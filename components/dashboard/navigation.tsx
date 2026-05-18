@@ -175,8 +175,6 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
 // PLUS DRAWER (bottom sheet)
 // ═══════════════════════════════════════════════════════════════
 
-interface PlusDrawerProps {
-
 interface DrawerLinkItem {
   type: "link"
   href: string
@@ -196,6 +194,8 @@ interface DrawerLogoItem {
 }
 
 type DrawerItem = DrawerLinkItem | DrawerLogoItem
+
+interface PlusDrawerProps {
   isOpen: boolean
   onClose: () => void
 }
