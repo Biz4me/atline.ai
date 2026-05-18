@@ -14,8 +14,8 @@ const prompts = [
 
 export function QuickPrompts({ onSelect }: QuickPromptsProps) {
   return (
-    <div className="-mx-4 overflow-x-auto px-4 py-2 scrollbar-none lg:-mx-6 lg:px-6">
-      <div className="flex gap-2 pr-6">
+    <div className="-mx-4 overflow-x-auto px-4 py-2 scrollbar-none lg:mx-0 lg:overflow-visible lg:px-6">
+      <div className="flex gap-2 pr-4 lg:justify-center lg:pr-0">
         {prompts.map((prompt) => (
           <Button
             key={prompt}

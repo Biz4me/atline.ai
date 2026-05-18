@@ -8,15 +8,11 @@ import { cn } from "@/lib/utils"
 interface ChatInputProps {
   onSend: (message: string) => void
   disabled?: boolean
-  messagesUsed?: number
-  messagesLimit?: number
 }
 
 export function ChatInput({
   onSend,
   disabled,
-  messagesUsed = 8,
-  messagesLimit = 10,
 }: ChatInputProps) {
   const [message, setMessage] = useState("")
   const [isRecording, setIsRecording] = useState(false)
@@ -36,13 +32,6 @@ export function ChatInput({
 
   return (
     <div className="border-t border-border bg-background">
-      {/* Message counter */}
-      <div className="px-4 pt-2 lg:px-6">
-        <p className="text-xs text-muted-foreground">
-          {messagesUsed} / {messagesLimit} messages aujourd&apos;hui
-        </p>
-      </div>
-
       {/* Input form */}
       <form onSubmit={handleSubmit} className="flex items-center gap-1.5 p-3 lg:gap-2 lg:p-4 lg:px-6">
         {/* Microphone button */}

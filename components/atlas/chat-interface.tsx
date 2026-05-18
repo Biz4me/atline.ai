@@ -5,6 +5,7 @@ import { QuoteCard } from "./quote-card"
 import { ChatMessage, TypingIndicator } from "./chat-message"
 import { QuickPrompts } from "./quick-prompts"
 import { ChatInput } from "./chat-input"
+import { MessageToast } from "./message-toast"
 
 interface Message {
   id: string
@@ -108,11 +109,14 @@ export function ChatInterface() {
         )}
       </div>
 
-      {/* Quick prompts */}
-      <QuickPrompts onSelect={handleQuickPrompt} />
+      {/* Quick prompts with toast */}
+      <div className="relative">
+        <MessageToast messagesRemaining={8} />
+        <QuickPrompts onSelect={handleQuickPrompt} />
+      </div>
 
       {/* Input area */}
-      <ChatInput onSend={handleSend} messagesUsed={8} messagesLimit={10} />
+      <ChatInput onSend={handleSend} />
     </div>
   )
 }
