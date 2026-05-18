@@ -6,9 +6,9 @@ interface QuickPromptsProps {
 }
 
 const prompts = [
-  "Générer un script WhatsApp",
-  "Plan d'action semaine",
-  "Analyser mon pitch",
+  "Script WhatsApp",
+  "Plan semaine",
+  "Mon pitch",
 ]
 
 export function QuickPrompts({ onSelect }: QuickPromptsProps) {
