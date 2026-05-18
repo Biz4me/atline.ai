@@ -1,18 +1,13 @@
 "use client"
 
 import { Bell } from "lucide-react"
-import { Sparkles } from "lucide-react"
+import { AtlineLogo } from "./logo"
 
 export function MobileHeader() {
   return (
     <header className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center justify-between border-b border-border bg-background px-4 lg:hidden">
       {/* Logo */}
-      <div className="flex items-center gap-2">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-          <Sparkles className="h-4 w-4 text-primary-foreground" />
-        </div>
-        <span className="font-heading text-lg font-medium">Atline</span>
-      </div>
+      <AtlineLogo size="md" />
 
       {/* Right side */}
       <div className="flex items-center gap-3">

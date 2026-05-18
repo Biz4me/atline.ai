@@ -1,4 +1,3 @@
-import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
 
 interface StatCardProps {
@@ -6,11 +5,15 @@ interface StatCardProps {
   value: string | number
   suffix?: string
   trend?: "up" | "down" | "neutral"
+  accent?: boolean
 }
 
-export function StatCard({ label, value, suffix }: StatCardProps) {
+export function StatCard({ label, value, suffix, accent = false }: StatCardProps) {
   return (
-    <Card className="p-4">
+    <div className={cn(
+      "rounded-lg border border-border bg-card p-4",
+      accent && "border-l-2 border-l-primary"
+    )}>
       <p className="text-xs font-medium text-muted-foreground">{label}</p>
       <p className="mt-1 font-mono text-2xl font-semibold tracking-tight">
         {value}
@@ -18,7 +21,7 @@ export function StatCard({ label, value, suffix }: StatCardProps) {
           <span className="text-base text-muted-foreground">{suffix}</span>
         )}
       </p>
-    </Card>
+    </div>
   )
 }
 

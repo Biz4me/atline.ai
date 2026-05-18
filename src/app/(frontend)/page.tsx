@@ -5,10 +5,10 @@ import { HotProspects } from "@/components/dashboard/hot-prospects"
 import { QuickActions } from "@/components/dashboard/quick-actions"
 
 const stats = [
-  { label: "Sessions ce mois", value: 24 },
+  { label: "Sessions ce mois", value: 24, accent: true },
   { label: "Prospects actifs", value: 8 },
-  { label: "Score moyen", value: "7.4", suffix: "/10" },
-  { label: "Streak", value: "12 jours 🔥" },
+  { label: "Score moyen", value: "7.4", suffix: "/10", accent: true },
+  { label: "Streak", value: "12j" },
 ]
 
 const hotProspects = [

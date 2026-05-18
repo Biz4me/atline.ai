@@ -12,6 +12,7 @@ import {
   Calendar,
   LineChart,
 } from "lucide-react"
+import { AtlineLogo } from "./logo"
 
 const mobileNavItems = [
   { href: "/", icon: Home, label: "Home" },
@@ -45,14 +46,17 @@ export function MobileBottomNav() {
               key={item.href}
               href={item.href}
               className={cn(
-                "flex flex-col items-center justify-center gap-1 px-3 py-2 transition-colors",
+                "flex flex-col items-center justify-center gap-0.5 px-3 py-2 transition-colors",
                 isActive ? "text-primary" : "text-muted-foreground"
               )}
             >
               <Icon className="h-5 w-5" />
-              {isActive && (
-                <span className="text-[10px] font-medium">{item.label}</span>
-              )}
+              <span className={cn(
+                "text-[10px] font-medium",
+                isActive ? "text-primary" : "text-muted-foreground"
+              )}>
+                {item.label}
+              </span>
             </Link>
           )
         })}
@@ -77,13 +81,8 @@ export function DesktopSidebar({ collapsed = false }: DesktopSidebarProps) {
       )}
     >
       {/* Logo */}
-      <div className="flex h-16 items-center gap-3 border-b border-border px-4">
-        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary">
-          <Sparkles className="h-4 w-4 text-primary-foreground" />
-        </div>
-        {!collapsed && (
-          <span className="font-heading text-lg font-medium">Atline</span>
-        )}
+      <div className="flex h-16 items-center border-b border-border px-4">
+        <AtlineLogo showText={!collapsed} size="md" />
       </div>
 
       {/* Navigation */}

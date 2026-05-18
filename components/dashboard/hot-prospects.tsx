@@ -1,6 +1,5 @@
-import { Card } from "@/components/ui/card"
-import { Badge } from "@/components/ui/badge"
-import { ChevronRight } from "lucide-react"
+import { Button } from "@/components/ui/button"
+import { ChevronRight, Phone } from "lucide-react"
 
 interface Prospect {
   id: string
@@ -15,25 +14,37 @@ interface ProspectCardProps {
 
 export function ProspectCard({ prospect }: ProspectCardProps) {
   return (
-    <Card className="flex items-center justify-between p-4">
-      <div className="flex items-center gap-3">
-        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-accent/20 to-primary/20">
-          <span className="text-sm font-medium">{prospect.name.charAt(0)}</span>
+    <div className="rounded-lg border border-border border-l-2 border-l-accent bg-card p-4">
+      <div className="flex items-start justify-between">
+        <div className="flex items-center gap-3">
+          <div className="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-accent/20 to-primary/20">
+            <span className="text-sm font-medium">{prospect.name.charAt(0)}</span>
+          </div>
+          <div>
+            <p className="font-medium">{prospect.name}</p>
+            <p className="text-sm text-muted-foreground">
+              {prospect.lastActivity}
+            </p>
+          </div>
         </div>
-        <div>
-          <p className="font-medium">{prospect.name}</p>
-          <p className="text-sm text-muted-foreground">
-            {prospect.lastActivity}
-          </p>
+        <div className="flex items-center gap-3">
+          <span className="rounded bg-accent/20 px-2 py-0.5 font-mono text-xs font-medium text-accent">
+            {prospect.score}/10
+          </span>
+          <ChevronRight className="h-4 w-4 text-muted-foreground" />
         </div>
       </div>
-      <div className="flex items-center gap-3">
-        <Badge variant="accent" className="font-mono">
-          {prospect.score}/10
-        </Badge>
-        <ChevronRight className="h-4 w-4 text-muted-foreground" />
+      <div className="mt-3 pt-3 border-t border-border">
+        <Button
+          variant="ghost"
+          size="sm"
+          className="h-7 px-2 text-xs text-muted-foreground hover:text-accent"
+        >
+          <Phone className="mr-1.5 h-3 w-3" />
+          Appeler maintenant
+        </Button>
       </div>
-    </Card>
+    </div>
   )
 }
 
