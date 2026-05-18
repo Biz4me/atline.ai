@@ -30,6 +30,21 @@ import { AtlineLogo } from "./logo"
 // MOBILE STATS BAR (replaces header)
 // ═══════════════════════════════════════════════════════════════
 
+// Small triangle logo for stats bar
+function StatsBarLogo() {
+  return (
+    <svg
+      viewBox="0 0 18 18"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className="h-[18px] w-[18px]"
+    >
+      <path d="M9 2L17 15H1L9 2Z" fill="#7C6FE8" />
+      <path d="M9 5L14 13H4L9 5Z" fill="#06B6D4" fillOpacity="0.6" />
+    </svg>
+  )
+}
+
 const statsBarItems = [
   { href: "/croissance", icon: IconFlame, value: "12", color: "#F59E0B" },
   { href: "/proline", icon: IconChartBar, value: "4", color: "#10B981" },
@@ -39,24 +54,30 @@ const statsBarItems = [
 
 export function MobileStatsBar() {
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 flex h-11 items-center border-b border-white/[0.08] bg-background px-4 lg:hidden">
-      <div className="flex w-full items-center justify-between">
+    <header className="fixed left-0 right-0 top-0 z-50 flex h-12 items-center border-b border-white/[0.08] bg-[#09090B] px-4 lg:hidden">
+      {/* Triangle logo - links to home */}
+      <Link href="/" className="mr-3 flex items-center justify-center">
+        <StatsBarLogo />
+      </Link>
+
+      {/* Stats */}
+      <div className="flex flex-1 items-center justify-between">
         {statsBarItems.map((item, index) => {
           const Icon = item.icon
           return (
             <div key={item.href} className="flex items-center">
+              {index > 0 && (
+                <div className="mr-2 h-4 w-px bg-white/[0.08]" />
+              )}
               <Link
                 href={item.href}
-                className="flex items-center gap-1.5 px-2 py-1"
+                className="flex items-center gap-1.5 px-1 py-1"
               >
                 <Icon className="h-4 w-4" style={{ color: item.color }} />
                 <span className="font-mono text-[13px] font-bold text-white">
                   {item.value}
                 </span>
               </Link>
-              {index < statsBarItems.length - 1 && (
-                <div className="ml-2 h-4 w-px bg-white/[0.08]" />
-              )}
             </div>
           )
         })}
