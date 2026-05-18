@@ -14,8 +14,11 @@ const prompts = [
 
 export function QuickPrompts({ onSelect }: QuickPromptsProps) {
   return (
-    <div className="-mx-4 overflow-x-auto px-4 py-2 scrollbar-none lg:mx-0 lg:overflow-visible lg:px-6">
-      <div className="flex gap-2 pr-4 lg:justify-center lg:pr-0">
+    <div className="w-full overflow-hidden">
+      <div 
+        className="flex w-full max-w-full gap-2 overflow-x-scroll px-4 pb-2 scrollbar-none lg:justify-center lg:overflow-visible lg:px-6"
+        style={{ WebkitOverflowScrolling: "touch" }}
+      >
         {prompts.map((prompt) => (
           <Button
             key={prompt}
