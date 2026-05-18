@@ -178,7 +178,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
 interface DrawerLinkItem {
   type: "link"
   href: string
-  icon: React.ComponentType<{ className?: string }>
+  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
   label: string
   bgColor: string
   iconColor: string
