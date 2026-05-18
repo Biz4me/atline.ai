@@ -21,6 +21,8 @@ import {
   IconChevronRight,
   IconBell,
   IconX,
+  IconFlame,
+  IconBarbell,
 } from "@tabler/icons-react"
 import { AtlineLogo } from "./logo"
 
@@ -29,10 +31,10 @@ import { AtlineLogo } from "./logo"
 // ═══════════════════════════════════════════════════════════════
 
 const statsBarItems = [
-  { href: "/croissance", icon: IconTrophy, value: "225", color: "#EAB308" },
+  { href: "/croissance", icon: IconFlame, value: "12", color: "#F59E0B" },
+  { href: "/proline", icon: IconChartBar, value: "4", color: "#10B981" },
   { href: "/markline", icon: IconBroadcast, value: "5", color: "#06B6D4" },
   { href: "/reseau", icon: IconUsers, value: "24", color: "#7C6FE8" },
-  { href: "/agenda", icon: IconCalendar, value: "3", color: "#10B981" },
 ]
 
 export function MobileStatsBar() {
@@ -67,11 +69,26 @@ export function MobileStatsBar() {
 // MOBILE BOTTOM NAV (5 tabs)
 // ═══════════════════════════════════════════════════════════════
 
+// Triangle logo SVG for Atlas center tab
+function AtlasTriangleLogo({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 28 28"
+      fill="none"
+      xmlns="http://www.w3.org/2000/svg"
+      className={className}
+    >
+      <path d="M14 4L24 22H4L14 4Z" fill="#7C6FE8" />
+      <path d="M14 8L20 20H8L14 8Z" fill="#06B6D4" fillOpacity="0.6" />
+    </svg>
+  )
+}
+
 const bottomNavItems = [
   { href: "/formation", icon: IconSchool, label: "Formation" },
-  { href: "/atlas", icon: IconSparkles, label: "Atlas" },
-  { href: "/simulations", icon: IconPhone, label: "Simulations" },
-  { href: "/reseau", icon: IconUsers, label: "Réseau" },
+  { href: "/simulations", icon: IconBarbell, label: "Simulations" },
+  { href: "/atlas", icon: null, label: "Atlas", isCenter: true },
+  { href: "/agenda", icon: IconCalendar, label: "Agenda" },
 ]
 
 interface MobileBottomNavProps {
@@ -86,7 +103,21 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
       <div className="flex h-full items-center justify-around px-1">
         {bottomNavItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
-          const Icon = item.icon
+          
+          // Atlas center tab - special rendering
+          if (item.isCenter) {
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className="flex min-h-[44px] flex-col items-center justify-center px-2"
+              >
+                <AtlasTriangleLogo className="h-7 w-7" />
+              </Link>
+            )
+          }
+          
+          const Icon = item.icon!
           return (
             <Link
               key={item.href}
@@ -160,30 +191,8 @@ const drawerSections = [
     ],
   },
   {
-    label: "ORGANISATION",
-    items: [
-      {
-        type: "link" as const,
-        href: "/agenda",
-        icon: IconCalendar,
-        label: "Agenda",
-        bgColor: "rgba(6,182,212,0.12)",
-        iconColor: "#06B6D4",
-      },
-    ],
-  },
-  {
     label: "OUTILS PRO",
     items: [
-      {
-        type: "link" as const,
-        href: "/markline",
-        icon: IconBroadcast,
-        label: "Markline",
-        badge: "Pro",
-        bgColor: "rgba(6,182,212,0.12)",
-        iconColor: "#06B6D4",
-      },
       {
         type: "link" as const,
         href: "/proline",
@@ -193,17 +202,25 @@ const drawerSections = [
         bgColor: "rgba(16,185,129,0.12)",
         iconColor: "#10B981",
       },
-    ],
-  },
-  {
-    label: "ENRICHISSEMENT",
-    items: [
       {
         type: "link" as const,
         href: "/enrichir-atlas",
         icon: IconUpload,
         label: "Enrichir Atlas",
         badge: "Pro",
+        bgColor: "rgba(124,111,232,0.12)",
+        iconColor: "#7C6FE8",
+      },
+    ],
+  },
+  {
+    label: "RÉSEAU",
+    items: [
+      {
+        type: "link" as const,
+        href: "/reseau",
+        icon: IconUsers,
+        label: "Réseau complet",
         bgColor: "rgba(124,111,232,0.12)",
         iconColor: "#7C6FE8",
       },
@@ -341,7 +358,7 @@ const sidebarSections = {
     },
     {
       href: "/simulations",
-      icon: IconPhone,
+      icon: IconBarbell,
       label: "Simulations",
       subItems: [
         { href: "/simulations", label: "Scénarios" },

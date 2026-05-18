@@ -41,7 +41,7 @@ export function DashboardShell({ children, breadcrumbs, layout = "standard" }: D
         <main className="flex-1 px-4 pb-20 pt-[60px] lg:px-8 lg:pb-8 lg:pt-6">
           <div
             className={cn(
-              "mx-auto",
+              "mx-auto pt-4 lg:pt-0",
               layout === "standard" && "max-w-3xl",
               layout === "with-sidebar" && "max-w-4xl"
             )}
