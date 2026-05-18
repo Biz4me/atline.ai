@@ -1,8 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { MobileHeader, DesktopHeader } from "./header"
-import { MobileBottomNav, DesktopSidebar } from "./navigation"
+import { MobileStatsBar, MobileBottomNav, PlusDrawer, DesktopSidebar, DesktopTopBar } from "./navigation"
 import { cn } from "@/lib/utils"
 
 type LayoutVariant = "standard" | "with-sidebar"
@@ -14,15 +13,19 @@ interface DashboardShellProps {
 }
 
 export function DashboardShell({ children, breadcrumbs, layout = "standard" }: DashboardShellProps) {
-  const [sidebarCollapsed] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
     <div className="min-h-screen bg-background">
-      {/* Mobile header */}
-      <MobileHeader />
+      {/* Mobile stats bar (replaces old header) */}
+      <MobileStatsBar />
 
       {/* Desktop sidebar */}
-      <DesktopSidebar collapsed={sidebarCollapsed} />
+      <DesktopSidebar
+        collapsed={sidebarCollapsed}
+        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+      />
 
       {/* Main content area */}
       <div
@@ -31,16 +34,16 @@ export function DashboardShell({ children, breadcrumbs, layout = "standard" }: D
           sidebarCollapsed ? "lg:pl-16" : "lg:pl-60"
         )}
       >
-        {/* Desktop header */}
-        <DesktopHeader breadcrumbs={breadcrumbs} />
+        {/* Desktop top bar */}
+        <DesktopTopBar breadcrumbs={breadcrumbs} />
 
         {/* Page content */}
-        <main className="flex-1 px-4 pb-20 pt-[72px] lg:px-8 lg:pb-8 lg:pt-8">
+        <main className="flex-1 px-4 pb-20 pt-[64px] lg:px-8 lg:pb-8 lg:pt-6">
           <div
             className={cn(
               "mx-auto",
-              layout === "standard" && "max-w-[960px]",
-              layout === "with-sidebar" && "max-w-[1000px]"
+              layout === "standard" && "max-w-3xl",
+              layout === "with-sidebar" && "max-w-4xl"
             )}
           >
             {children}
@@ -49,7 +52,10 @@ export function DashboardShell({ children, breadcrumbs, layout = "standard" }: D
       </div>
 
       {/* Mobile bottom nav */}
-      <MobileBottomNav />
+      <MobileBottomNav onPlusClick={() => setDrawerOpen(true)} />
+
+      {/* Plus drawer */}
+      <PlusDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
     </div>
   )
 }
