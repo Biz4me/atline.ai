@@ -176,6 +176,26 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
 // ═══════════════════════════════════════════════════════════════
 
 interface PlusDrawerProps {
+
+interface DrawerLinkItem {
+  type: "link"
+  href: string
+  icon: React.ComponentType<{ className?: string }>
+  label: string
+  bgColor: string
+  iconColor: string
+  badge?: string
+  subtitle?: string
+}
+
+interface DrawerLogoItem {
+  type: "logo"
+  label: string
+  subtitle: string
+  bgColor: string
+}
+
+type DrawerItem = DrawerLinkItem | DrawerLogoItem
   isOpen: boolean
   onClose: () => void
 }
