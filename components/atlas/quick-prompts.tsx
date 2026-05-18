@@ -14,7 +14,7 @@ const prompts = [
 
 export function QuickPrompts({ onSelect }: QuickPromptsProps) {
   return (
-    <div className="w-full overflow-hidden">
+    <div className="w-full">
       <div 
         className="flex w-full max-w-full gap-2 overflow-x-scroll px-4 pb-2 scrollbar-none lg:justify-center lg:overflow-visible lg:px-6"
         style={{ WebkitOverflowScrolling: "touch" }}
