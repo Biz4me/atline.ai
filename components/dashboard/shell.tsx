@@ -32,7 +32,7 @@ export function DashboardShell({ children, breadcrumbs }: DashboardShellProps) {
         <DesktopHeader breadcrumbs={breadcrumbs} />
 
         {/* Page content */}
-        <main className="flex-1 px-4 pb-20 pt-[72px] lg:px-6 lg:pb-6 lg:pt-6">
+        <main className="flex-1 px-4 pb-20 pt-[72px] lg:px-8 lg:pb-8 lg:pt-8 max-w-5xl mx-auto w-full">
           {children}
         </main>
       </div>
