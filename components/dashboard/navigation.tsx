@@ -200,7 +200,7 @@ interface PlusDrawerProps {
   onClose: () => void
 }
 
-const drawerSections = [
+const drawerSections: { label: string; items: DrawerItem[] }[] = [
   {
     label: "IDENTITÉ",
     items: [
