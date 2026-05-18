@@ -36,7 +36,7 @@ export function CurrentLessonCard({
       </p>
 
       {/* CTA button */}
-      <Button className="mt-4 h-10 w-full rounded-[8px] bg-primary text-sm font-medium text-white hover:bg-primary/90">
+      <Button className="mt-4 h-10 w-full rounded-[8px] text-sm font-medium text-white" style={{ backgroundColor: "#7C6FE8" }}>
         Reprendre
         <ArrowRight className="ml-1 h-4 w-4" />
       </Button>
