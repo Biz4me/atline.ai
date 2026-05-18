@@ -14,18 +14,20 @@ const prompts = [
 
 export function QuickPrompts({ onSelect }: QuickPromptsProps) {
   return (
-    <div className="flex gap-2 overflow-x-auto px-4 py-2 scrollbar-none lg:px-6">
-      {prompts.map((prompt) => (
-        <Button
-          key={prompt}
-          variant="ghost"
-          size="sm"
-          onClick={() => onSelect(prompt)}
-          className="shrink-0 rounded-full border border-border bg-transparent px-4 text-sm text-muted-foreground hover:border-primary hover:text-primary"
-        >
-          {prompt}
-        </Button>
-      ))}
+    <div className="overflow-x-auto px-4 py-2 scrollbar-none lg:px-6">
+      <div className="flex gap-2 pr-4">
+        {prompts.map((prompt) => (
+          <Button
+            key={prompt}
+            variant="ghost"
+            size="sm"
+            onClick={() => onSelect(prompt)}
+            className="shrink-0 rounded-full border border-border bg-transparent px-4 text-sm text-muted-foreground hover:border-primary hover:text-primary"
+          >
+            {prompt}
+          </Button>
+        ))}
+      </div>
     </div>
   )
 }

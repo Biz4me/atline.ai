@@ -39,12 +39,12 @@ export function ChatInput({
       {/* Message counter */}
       <div className="px-4 pt-2 lg:px-6">
         <p className="text-xs text-muted-foreground">
-          {messagesUsed}/{messagesLimit} messages aujourd&apos;hui
+          {messagesUsed} / {messagesLimit} messages aujourd&apos;hui
         </p>
       </div>
 
       {/* Input form */}
-      <form onSubmit={handleSubmit} className="flex items-center gap-2 p-4 lg:px-6">
+      <form onSubmit={handleSubmit} className="flex items-center gap-1.5 p-3 lg:gap-2 lg:p-4 lg:px-6">
         {/* Microphone button */}
         <Button
           type="button"
@@ -52,12 +52,12 @@ export function ChatInput({
           size="icon"
           onClick={toggleRecording}
           className={cn(
-            "h-10 w-10 shrink-0 rounded-full",
+            "h-9 w-9 shrink-0 rounded-full lg:h-10 lg:w-10",
             isRecording && "animate-pulse text-accent"
           )}
         >
           <Mic className={cn("h-5 w-5", isRecording ? "text-accent" : "text-primary")} />
-          <span className="sr-only">Dictée vocale</span>
+          <span className="sr-only">Dictee vocale</span>
         </Button>
 
         {/* Text input */}
@@ -65,9 +65,9 @@ export function ChatInput({
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Pose une question à Atlas..."
+          placeholder="Pose une question..."
           disabled={disabled}
-          className="h-10 flex-1 rounded-full border border-border bg-card px-4 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50"
+          className="h-9 min-w-0 flex-1 rounded-full border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50 lg:h-10 lg:px-4"
         />
 
         {/* Send button */}
@@ -75,9 +75,9 @@ export function ChatInput({
           type="submit"
           size="icon"
           disabled={!message.trim() || disabled}
-          className="h-10 w-10 shrink-0 rounded-full bg-primary text-white hover:bg-primary/90 disabled:opacity-50"
+          className="h-9 w-9 shrink-0 rounded-full bg-primary text-white hover:bg-primary/90 disabled:opacity-50 lg:h-10 lg:w-10"
         >
-          <Send className="h-5 w-5" />
+          <Send className="h-4 w-4 lg:h-5 lg:w-5" />
           <span className="sr-only">Envoyer</span>
         </Button>
       </form>
