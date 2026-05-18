@@ -11,7 +11,7 @@ interface StatCardProps {
 export function StatCard({ label, value, suffix, accent = false }: StatCardProps) {
   return (
     <div className={cn(
-      "rounded-lg border border-border bg-card p-4",
+      "rounded-[8px] border border-border bg-card p-4",
       accent && "border-l-2 border-l-primary"
     )}>
       <p className="text-xs font-medium text-muted-foreground">{label}</p>

@@ -10,7 +10,8 @@ import {
   Users,
   TrendingUp,
   Calendar,
-  LineChart,
+  Phone,
+  User,
 } from "lucide-react"
 import { AtlineLogo } from "./logo"
 
@@ -26,10 +27,14 @@ const desktopNavItems = [
   { href: "/", icon: Home, label: "Accueil" },
   { href: "/atlas", icon: Sparkles, label: "Atlas" },
   { href: "/formation", icon: GraduationCap, label: "Formation" },
-  { href: "/simulations", icon: LineChart, label: "Simulations" },
   { href: "/reseau", icon: Users, label: "Réseau" },
+  { href: "/simulations", icon: Phone, label: "Simulations" },
   { href: "/agenda", icon: Calendar, label: "Agenda" },
   { href: "/croissance", icon: TrendingUp, label: "Croissance" },
+]
+
+const bottomNavItems = [
+  { href: "/profil", icon: User, label: "Profil" },
 ]
 
 export function MobileBottomNav() {
@@ -108,6 +113,29 @@ export function DesktopSidebar({ collapsed = false }: DesktopSidebarProps) {
         })}
       </nav>
 
+      {/* Bottom nav items (Profil) */}
+      <div className="space-y-1 p-3">
+        {bottomNavItems.map((item) => {
+          const isActive = pathname === item.href
+          const Icon = item.icon
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              className={cn(
+                "flex items-center gap-3 rounded-md px-3 py-2.5 text-sm transition-colors",
+                isActive
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              <Icon className="h-5 w-5 shrink-0" />
+              {!collapsed && <span>{item.label}</span>}
+            </Link>
+          )
+        })}
+      </div>
+
       {/* User section */}
       <div className="border-t border-border p-3">
         <div
@@ -116,15 +144,17 @@ export function DesktopSidebar({ collapsed = false }: DesktopSidebarProps) {
             collapsed && "justify-center px-0"
           )}
         >
-          <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-gradient-to-br from-primary to-accent">
+          <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-primary">
             <div className="flex h-full w-full items-center justify-center text-sm font-medium text-white">
               PH
             </div>
           </div>
           {!collapsed && (
             <div className="flex flex-col">
-              <span className="text-sm font-medium">Patrice</span>
-              <span className="text-xs text-primary">Plan Pro</span>
+              <span className="text-sm font-medium">Patrice Haure-Pallesi</span>
+              <span className="inline-flex items-center rounded-[4px] bg-primary px-1.5 py-0.5 text-[10px] font-medium text-white w-fit">
+                Plan Pro
+              </span>
             </div>
           )}
         </div>

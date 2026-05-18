@@ -28,7 +28,7 @@ export function ProspectCard({ prospect }: ProspectCardProps) {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <span className="rounded bg-accent/20 px-2 py-0.5 font-mono text-xs font-medium text-accent">
+          <span className="rounded-[4px] bg-accent px-2 py-0.5 font-mono text-xs font-medium text-white">
             {prospect.score}/10
           </span>
           <ChevronRight className="h-4 w-4 text-muted-foreground" />

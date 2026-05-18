@@ -34,7 +34,7 @@ export function AtlineLogo({ className, showText = true, size = "md" }: AtlineLo
         />
       </svg>
       {showText && (
-        <span className={cn("font-heading font-semibold text-white", sizes[size].text)}>
+        <span className={cn("font-logo font-bold text-white", sizes[size].text)}>
           Atline
         </span>
       )}

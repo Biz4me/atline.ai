@@ -1,5 +1,5 @@
 import React from "react"
-import { Plus_Jakarta_Sans, DM_Sans, JetBrains_Mono } from "next/font/google"
+import { Plus_Jakarta_Sans, DM_Sans, JetBrains_Mono, Space_Grotesk } from "next/font/google"
 import "./globals.css"
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -23,6 +23,13 @@ const jetbrainsMono = JetBrains_Mono({
   display: "swap",
 })
 
+const spaceGrotesk = Space_Grotesk({
+  subsets: ["latin"],
+  weight: ["700"],
+  variable: "--font-space-grotesk",
+  display: "swap",
+})
+
 export const metadata = {
   title: "Atline.ai - AI Coaching for MLM Success",
   description:
@@ -43,7 +50,7 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html
       lang="fr"
-      className={`${plusJakarta.variable} ${dmSans.variable} ${jetbrainsMono.variable} dark bg-background`}
+      className={`${plusJakarta.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} dark bg-background`}
     >
       <body className="min-h-screen font-sans antialiased">{children}</body>
     </html>
