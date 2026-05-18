@@ -62,6 +62,7 @@ export default function SimulationsPage() {
           scenarioName={selectedScenario.name}
           characterName={selectedScenario.character}
           onEndCall={handleEndCall}
+          onBack={handleNewScenario}
         />
       </DashboardShell>
     )

@@ -97,13 +97,13 @@ export function DebriefScreen({
       {/* Actions */}
       <div className="space-y-2">
         <Button onClick={onReplay} className="w-full">
-          Rejouer ce scénario
+          Rejouer
         </Button>
-        <Button onClick={onNewScenario} variant="outline" className="w-full">
-          Voir la transcription complète
+        <Button onClick={onNewScenario} variant="ghost" className="w-full">
+          Voir transcription
         </Button>
-        <Button onClick={onNewScenario} variant="outline" className="w-full">
-          Choisir un autre scénario
+        <Button onClick={onNewScenario} variant="ghost" className="w-full">
+          Analyser ma présentation
         </Button>
       </div>
     </div>

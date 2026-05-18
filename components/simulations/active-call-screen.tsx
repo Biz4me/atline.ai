@@ -1,16 +1,17 @@
 "use client"
 
 import { useState, useCallback, useEffect } from "react"
-import { PhoneOff, Mic } from "lucide-react"
+import { PhoneOff, Mic, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 interface ActiveCallScreenProps {
   scenarioName: string
   characterName: string
   onEndCall: () => void
+  onBack: () => void
 }
 
-export function ActiveCallScreen({ scenarioName, characterName, onEndCall }: ActiveCallScreenProps) {
+export function ActiveCallScreen({ scenarioName, characterName, onEndCall, onBack }: ActiveCallScreenProps) {
   const [isSpeaking, setIsSpeaking] = useState(true)
   const [isUserSpeaking, setIsUserSpeaking] = useState(false)
   const [exchangeCount, setExchangeCount] = useState(3)
@@ -44,7 +45,15 @@ export function ActiveCallScreen({ scenarioName, characterName, onEndCall }: Act
   }, [])
 
   return (
-    <div className="flex min-h-[calc(100vh-140px)] flex-col items-center justify-center bg-background px-4 py-6 lg:min-h-[calc(100vh-80px)]">
+    <div className="relative flex min-h-[calc(100vh-140px)] flex-col items-center justify-center bg-background px-4 py-6 lg:min-h-[calc(100vh-80px)]">
+      {/* Back button */}
+      <button
+        onClick={onBack}
+        className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-card hover:text-white"
+      >
+        <ArrowLeft className="h-5 w-5" />
+      </button>
+
       {/* Scenario name */}
       <p className="mb-2 text-[11px] text-muted-foreground">{scenarioName}</p>
 
