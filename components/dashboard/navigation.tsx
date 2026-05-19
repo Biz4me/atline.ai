@@ -3,16 +3,15 @@
 import { useState } from "react"
 import Link from "next/link"
 import { usePathname } from "next/navigation"
+import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
 import {
   IconCalendar,
-  IconPhone,
   IconUsers,
   IconSchool,
   IconSparkles,
   IconGridDots,
   IconUser,
-  IconTrophy,
   IconBroadcast,
   IconChartBar,
   IconUpload,
@@ -24,6 +23,11 @@ import {
   IconFlame,
   IconBarbell,
   IconLogout,
+  IconCreditCard,
+  IconLanguage,
+  IconSun,
+  IconMoon,
+  IconTrophy,
 } from "@tabler/icons-react"
 import { AtlineLogo } from "./logo"
 import { useUser } from "@/hooks/use-user"
@@ -177,189 +181,172 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
 // PLUS DRAWER (bottom sheet)
 // ═══════════════════════════════════════════════════════════════
 
-interface DrawerLinkItem {
-  type: "link"
-  href: string
-  icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }>
-  label: string
-  bgColor: string
-  iconColor: string
-  badge?: string
-  subtitle?: string
-}
-interface DrawerLogoItem {
-  type: "logo"
-  label: string
-  subtitle: string
-  bgColor: string
-}
-type DrawerItem = DrawerLinkItem | DrawerLogoItem
-
 interface PlusDrawerProps {
   isOpen: boolean
   onClose: () => void
 }
 
-const drawerSections: { label: string; items: DrawerItem[] }[] = [
-  {
-    label: "IDENTITÉ",
-    items: [
-      {
-        type: "logo" as const,
-        label: "Atline",
-        subtitle: "Plan Pro · Actif",
-        bgColor: "rgba(124,111,232,0.15)",
-      },
-      {
-        type: "link" as const,
-        href: "/profil",
-        icon: IconUser,
-        label: "Profil",
-        bgColor: "rgba(113,113,122,0.12)",
-        iconColor: "#71717A",
-      },
-    ],
-  },
-  {
-    label: "PROGRESSION",
-    items: [
-      {
-        type: "link" as const,
-        href: "/croissance",
-        icon: IconTrophy,
-        label: "Croissance",
-        bgColor: "rgba(234,179,8,0.12)",
-        iconColor: "#EAB308",
-      },
-    ],
-  },
-  {
-    label: "OUTILS PRO",
-    items: [
-      {
-        type: "link" as const,
-        href: "/proline",
-        icon: IconChartBar,
-        label: "Proline",
-        badge: "Pro",
-        bgColor: "rgba(16,185,129,0.12)",
-        iconColor: "#10B981",
-      },
-      {
-        type: "link" as const,
-        href: "/enrichir-atlas",
-        icon: IconUpload,
-        label: "Enrichir Atlas",
-        badge: "Pro",
-        bgColor: "rgba(124,111,232,0.12)",
-        iconColor: "#7C6FE8",
-      },
-    ],
-  },
-  {
-    label: "RÉSEAU",
-    items: [
-      {
-        type: "link" as const,
-        href: "/reseau",
-        icon: IconUsers,
-        label: "Réseau complet",
-        bgColor: "rgba(124,111,232,0.12)",
-        iconColor: "#7C6FE8",
-      },
-    ],
-  },
+const LANGUAGES = [
+  { code: "fr", label: "Français", flag: "🇫🇷" },
+  { code: "en", label: "English", flag: "🇬🇧" },
+  { code: "es", label: "Español", flag: "🇪🇸" },
 ]
 
+function DrawerItem({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="flex h-[62px] items-center border-b border-white/[0.05] px-4">
+      {children}
+    </div>
+  )
+}
+
+function DrawerIcon({ bg, color, icon: Icon }: { bg: string; color: string; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }> }) {
+  return (
+    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: bg }}>
+      <Icon className="h-6 w-6" style={{ color }} />
+    </div>
+  )
+}
+
+function DrawerSeparator() {
+  return <div className="mx-4 my-1 border-t border-white/[0.06]" />
+}
+
 export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
+  const { theme, setTheme } = useTheme()
+  const { logout } = useUser()
+  const [lang, setLang] = useState("fr")
+  const [langOpen, setLangOpen] = useState(false)
+  const isDark = theme === "dark"
+
   if (!isOpen) return null
+
+  const currentLang = LANGUAGES.find((l) => l.code === lang)!
 
   return (
     <>
-      {/* Backdrop */}
-      <div
-        className="fixed inset-0 z-[60] bg-black/60 lg:hidden"
-        onClick={onClose}
-      />
+      <div className="fixed inset-0 z-[60] bg-black/60 lg:hidden" onClick={onClose} />
 
-      {/* Drawer */}
-      <div className="fixed bottom-0 left-0 right-0 z-[70] rounded-t-[20px] bg-background lg:hidden">
+      <div className="fixed bottom-0 left-0 right-0 z-[70] rounded-t-[24px] bg-background lg:hidden">
         {/* Handle */}
         <div className="flex justify-center py-3">
-          <div className="h-[3px] w-8 rounded-full bg-white/20" />
+          <div className="h-[3px] w-10 rounded-full bg-white/20" />
         </div>
 
         {/* Close button */}
         <button
           onClick={onClose}
-          className="absolute right-4 top-3 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-card"
+          className="absolute right-4 top-3 flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground hover:bg-card"
         >
-          <IconX className="h-9 w-9" />
+          <IconX className="h-5 w-5" />
         </button>
 
-        {/* Content */}
-        <div className="max-h-[70vh] overflow-y-auto pb-8">
-          {drawerSections.map((section) => (
-            <div key={section.label}>
-              {/* Section label */}
-              <div className="px-4 py-2">
-                <span className="text-[10px] font-medium uppercase tracking-wider text-muted-foreground">
-                  {section.label}
-                </span>
-              </div>
+        <div className="max-h-[75vh] overflow-y-auto pb-10">
 
-              {/* Items */}
-              {section.items.map((item, index) => (
-                <div
-                  key={index}
-                  className="flex h-[60px] items-center border-b border-white/[0.05] px-4"
-                >
-                  {item.type === "logo" ? (
-                    <div className="flex items-center gap-3">
-                      <div
-                        className="flex h-11 w-11 items-center justify-center rounded-lg"
-                        style={{ backgroundColor: item.bgColor }}
-                      >
-                        <AtlineLogo showText={false} size="sm" />
-                      </div>
-                      <div className="flex flex-col">
-                        <span className="text-sm font-bold text-white">
-                          {item.label}
-                        </span>
-                        <span className="text-xs text-muted-foreground">
-                          {item.subtitle}
-                        </span>
-                      </div>
-                    </div>
-                  ) : (
-                    <Link
-                      href={item.href}
-                      onClick={onClose}
-                      className="flex w-full items-center gap-3"
-                    >
-                      <div
-                        className="flex h-11 w-11 items-center justify-center rounded-lg"
-                        style={{ backgroundColor: item.bgColor }}
-                      >
-                        <item.icon
-                          className="h-6 w-6"
-                          style={{ color: item.iconColor }}
-                        />
-                      </div>
-                      <span className="flex-1 text-sm text-white">
-                        {item.label}
-                      </span>
-                      {item.badge && (
-                        <span className="rounded bg-accent px-1.5 py-0.5 text-[10px] font-medium text-white">
-                          {item.badge}
-                        </span>
-                      )}
-                    </Link>
+          {/* ── Compte ── */}
+          <DrawerItem>
+            <Link href="/profil" onClick={onClose} className="flex w-full items-center gap-3">
+              <DrawerIcon bg="rgba(113,113,122,0.12)" color="#71717A" icon={IconUser} />
+              <span className="flex-1 text-sm font-medium text-white">Profil</span>
+            </Link>
+          </DrawerItem>
+
+          <DrawerItem>
+            <Link href="/abonnement" onClick={onClose} className="flex w-full items-center gap-3">
+              <DrawerIcon bg="rgba(124,111,232,0.15)" color="#7C6FE8" icon={IconCreditCard} />
+              <div className="flex flex-1 flex-col">
+                <span className="text-sm font-medium text-white">Abonnement</span>
+                <span className="text-[11px] text-muted-foreground">Plan Pro · Actif</span>
+              </div>
+            </Link>
+          </DrawerItem>
+
+          <DrawerSeparator />
+
+          {/* ── Outils ── */}
+          <DrawerItem>
+            <Link href="/enrichir-atlas" onClick={onClose} className="flex w-full items-center gap-3">
+              <DrawerIcon bg="rgba(124,111,232,0.12)" color="#7C6FE8" icon={IconUpload} />
+              <span className="flex-1 text-sm font-medium text-white">Enrichir Atlas</span>
+              <span className="rounded bg-primary/20 px-1.5 py-0.5 text-[10px] font-medium text-primary">Pro</span>
+            </Link>
+          </DrawerItem>
+
+          <DrawerSeparator />
+
+          {/* ── Préférences ── */}
+          {/* Langue */}
+          <DrawerItem>
+            <button
+              onClick={() => setLangOpen((v) => !v)}
+              className="flex w-full items-center gap-3"
+            >
+              <DrawerIcon bg="rgba(6,182,212,0.12)" color="#06B6D4" icon={IconLanguage} />
+              <span className="flex-1 text-left text-sm font-medium text-white">Langue</span>
+              <span className="text-sm text-muted-foreground">{currentLang.flag} {currentLang.label}</span>
+            </button>
+          </DrawerItem>
+
+          {langOpen && (
+            <div className="mx-4 mb-1 overflow-hidden rounded-xl border border-white/[0.08] bg-card">
+              {LANGUAGES.map((l) => (
+                <button
+                  key={l.code}
+                  onClick={() => { setLang(l.code); setLangOpen(false) }}
+                  className={cn(
+                    "flex w-full items-center gap-3 px-4 py-3 text-sm transition-colors",
+                    lang === l.code ? "text-primary" : "text-white hover:bg-white/[0.04]"
                   )}
-                </div>
+                >
+                  <span className="text-base">{l.flag}</span>
+                  <span>{l.label}</span>
+                  {lang === l.code && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
+                </button>
               ))}
             </div>
-          ))}
+          )}
+
+          {/* Mode */}
+          <DrawerItem>
+            <div className="flex w-full items-center gap-3">
+              <DrawerIcon
+                bg={isDark ? "rgba(113,113,122,0.12)" : "rgba(245,158,11,0.12)"}
+                color={isDark ? "#71717A" : "#F59E0B"}
+                icon={isDark ? IconMoon : IconSun}
+              />
+              <span className="flex-1 text-sm font-medium text-white">
+                {isDark ? "Mode sombre" : "Mode clair"}
+              </span>
+              <button
+                onClick={() => setTheme(isDark ? "light" : "dark")}
+                className={cn(
+                  "relative h-6 w-11 rounded-full transition-colors",
+                  isDark ? "bg-primary" : "bg-muted"
+                )}
+              >
+                <span
+                  className={cn(
+                    "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform",
+                    isDark ? "translate-x-5" : "translate-x-0.5"
+                  )}
+                />
+              </button>
+            </div>
+          </DrawerItem>
+
+          <DrawerSeparator />
+
+          {/* ── Session ── */}
+          <DrawerItem>
+            <button
+              onClick={() => { logout(); onClose() }}
+              className="flex w-full items-center gap-3"
+            >
+              <DrawerIcon bg="rgba(239,68,68,0.12)" color="#EF4444" icon={IconLogout} />
+              <span className="text-sm font-medium text-red-400">Déconnexion</span>
+            </button>
+          </DrawerItem>
+
         </div>
       </div>
     </>

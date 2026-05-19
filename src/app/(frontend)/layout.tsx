@@ -1,5 +1,6 @@
 import React from "react"
 import { Plus_Jakarta_Sans, DM_Sans, JetBrains_Mono, Space_Grotesk } from "next/font/google"
+import { Providers } from "@/components/providers"
 import "./globals.css"
 
 const plusJakarta = Plus_Jakarta_Sans({
@@ -59,9 +60,12 @@ export default async function RootLayout(props: { children: React.ReactNode }) {
   return (
     <html
       lang="fr"
-      className={`${plusJakarta.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable} dark bg-background`}
+      className={`${plusJakarta.variable} ${dmSans.variable} ${jetbrainsMono.variable} ${spaceGrotesk.variable}`}
+      suppressHydrationWarning
     >
-      <body className="min-h-screen font-sans antialiased">{children}</body>
+      <body className="min-h-screen bg-background font-sans antialiased">
+        <Providers>{children}</Providers>
+      </body>
     </html>
   )
 }
