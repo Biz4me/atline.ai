@@ -1,21 +1,32 @@
 "use client"
 
-import { useState } from "react"
-import { Mic, Send } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
+import { Mic, MicOff, Send, Volume2, VolumeX } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 interface ChatInputProps {
   onSend: (message: string) => void
   disabled?: boolean
+  ttsEnabled?: boolean
+  onToggleTts?: () => void
 }
 
 export function ChatInput({
   onSend,
   disabled,
+  ttsEnabled = true,
+  onToggleTts,
 }: ChatInputProps) {
   const [message, setMessage] = useState("")
   const [isRecording, setIsRecording] = useState(false)
+  const recognitionRef = useRef<SpeechRecognition | null>(null)
+
+  useEffect(() => {
+    return () => {
+      recognitionRef.current?.stop()
+    }
+  }, [])
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
@@ -26,14 +37,63 @@ export function ChatInput({
   }
 
   const toggleRecording = () => {
-    setIsRecording(!isRecording)
-    // STT implementation would go here
+    if (isRecording) {
+      recognitionRef.current?.stop()
+      setIsRecording(false)
+      return
+    }
+
+    const SpeechRecognition =
+      (window as typeof window & { SpeechRecognition?: typeof window.SpeechRecognition; webkitSpeechRecognition?: typeof window.SpeechRecognition }).SpeechRecognition ||
+      (window as typeof window & { webkitSpeechRecognition?: typeof window.SpeechRecognition }).webkitSpeechRecognition
+
+    if (!SpeechRecognition) return
+
+    const recognition = new SpeechRecognition()
+    recognition.lang = "fr-FR"
+    recognition.interimResults = false
+    recognition.maxAlternatives = 1
+
+    recognition.onresult = (event) => {
+      const transcript = event.results[0][0].transcript
+      setMessage(transcript)
+    }
+
+    recognition.onend = () => {
+      setIsRecording(false)
+    }
+
+    recognition.onerror = () => {
+      setIsRecording(false)
+    }
+
+    recognitionRef.current = recognition
+    recognition.start()
+    setIsRecording(true)
   }
 
   return (
     <div className="border-t border-border bg-background">
-      {/* Input form */}
       <form onSubmit={handleSubmit} className="flex items-center gap-1.5 p-3 lg:gap-2 lg:p-4 lg:px-6">
+        {/* TTS toggle */}
+        {onToggleTts && (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            onClick={onToggleTts}
+            title={ttsEnabled ? "Couper la voix" : "Activer la voix"}
+            className="h-9 w-9 shrink-0 rounded-full lg:h-10 lg:w-10"
+          >
+            {ttsEnabled ? (
+              <Volume2 className="h-5 w-5 text-primary" />
+            ) : (
+              <VolumeX className="h-5 w-5 text-muted-foreground" />
+            )}
+            <span className="sr-only">{ttsEnabled ? "Couper la voix" : "Activer la voix"}</span>
+          </Button>
+        )}
+
         {/* Microphone button */}
         <Button
           type="button"
@@ -45,8 +105,12 @@ export function ChatInput({
             isRecording && "animate-pulse text-accent"
           )}
         >
-          <Mic className={cn("h-5 w-5", isRecording ? "text-accent" : "text-primary")} />
-          <span className="sr-only">Dictee vocale</span>
+          {isRecording ? (
+            <MicOff className="h-5 w-5 text-accent" />
+          ) : (
+            <Mic className="h-5 w-5 text-primary" />
+          )}
+          <span className="sr-only">{isRecording ? "Arrêter" : "Dictée vocale"}</span>
         </Button>
 
         {/* Text input */}

@@ -15,15 +15,33 @@ interface Message {
   isStreaming?: boolean
 }
 
+async function speakText(text: string) {
+  try {
+    const res = await fetch("/api/tts", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ text }),
+    })
+    if (!res.ok || !res.body) return
+    const blob = await res.blob()
+    const url = URL.createObjectURL(blob)
+    const audio = new Audio(url)
+    audio.onended = () => URL.revokeObjectURL(url)
+    await audio.play()
+  } catch {
+    // TTS failure is non-blocking
+  }
+}
+
 export function ChatInterface() {
   const { user } = useUser()
   const [messages, setMessages] = useState<Message[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
+  const [ttsEnabled, setTtsEnabled] = useState(true)
   const scrollRef = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
 
-  // session id: one per browser session, tied to user
   const sessionId = user?.id ? `atlas-${user.id}` : "atlas-guest"
 
   useEffect(() => {
@@ -44,6 +62,7 @@ export function ChatInterface() {
     setIsTyping(true)
 
     const assistantId = `assistant-${Date.now()}`
+    let fullText = ""
 
     abortRef.current = new AbortController()
 
@@ -59,7 +78,6 @@ export function ChatInterface() {
         throw new Error("Réponse invalide")
       }
 
-      // Add empty assistant message and start streaming
       setIsTyping(false)
       setIsStreaming(true)
       setMessages((prev) => [
@@ -80,27 +98,30 @@ export function ChatInterface() {
         buffer = lines.pop() ?? ""
 
         for (const line of lines) {
-          if (!line.startsWith("data: ")) continue
-          const raw = line.slice(6).trim()
+          if (!line.startsWith("data:")) continue
+          const raw = line.slice(5).trim()
           if (!raw || raw === "[DONE]") continue
 
           let token = ""
           try {
             const parsed = JSON.parse(raw)
-            // Flowise SSE format: { event: "token", data: "..." }
             if (parsed.event === "token" && typeof parsed.data === "string") {
               token = parsed.data
-            } else if (parsed.event === "end") {
-              break
+            } else if (
+              parsed.event === "end" ||
+              parsed.event === "start" ||
+              parsed.event === "metadata"
+            ) {
+              continue
             } else if (typeof parsed === "string") {
               token = parsed
             }
           } catch {
-            // raw token (non-JSON line)
             token = raw
           }
 
           if (token) {
+            fullText += token
             setMessages((prev) =>
               prev.map((m) =>
                 m.id === assistantId
@@ -115,13 +136,16 @@ export function ChatInterface() {
       setIsTyping(false)
       if (err instanceof Error && err.name === "AbortError") return
 
-      // Show error in assistant bubble
       setMessages((prev) => {
         const existing = prev.find((m) => m.id === assistantId)
         if (existing) {
           return prev.map((m) =>
             m.id === assistantId
-              ? { ...m, content: "Désolé, je ne suis pas disponible pour l'instant. Réessaie dans un instant." }
+              ? {
+                  ...m,
+                  content:
+                    "Désolé, je ne suis pas disponible pour l'instant. Réessaie dans un instant.",
+                }
               : m
           )
         }
@@ -130,19 +154,22 @@ export function ChatInterface() {
           {
             id: assistantId,
             role: "assistant",
-            content: "Désolé, je ne suis pas disponible pour l'instant. Réessaie dans un instant.",
+            content:
+              "Désolé, je ne suis pas disponible pour l'instant. Réessaie dans un instant.",
           },
         ]
       })
     } finally {
       setIsTyping(false)
       setIsStreaming(false)
-      // Remove streaming flag from last message
       setMessages((prev) =>
         prev.map((m) =>
           m.id === assistantId ? { ...m, isStreaming: false } : m
         )
       )
+      if (ttsEnabled && fullText) {
+        speakText(fullText)
+      }
     }
   }
 
@@ -187,7 +214,12 @@ export function ChatInterface() {
         <QuickPrompts onSelect={handleSend} />
       </div>
 
-      <ChatInput onSend={handleSend} disabled={isStreaming} />
+      <ChatInput
+        onSend={handleSend}
+        disabled={isStreaming}
+        ttsEnabled={ttsEnabled}
+        onToggleTts={() => setTtsEnabled((v) => !v)}
+      />
     </div>
   )
 }
