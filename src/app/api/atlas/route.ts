@@ -8,6 +8,12 @@ export const runtime = "nodejs"
 const ATLAS_SYSTEM = `Tu es Atlas, un coach MLM expert, chaleureux et orienté résultats.
 Tu accompagnes les distributeurs MLM à performer dans leur business, quelle que soit leur société.
 
+Tu as accès à des bases de connaissances spécialisées :
+- [Base Atlas] : coaching MLM général, mindset, prospection, leadership
+- [Proline — Plan de rémunération] : détails des plans de compensation, rangs, qualifications, bonus
+- [Markline — Compétences] : formations, scripts, techniques de vente et recrutement
+Utilise ces informations quand elles sont présentes dans le contexte, sans jamais mentionner leur source.
+
 Règles de réponse :
 - Utilise toujours le prénom si connu
 - Max 3 points par message — va à l'essentiel
@@ -44,17 +50,20 @@ function buildMemoryContext(memory: UserMemory): string {
   return lines.join("\n")
 }
 
-async function getRagContext(query: string, userId?: string): Promise<string> {
-  const vpsUrl = process.env.VPS_INGEST_URL
-  const vpsKey = process.env.VPS_INGEST_KEY
-  if (!vpsUrl || !vpsKey) return ""
-
+async function searchAgent(
+  vpsUrl: string,
+  vpsKey: string,
+  query: string,
+  agent: string,
+  topK: number,
+  userId?: string
+): Promise<string[]> {
   try {
     const form = new FormData()
     form.append("query", query)
-    form.append("agent", "atlas")
-    form.append("top_k", "4")
-    if (userId) form.append("user_id", userId)
+    form.append("agent", agent)
+    form.append("top_k", String(topK))
+    if (userId && agent === "atlas") form.append("user_id", userId)
 
     const res = await fetch(`${vpsUrl}/search`, {
       method: "POST",
@@ -62,14 +71,34 @@ async function getRagContext(query: string, userId?: string): Promise<string> {
       body: form,
       signal: AbortSignal.timeout(10000),
     })
-    if (!res.ok) return ""
+    if (!res.ok) return []
     const json = await res.json()
-    const chunks: string[] = json.chunks ?? []
-    if (!chunks.length) return ""
-    return `[Base de connaissances]\n${chunks.join("\n\n---\n\n")}`
+    return (json.chunks as string[]) ?? []
   } catch {
-    return ""
+    return []
   }
+}
+
+async function getRagContext(query: string, userId?: string): Promise<string> {
+  const vpsUrl = process.env.VPS_INGEST_URL
+  const vpsKey = process.env.VPS_INGEST_KEY
+  if (!vpsUrl || !vpsKey) return ""
+
+  const [atlasChunks, prolineChunks, marklineChunks] = await Promise.all([
+    searchAgent(vpsUrl, vpsKey, query, "atlas", 4, userId),
+    searchAgent(vpsUrl, vpsKey, query, "proline", 3),
+    searchAgent(vpsUrl, vpsKey, query, "markline", 3),
+  ])
+
+  const sections: string[] = []
+  if (atlasChunks.length)
+    sections.push(`[Base Atlas]\n${atlasChunks.join("\n\n---\n\n")}`)
+  if (prolineChunks.length)
+    sections.push(`[Proline — Plan de rémunération]\n${prolineChunks.join("\n\n---\n\n")}`)
+  if (marklineChunks.length)
+    sections.push(`[Markline — Compétences]\n${marklineChunks.join("\n\n---\n\n")}`)
+
+  return sections.join("\n\n")
 }
 
 async function updateUserMemory(
