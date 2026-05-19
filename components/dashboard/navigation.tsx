@@ -440,6 +440,7 @@ interface DesktopSidebarProps {
 
 export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarProps) {
   const pathname = usePathname()
+  const { user } = useUser()
   const [expandedItems, setExpandedItems] = useState<string[]>([])
 
   const toggleExpanded = (href: string) => {
@@ -592,6 +593,20 @@ export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarPr
               </Link>
             )
           })}
+          {(user as any)?.isAdmin && (
+            <Link
+              href="/rag"
+              className={cn(
+                "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                isActive("/rag")
+                  ? "bg-primary/10 text-primary"
+                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              <IconUpload className="h-5 w-5 shrink-0" />
+              {!collapsed && <span>Admin RAG</span>}
+            </Link>
+          )}
         </div>
       </nav>
 

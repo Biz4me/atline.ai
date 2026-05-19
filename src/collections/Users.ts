@@ -42,6 +42,14 @@ export const Users: CollectionConfig = {
       ],
     },
     {
+      name: 'isAdmin',
+      type: 'checkbox',
+      defaultValue: false,
+      admin: {
+        description: 'Accès admin — upload de documents RAG',
+      },
+    },
+    {
       name: 'userMemory',
       type: 'json',
       admin: {
