@@ -1,6 +1,4 @@
-"use server"
-import { after } from "next/server"
-import { NextRequest } from "next/server"
+import { after, NextRequest } from "next/server"
 import { getPayload } from "payload"
 import configPromise from "@payload-config"
 import Anthropic from "@anthropic-ai/sdk"
