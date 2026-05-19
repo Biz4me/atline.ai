@@ -15,30 +15,11 @@ interface Message {
   isStreaming?: boolean
 }
 
-async function speakText(text: string) {
-  try {
-    const res = await fetch("/api/tts", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ text }),
-    })
-    if (!res.ok || !res.body) return
-    const blob = await res.blob()
-    const url = URL.createObjectURL(blob)
-    const audio = new Audio(url)
-    audio.onended = () => URL.revokeObjectURL(url)
-    await audio.play()
-  } catch {
-    // TTS failure is non-blocking
-  }
-}
-
 export function ChatInterface() {
   const { user } = useUser()
   const [messages, setMessages] = useState<Message[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
-  const [ttsEnabled, setTtsEnabled] = useState(true)
   const scrollRef = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
 
@@ -167,9 +148,6 @@ export function ChatInterface() {
           m.id === assistantId ? { ...m, isStreaming: false } : m
         )
       )
-      if (ttsEnabled && fullText) {
-        speakText(fullText)
-      }
     }
   }
 
@@ -217,8 +195,6 @@ export function ChatInterface() {
       <ChatInput
         onSend={handleSend}
         disabled={isStreaming}
-        ttsEnabled={ttsEnabled}
-        onToggleTts={() => setTtsEnabled((v) => !v)}
       />
     </div>
   )

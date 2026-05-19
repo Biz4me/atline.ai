@@ -1,23 +1,16 @@
 "use client"
 
 import { useState, useRef, useEffect } from "react"
-import { Mic, MicOff, Send, Volume2, VolumeX } from "lucide-react"
+import { Mic, MicOff, Send } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
 
 interface ChatInputProps {
   onSend: (message: string) => void
   disabled?: boolean
-  ttsEnabled?: boolean
-  onToggleTts?: () => void
 }
 
-export function ChatInput({
-  onSend,
-  disabled,
-  ttsEnabled = true,
-  onToggleTts,
-}: ChatInputProps) {
+export function ChatInput({ onSend, disabled }: ChatInputProps) {
   const [message, setMessage] = useState("")
   const [isRecording, setIsRecording] = useState(false)
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -76,25 +69,6 @@ export function ChatInput({
   return (
     <div className="border-t border-border bg-background">
       <form onSubmit={handleSubmit} className="flex items-center gap-1.5 p-3 lg:gap-2 lg:p-4 lg:px-6">
-        {/* TTS toggle */}
-        {onToggleTts && (
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-            onClick={onToggleTts}
-            title={ttsEnabled ? "Couper la voix" : "Activer la voix"}
-            className="h-9 w-9 shrink-0 rounded-full lg:h-10 lg:w-10"
-          >
-            {ttsEnabled ? (
-              <Volume2 className="h-5 w-5 text-primary" />
-            ) : (
-              <VolumeX className="h-5 w-5 text-muted-foreground" />
-            )}
-            <span className="sr-only">{ttsEnabled ? "Couper la voix" : "Activer la voix"}</span>
-          </Button>
-        )}
-
         {/* Microphone button */}
         <Button
           type="button"
