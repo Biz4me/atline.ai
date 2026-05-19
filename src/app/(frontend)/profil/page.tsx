@@ -1,9 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useRef, useState } from "react"
+import Image from "next/image"
 import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
-import { IconFileText, IconCheck, IconX } from "@tabler/icons-react"
+import { IconFileText, IconCheck, IconX, IconCamera } from "@tabler/icons-react"
 import { useUser } from "@/hooks/use-user"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { cn } from "@/lib/utils"
@@ -21,12 +22,20 @@ const MLM_LEVEL_LABELS: Record<string, string> = Object.fromEntries(
   MLM_LEVEL_OPTIONS.map((o) => [o.value, o.label])
 )
 
+const inputClass =
+  "w-full rounded-lg border border-white/[0.12] bg-background px-3 py-2 text-sm text-white outline-none focus:border-primary/60 transition-colors placeholder:text-muted-foreground/50"
+
 export default function ProfilPage() {
   const [activeTab, setActiveTab] = useState("Mon Profil")
   const [notifSuivi, setNotifSuivi] = useState(true)
   const [notifFilleuls, setNotifFilleuls] = useState(true)
   const [notifResume, setNotifResume] = useState(false)
   const { user, loading, initials, displayName, updateProfile } = useUser()
+
+  // Avatar upload
+  const fileInputRef = useRef<HTMLInputElement>(null)
+  const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
+  const [uploadingAvatar, setUploadingAvatar] = useState(false)
 
   // Edit mode
   const [editing, setEditing] = useState(false)
@@ -35,14 +44,18 @@ export default function ProfilPage() {
   const [form, setForm] = useState({
     firstName: "",
     lastName: "",
+    phone: "",
     mlmCompany: "",
     mlmLevel: "",
   })
+
+  const avatarSrc = avatarPreview ?? (user as any)?.avatarUrl ?? null
 
   function startEditing() {
     setForm({
       firstName: user?.firstName ?? "",
       lastName: user?.lastName ?? "",
+      phone: (user as any)?.phone ?? "",
       mlmCompany: user?.mlmCompany ?? "",
       mlmLevel: user?.mlmLevel ?? "",
     })
@@ -70,6 +83,35 @@ export default function ProfilPage() {
     }
   }
 
+  async function handleAvatarChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0]
+    if (!file) return
+
+    setAvatarPreview(URL.createObjectURL(file))
+    setUploadingAvatar(true)
+    setFeedback(null)
+
+    try {
+      const fd = new FormData()
+      fd.append("file", file)
+      const res = await fetch("/api/user/avatar", { method: "POST", body: fd })
+      if (!res.ok) {
+        const err = await res.json().catch(() => ({}))
+        throw new Error(err.error ?? "Erreur upload")
+      }
+      const { url } = await res.json()
+      setAvatarPreview(url)
+      setFeedback({ type: "success", message: "Photo mise à jour" })
+      setTimeout(() => setFeedback(null), 3000)
+    } catch (e: unknown) {
+      setAvatarPreview(null)
+      setFeedback({ type: "error", message: e instanceof Error ? e.message : "Erreur upload" })
+    } finally {
+      setUploadingAvatar(false)
+      if (fileInputRef.current) fileInputRef.current.value = ""
+    }
+  }
+
   return (
     <DashboardShell>
       <div>
@@ -83,14 +125,42 @@ export default function ProfilPage() {
           <div className="space-y-4">
             {/* Avatar + nom */}
             <div className="flex items-center gap-4 rounded-xl border border-white/[0.08] bg-card p-6">
-              <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-xl font-bold text-white">
-                {loading ? "…" : initials}
-              </div>
+              {/* Avatar clickable */}
+              <button
+                type="button"
+                onClick={() => fileInputRef.current?.click()}
+                disabled={uploadingAvatar}
+                className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-primary focus:outline-none"
+              >
+                {avatarSrc ? (
+                  <Image src={avatarSrc} alt="Avatar" fill className="object-cover" />
+                ) : (
+                  <span className="flex h-full w-full items-center justify-center text-xl font-bold text-white">
+                    {loading ? "…" : initials}
+                  </span>
+                )}
+                <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                  {uploadingAvatar ? (
+                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  ) : (
+                    <IconCamera className="h-5 w-5 text-white" />
+                  )}
+                </span>
+              </button>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={handleAvatarChange}
+              />
+
               <div>
                 <p className="font-semibold text-white">{loading ? "Chargement…" : displayName}</p>
                 <p className="text-sm text-muted-foreground">
                   {user?.email ?? "—"} · {user?.plan === "pro" ? "Plan Pro" : "Plan Gratuit"}
                 </p>
+                <p className="mt-1 text-xs text-muted-foreground/60">Clique sur la photo pour changer</p>
               </div>
             </div>
 
@@ -102,7 +172,9 @@ export default function ProfilPage() {
                   ? "border-success/30 bg-success/10 text-success"
                   : "border-destructive/30 bg-destructive/10 text-destructive"
               )}>
-                {feedback.type === "success" ? <IconCheck className="h-4 w-4 shrink-0" /> : <IconX className="h-4 w-4 shrink-0" />}
+                {feedback.type === "success"
+                  ? <IconCheck className="h-4 w-4 shrink-0" />
+                  : <IconX className="h-4 w-4 shrink-0" />}
                 {feedback.message}
               </div>
             )}
@@ -113,51 +185,31 @@ export default function ProfilPage() {
 
               {editing ? (
                 <div className="grid gap-3 sm:grid-cols-2">
-                  {/* Prénom */}
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Prénom</p>
-                    <input
-                      value={form.firstName}
-                      onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))}
-                      className="w-full rounded-lg border border-white/[0.12] bg-background px-3 py-2 text-sm text-white outline-none focus:border-primary/60 transition-colors"
-                      placeholder="Prénom"
-                    />
+                    <input value={form.firstName} onChange={(e) => setForm((f) => ({ ...f, firstName: e.target.value }))} className={inputClass} placeholder="Prénom" />
                   </div>
-                  {/* Nom */}
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Nom</p>
-                    <input
-                      value={form.lastName}
-                      onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))}
-                      className="w-full rounded-lg border border-white/[0.12] bg-background px-3 py-2 text-sm text-white outline-none focus:border-primary/60 transition-colors"
-                      placeholder="Nom"
-                    />
+                    <input value={form.lastName} onChange={(e) => setForm((f) => ({ ...f, lastName: e.target.value }))} className={inputClass} placeholder="Nom" />
                   </div>
-                  {/* Email (readonly) */}
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Email</p>
                     <div className="rounded-lg border border-white/[0.04] bg-background/50 px-3 py-2 text-sm text-muted-foreground">
                       {user?.email ?? "—"}
                     </div>
                   </div>
-                  {/* Société MLM */}
+                  <div className="space-y-1">
+                    <p className="text-xs text-muted-foreground">Téléphone</p>
+                    <input value={form.phone} onChange={(e) => setForm((f) => ({ ...f, phone: e.target.value }))} className={inputClass} placeholder="+33 6 00 00 00 00" type="tel" />
+                  </div>
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Société MLM</p>
-                    <input
-                      value={form.mlmCompany}
-                      onChange={(e) => setForm((f) => ({ ...f, mlmCompany: e.target.value }))}
-                      className="w-full rounded-lg border border-white/[0.12] bg-background px-3 py-2 text-sm text-white outline-none focus:border-primary/60 transition-colors"
-                      placeholder="Ex: Herbalife, Proline…"
-                    />
+                    <input value={form.mlmCompany} onChange={(e) => setForm((f) => ({ ...f, mlmCompany: e.target.value }))} className={inputClass} placeholder="Ex: Herbalife, Proline…" />
                   </div>
-                  {/* Niveau MLM */}
                   <div className="space-y-1">
                     <p className="text-xs text-muted-foreground">Niveau MLM</p>
-                    <select
-                      value={form.mlmLevel}
-                      onChange={(e) => setForm((f) => ({ ...f, mlmLevel: e.target.value }))}
-                      className="w-full rounded-lg border border-white/[0.12] bg-background px-3 py-2 text-sm text-white outline-none focus:border-primary/60 transition-colors"
-                    >
+                    <select value={form.mlmLevel} onChange={(e) => setForm((f) => ({ ...f, mlmLevel: e.target.value }))} className={inputClass}>
                       <option value="">— Choisir —</option>
                       {MLM_LEVEL_OPTIONS.map((o) => (
                         <option key={o.value} value={o.value}>{o.label}</option>
@@ -171,6 +223,7 @@ export default function ProfilPage() {
                     { label: "Prénom", value: user?.firstName ?? "—" },
                     { label: "Nom", value: user?.lastName ?? "—" },
                     { label: "Email", value: user?.email ?? "—" },
+                    { label: "Téléphone", value: (user as any)?.phone ?? "—" },
                     { label: "Société MLM", value: user?.mlmCompany ?? "—" },
                     { label: "Niveau MLM", value: user?.mlmLevel ? MLM_LEVEL_LABELS[user.mlmLevel] ?? user.mlmLevel : "—" },
                   ].map((field) => (
@@ -187,26 +240,15 @@ export default function ProfilPage() {
               <div className="flex items-center gap-3 mt-2">
                 {editing ? (
                   <>
-                    <button
-                      onClick={handleSave}
-                      disabled={saving}
-                      className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50 transition-colors"
-                    >
+                    <button onClick={handleSave} disabled={saving} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50 transition-colors">
                       {saving ? "Sauvegarde…" : "Sauvegarder"}
                     </button>
-                    <button
-                      onClick={cancelEditing}
-                      disabled={saving}
-                      className="rounded-lg border border-white/[0.08] px-4 py-2 text-sm font-medium text-muted-foreground hover:text-white transition-colors"
-                    >
+                    <button onClick={cancelEditing} disabled={saving} className="rounded-lg border border-white/[0.08] px-4 py-2 text-sm font-medium text-muted-foreground hover:text-white transition-colors">
                       Annuler
                     </button>
                   </>
                 ) : (
-                  <button
-                    onClick={startEditing}
-                    className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors"
-                  >
+                  <button onClick={startEditing} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 transition-colors">
                     Modifier
                   </button>
                 )}

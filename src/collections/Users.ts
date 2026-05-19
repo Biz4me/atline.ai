@@ -19,6 +19,17 @@ export const Users: CollectionConfig = {
       type: 'text',
     },
     {
+      name: 'phone',
+      type: 'text',
+    },
+    {
+      name: 'avatarUrl',
+      type: 'text',
+      admin: {
+        description: 'URL publique Vercel Blob de la photo de profil',
+      },
+    },
+    {
       name: 'mlmCompany',
       type: 'text',
     },

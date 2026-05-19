@@ -4,7 +4,7 @@ import configPromise from "@payload-config"
 
 export const runtime = "nodejs"
 
-const ALLOWED_FIELDS = ["firstName", "lastName", "mlmCompany", "mlmLevel"] as const
+const ALLOWED_FIELDS = ["firstName", "lastName", "phone", "mlmCompany", "mlmLevel"] as const
 
 export async function PATCH(req: NextRequest) {
   try {
@@ -34,6 +34,7 @@ export async function PATCH(req: NextRequest) {
         email: updated.email,
         firstName: updated.firstName,
         lastName: updated.lastName,
+        phone: (updated as any).phone,
         mlmCompany: updated.mlmCompany,
         mlmLevel: updated.mlmLevel,
         plan: updated.plan,

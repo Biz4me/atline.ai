@@ -7,12 +7,14 @@ export interface AtlineUser {
   email: string
   firstName?: string
   lastName?: string
+  phone?: string
+  avatarUrl?: string
   mlmCompany?: string
   mlmLevel?: string
   plan?: string
 }
 
-type ProfileUpdate = Partial<Pick<AtlineUser, "firstName" | "lastName" | "mlmCompany" | "mlmLevel">>
+type ProfileUpdate = Partial<Pick<AtlineUser, "firstName" | "lastName" | "phone" | "mlmCompany" | "mlmLevel">>
 
 interface UseUserReturn {
   user: AtlineUser | null
