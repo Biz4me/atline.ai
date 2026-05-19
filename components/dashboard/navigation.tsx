@@ -120,7 +120,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 h-[68px] border-t border-white/[0.08] bg-[#18181B] lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 h-[60px] border-t border-white/[0.08] bg-[#18181B] lg:hidden">
       <div className="flex h-full items-center justify-around px-1">
         {bottomNavItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
@@ -310,7 +310,7 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
               {section.items.map((item, index) => (
                 <div
                   key={index}
-                  className="flex h-[68px] items-center border-b border-white/[0.05] px-4"
+                  className="flex h-[60px] items-center border-b border-white/[0.05] px-4"
                 >
                   {item.type === "logo" ? (
                     <div className="flex items-center gap-3">
