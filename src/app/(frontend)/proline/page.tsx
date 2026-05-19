@@ -14,17 +14,12 @@ export default function ProlinePage() {
 
   return (
     <DashboardShell>
-      {/* Header */}
-      <div className="mb-4">
+      <div className="mb-6">
         <h1 className="font-heading text-xl font-semibold text-white">Proline</h1>
-        <p className="text-sm text-muted-foreground">Plans de compensation et objections</p>
+        <p className="mt-1 text-sm text-muted-foreground">Plans de compensation et objections produits</p>
       </div>
-
-      {/* Tabs */}
       <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-
-      {/* Tab content */}
-      <div className="mt-4">
+      <div className="mt-6">
         {activeTab === "Mon plan" && <MonPlanTab />}
         {activeTab === "Objections" && <ObjectionsTab />}
         {activeTab === "Comparaison" && <ComparaisonTab />}

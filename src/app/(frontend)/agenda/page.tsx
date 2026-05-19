@@ -59,14 +59,17 @@ export default function AgendaPage() {
 
   return (
     <DashboardShell>
-      {/* Header */}
-      <div className="mb-4 flex items-center justify-between">
-        <h1 className="font-heading text-xl font-semibold text-white">Agenda</h1>
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h1 className="font-heading text-xl font-semibold text-white">Agenda</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Tes événements et rappels MLM</p>
+        </div>
         <Button size="sm" onClick={() => setShowModal(true)}>
           <IconPlus className="h-4 w-4" />
           Ajouter
         </Button>
       </div>
+
 
       {/* Week view */}
       <div className="mb-6 overflow-hidden">

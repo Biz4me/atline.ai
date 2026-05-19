@@ -58,10 +58,9 @@ export default function EnrichirAtlasPage() {
 
   return (
     <DashboardShell>
-      {/* Header */}
       <div className="mb-6">
         <h1 className="font-heading text-xl font-semibold text-white">Enrichir Atlas</h1>
-        <p className="text-sm text-muted-foreground">Donne plus de connaissances à ton coach</p>
+        <p className="mt-1 text-sm text-muted-foreground">Donne plus de connaissances à ton coach IA</p>
       </div>
 
       {/* Upload zone */}

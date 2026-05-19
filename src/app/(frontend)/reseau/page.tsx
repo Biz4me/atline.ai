@@ -29,8 +29,11 @@ function ReseauContent() {
 
   return (
     <DashboardShell>
-      <div className="space-y-4">
-        <h1 className="font-heading text-xl font-semibold">Réseau</h1>
+      <div>
+        <div className="mb-6">
+          <h1 className="font-heading text-xl font-semibold text-white">Réseau</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Prospects, équipe et carte digitale</p>
+        </div>
         <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
         {activeTab === "Pipeline" && <PipelineTab />}
         {activeTab === "Liste de noms" && <ListeNomsTab />}

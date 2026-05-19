@@ -3,9 +3,7 @@
 import { useState } from "react"
 import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
-import {
-  IconUser, IconCreditCard, IconSettings, IconFileText, IconTrash,
-} from "@tabler/icons-react"
+import { IconFileText } from "@tabler/icons-react"
 
 const tabs = ["Mon Profil", "Abonnement", "Préférences", "Mes Documents", "Zone Danger"]
 
@@ -14,9 +12,11 @@ export default function ProfilPage() {
 
   return (
     <DashboardShell>
-      <div className="space-y-4">
-        <h1 className="font-heading text-xl font-semibold">Profil</h1>
-
+      <div>
+        <div className="mb-6">
+          <h1 className="font-heading text-xl font-semibold text-white">Profil</h1>
+          <p className="mt-1 text-sm text-muted-foreground">Tes informations et paramètres</p>
+        </div>
         <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
         {activeTab === "Mon Profil" && (

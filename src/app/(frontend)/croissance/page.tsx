@@ -16,19 +16,19 @@ export default function CroissancePage() {
 
   return (
     <DashboardShell>
-      <div className="space-y-4">
-        {/* Page header */}
-        <h1 className="font-heading text-xl font-semibold">Croissance</h1>
-
-        {/* Tabs navigation */}
+      <div>
+        <div className="mb-6">
+          <h1 className="font-heading text-xl font-semibold text-white">Croissance</h1>
+          <p className="mt-1 text-sm text-muted-foreground">XP, badges, défis et communauté</p>
+        </div>
         <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-
-        {/* Tab content */}
-        {activeTab === "XP & Niveau" && <XpNiveauTab />}
-        {activeTab === "Badges" && <BadgesTab />}
-        {activeTab === "Défis" && <DefisTab />}
-        {activeTab === "Leaderboard" && <LeaderboardTab />}
-        {activeTab === "Communauté" && <CommunauteTab />}
+        <div className="mt-6">
+          {activeTab === "XP & Niveau" && <XpNiveauTab />}
+          {activeTab === "Badges" && <BadgesTab />}
+          {activeTab === "Défis" && <DefisTab />}
+          {activeTab === "Leaderboard" && <LeaderboardTab />}
+          {activeTab === "Communauté" && <CommunauteTab />}
+        </div>
       </div>
     </DashboardShell>
   )
