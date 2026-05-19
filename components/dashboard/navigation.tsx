@@ -141,10 +141,10 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
                 className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
               >
                 <div className={cn(
-                  "flex h-11 w-11 items-center justify-center rounded-xl transition-opacity",
+                  "flex h-12 w-12 items-center justify-center rounded-xl transition-opacity",
                   isAtlasActive ? "opacity-100" : "opacity-70"
                 )} style={{ backgroundColor: "rgba(124,111,232,0.2)" }}>
-                  <AtlasTriangleLogo className="h-7 w-7" />
+                  <AtlasTriangleLogo className="h-8 w-8" />
                 </div>
                 {isAtlasActive && <span className="h-1 w-1 rounded-full bg-primary" />}
               </Link>
@@ -160,10 +160,10 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
               className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
             >
               <div
-                className={cn("flex h-11 w-11 items-center justify-center rounded-xl transition-opacity", activeOpacity)}
+                className={cn("flex h-12 w-12 items-center justify-center rounded-xl transition-opacity", activeOpacity)}
                 style={{ backgroundColor: item.bg }}
               >
-                <Icon className="h-6 w-6" style={{ color: item.color }} />
+                <Icon className="h-7 w-7" style={{ color: item.color }} />
               </div>
               {isActive && <span className="h-1 w-1 rounded-full bg-primary" />}
             </Link>
@@ -174,8 +174,8 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
           onClick={onPlusClick}
           className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
         >
-          <div className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ backgroundColor: "rgba(113,113,122,0.15)" }}>
-            <IconGridDots className="h-6 w-6 text-[#71717A]" />
+          <div className="flex h-12 w-12 items-center justify-center rounded-xl" style={{ backgroundColor: "rgba(113,113,122,0.15)" }}>
+            <IconGridDots className="h-7 w-7 text-[#71717A]" />
           </div>
         </button>
       </div>
