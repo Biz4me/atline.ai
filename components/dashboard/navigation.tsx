@@ -383,8 +383,8 @@ const sidebarSections = {
       label: "Formation",
       subItems: [
         { href: "/formation", label: "Modules" },
-        { href: "/formation", label: "Bibliothèque" },
-        { href: "/formation", label: "Mes notes" },
+        { href: "/formation?tab=bibliotheque", label: "Bibliothèque" },
+        { href: "/formation?tab=notes", label: "Mes notes" },
       ],
     },
     {
@@ -393,8 +393,8 @@ const sidebarSections = {
       label: "Atlas",
       subItems: [
         { href: "/atlas", label: "Chat" },
-        { href: "/atlas", label: "Historique" },
-        { href: "/atlas", label: "Scripts WhatsApp" },
+        { href: "/atlas?tab=historique", label: "Historique" },
+        { href: "/atlas?tab=scripts", label: "Scripts WhatsApp" },
       ],
     },
     {
@@ -403,8 +403,8 @@ const sidebarSections = {
       label: "Simulations",
       subItems: [
         { href: "/simulations", label: "Scénarios" },
-        { href: "/simulations", label: "Historique scores" },
-        { href: "/simulations", label: "Analyse présentation" },
+        { href: "/simulations?tab=historique", label: "Historique scores" },
+        { href: "/simulations?tab=analyse", label: "Analyse présentation" },
       ],
     },
     {
@@ -413,9 +413,9 @@ const sidebarSections = {
       label: "Réseau",
       subItems: [
         { href: "/reseau", label: "Pipeline" },
-        { href: "/reseau", label: "Liste de noms" },
-        { href: "/reseau", label: "Équipe" },
-        { href: "/reseau", label: "Carte digitale" },
+        { href: "/reseau?tab=liste-de-noms", label: "Liste de noms" },
+        { href: "/reseau?tab=equipe", label: "Équipe" },
+        { href: "/reseau?tab=carte-digitale", label: "Carte digitale" },
       ],
     },
   ] as NavItemWithSub[],

@@ -1,6 +1,7 @@
 "use client"
 
-import { useState } from "react"
+import { Suspense, useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
 import { PipelineTab } from "@/components/reseau/pipeline-tab"
@@ -9,20 +10,28 @@ import { EquipeTab } from "@/components/reseau/equipe-tab"
 import { CarteDigitaleTab } from "@/components/reseau/carte-digitale-tab"
 
 const tabs = ["Pipeline", "Liste de noms", "Équipe", "Carte digitale"]
+const tabFromParam: Record<string, string> = {
+  "liste-de-noms": "Liste de noms",
+  "equipe": "Équipe",
+  "carte-digitale": "Carte digitale",
+  "pipeline": "Pipeline",
+}
 
-export default function ReseauPage() {
-  const [activeTab, setActiveTab] = useState("Pipeline")
+function ReseauContent() {
+  const searchParams = useSearchParams()
+  const tabParam = searchParams.get("tab")
+  const [activeTab, setActiveTab] = useState(tabParam ? (tabFromParam[tabParam] ?? "Pipeline") : "Pipeline")
+
+  useEffect(() => {
+    const tab = searchParams.get("tab")
+    setActiveTab(tab ? (tabFromParam[tab] ?? "Pipeline") : "Pipeline")
+  }, [searchParams])
 
   return (
     <DashboardShell>
       <div className="space-y-4">
-        {/* Page header */}
         <h1 className="font-heading text-xl font-semibold">Réseau</h1>
-
-        {/* Tabs navigation */}
         <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-
-        {/* Tab content */}
         {activeTab === "Pipeline" && <PipelineTab />}
         {activeTab === "Liste de noms" && <ListeNomsTab />}
         {activeTab === "Équipe" && <EquipeTab />}
@@ -30,4 +39,8 @@ export default function ReseauPage() {
       </div>
     </DashboardShell>
   )
+}
+
+export default function ReseauPage() {
+  return <Suspense><ReseauContent /></Suspense>
 }

@@ -1,8 +1,13 @@
+"use client"
+
+import { Suspense, useState, useEffect } from "react"
+import { useSearchParams } from "next/navigation"
 import { DashboardShell } from "@/components/dashboard/shell"
 import { CurrentLessonCard } from "@/components/formation/current-lesson-card"
 import { GlobalProgressBar } from "@/components/formation/progress-bar"
 import { ModuleList, type Module } from "@/components/formation/module-list"
 import { ProgressSidebar } from "@/components/formation/progress-sidebar"
+import { TabsNav } from "@/components/reseau/tabs-nav"
 
 const modules: Module[] = [
   { number: "01", name: "Mindset & Vision", lessons: 6, duration: 45, status: "done", xp: 150 },
@@ -15,49 +20,59 @@ const modules: Module[] = [
   { number: "08", name: "Leadership", lessons: 6, duration: 50, status: "locked" },
 ]
 
-export default function FormationPage() {
+const tabs = ["Modules", "Bibliothèque", "Mes notes"]
+const tabFromParam: Record<string, string> = {
+  "bibliotheque": "Bibliothèque",
+  "notes": "Mes notes",
+}
+
+function FormationContent() {
+  const searchParams = useSearchParams()
+  const tabParam = searchParams.get("tab")
+  const [activeTab, setActiveTab] = useState(tabParam ? (tabFromParam[tabParam] ?? "Modules") : "Modules")
+
+  useEffect(() => {
+    const tab = searchParams.get("tab")
+    setActiveTab(tab ? (tabFromParam[tab] ?? "Modules") : "Modules")
+  }, [searchParams])
+
   return (
     <DashboardShell layout="with-sidebar">
       <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
-        {/* Main content */}
         <div className="min-w-0 flex-1 lg:max-w-[680px]">
-          {/* Page header */}
           <div className="mb-6">
             <h1 className="font-heading text-2xl font-semibold text-white">Formation</h1>
-            <p className="mt-1 text-sm text-muted-foreground">
-              Methode Go Pro — Eric Worre
-            </p>
+            <p className="mt-1 text-sm text-muted-foreground">Methode Go Pro — Eric Worre</p>
           </div>
-
-          {/* Current lesson card */}
-          <CurrentLessonCard
-            lessonNumber={4}
-            title="La liste de noms"
-            moduleNumber={2}
-            moduleName="Prospection"
-            minutesRemaining={12}
-          />
-
-          {/* Global progress */}
-          <div className="mt-6">
-            <GlobalProgressBar percentage={37} modulesRemaining={3} />
-          </div>
-
-          {/* Modules list */}
-          <div className="mt-6">
-            <ModuleList modules={modules} />
-          </div>
+          <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+          {activeTab === "Modules" && (
+            <div className="mt-6 space-y-6">
+              <CurrentLessonCard lessonNumber={4} title="La liste de noms" moduleNumber={2} moduleName="Prospection" minutesRemaining={12} />
+              <GlobalProgressBar percentage={37} modulesRemaining={3} />
+              <ModuleList modules={modules} />
+            </div>
+          )}
+          {activeTab === "Bibliothèque" && (
+            <div className="mt-6 flex flex-col items-center justify-center rounded-xl border border-white/[0.08] bg-card py-16 text-center">
+              <p className="text-2xl">📚</p>
+              <p className="mt-3 font-medium text-white">Bibliothèque</p>
+              <p className="mt-1 text-sm text-muted-foreground">Les livres et ressources MLM recommandés arrivent bientôt.</p>
+            </div>
+          )}
+          {activeTab === "Mes notes" && (
+            <div className="mt-6 flex flex-col items-center justify-center rounded-xl border border-white/[0.08] bg-card py-16 text-center">
+              <p className="text-2xl">📝</p>
+              <p className="mt-3 font-medium text-white">Mes notes</p>
+              <p className="mt-1 text-sm text-muted-foreground">Tes notes de formation apparaîtront ici.</p>
+            </div>
+          )}
         </div>
-
-        {/* Desktop sidebar */}
-        <ProgressSidebar
-          streak={12}
-          totalXP={225}
-          nextBadge="Studieux"
-          badgeRequirement="5 modules"
-          atlasRecommendation="Continue le module Prospection !"
-        />
+        <ProgressSidebar streak={12} totalXP={225} nextBadge="Studieux" badgeRequirement="5 modules" atlasRecommendation="Continue le module Prospection !" />
       </div>
     </DashboardShell>
   )
+}
+
+export default function FormationPage() {
+  return <Suspense><FormationContent /></Suspense>
 }
