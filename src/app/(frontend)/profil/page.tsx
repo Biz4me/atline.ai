@@ -4,11 +4,20 @@ import { useState } from "react"
 import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
 import { IconFileText } from "@tabler/icons-react"
+import { useUser } from "@/hooks/use-user"
 
 const tabs = ["Mon Profil", "Abonnement", "Préférences", "Mes Documents", "Zone Danger"]
 
+const MLM_LEVEL_LABELS: Record<string, string> = {
+  debutant: "Débutant",
+  intermediaire: "Intermédiaire",
+  senior: "Senior",
+  expert: "Expert",
+}
+
 export default function ProfilPage() {
   const [activeTab, setActiveTab] = useState("Mon Profil")
+  const { user, loading, initials, displayName } = useUser()
 
   return (
     <DashboardShell>
@@ -24,11 +33,13 @@ export default function ProfilPage() {
             {/* Avatar + nom */}
             <div className="flex items-center gap-4 rounded-xl border border-white/[0.08] bg-card p-6">
               <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary text-xl font-bold text-white">
-                PH
+                {loading ? "…" : initials}
               </div>
               <div>
-                <p className="font-semibold text-white">Patrice Haure-Pallesi</p>
-                <p className="text-sm text-muted-foreground">@patrice · Plan Pro</p>
+                <p className="font-semibold text-white">{loading ? "Chargement…" : displayName}</p>
+                <p className="text-sm text-muted-foreground">
+                  {user?.email ?? "—"} · {user?.plan === "pro" ? "Plan Pro" : "Plan Gratuit"}
+                </p>
               </div>
             </div>
 
@@ -37,12 +48,11 @@ export default function ProfilPage() {
               <h2 className="text-sm font-medium text-white">Informations personnelles</h2>
               <div className="grid gap-3 sm:grid-cols-2">
                 {[
-                  { label: "Prénom", value: "Patrice" },
-                  { label: "Nom", value: "Haure-Pallesi" },
-                  { label: "Email", value: "patrice@atline.ai" },
-                  { label: "Pseudo", value: "@patrice" },
-                  { label: "Société MLM", value: "Herbalife" },
-                  { label: "Niveau MLM", value: "Senior" },
+                  { label: "Prénom", value: user?.firstName ?? "—" },
+                  { label: "Nom", value: user?.lastName ?? "—" },
+                  { label: "Email", value: user?.email ?? "—" },
+                  { label: "Société MLM", value: user?.mlmCompany ?? "—" },
+                  { label: "Niveau MLM", value: user?.mlmLevel ? MLM_LEVEL_LABELS[user.mlmLevel] ?? user.mlmLevel : "—" },
                 ].map((field) => (
                   <div key={field.label} className="space-y-1">
                     <p className="text-xs text-muted-foreground">{field.label}</p>
@@ -63,14 +73,18 @@ export default function ProfilPage() {
           <div className="rounded-xl border border-white/[0.08] bg-card p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-semibold text-white">Plan Pro</p>
-                <p className="text-sm text-muted-foreground">$49/mois · Renouvellement le 19 Juin 2026</p>
+                <p className="font-semibold text-white">{user?.plan === "pro" ? "Plan Pro" : "Plan Gratuit"}</p>
+                <p className="text-sm text-muted-foreground">
+                  {user?.plan === "pro" ? "$49/mois · Renouvellement le 19 Juin 2026" : "Passe au Pro pour débloquer toutes les fonctionnalités"}
+                </p>
               </div>
-              <span className="rounded-full bg-primary/20 px-3 py-1 text-xs font-medium text-primary">Actif</span>
+              <span className="rounded-full bg-primary/20 px-3 py-1 text-xs font-medium text-primary">
+                {user?.plan === "pro" ? "Actif" : "Gratuit"}
+              </span>
             </div>
             <div className="border-t border-white/[0.08] pt-4">
               <button className="text-sm text-muted-foreground hover:text-white transition-colors">
-                Gérer mon abonnement →
+                {user?.plan === "pro" ? "Gérer mon abonnement →" : "Passer au Pro →"}
               </button>
             </div>
           </div>

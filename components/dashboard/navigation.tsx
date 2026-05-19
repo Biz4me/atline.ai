@@ -23,8 +23,10 @@ import {
   IconX,
   IconFlame,
   IconBarbell,
+  IconLogout,
 } from "@tabler/icons-react"
 import { AtlineLogo } from "./logo"
+import { useUser } from "@/hooks/use-user"
 
 // ═══════════════════════════════════════════════════════════════
 // MOBILE STATS BAR (replaces header)
@@ -607,28 +609,49 @@ export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarPr
 
       {/* User section */}
       <div className="border-t border-border p-3">
-        <div
-          className={cn(
-            "flex items-center gap-3 rounded-md px-3 py-2",
-            collapsed && "justify-center px-0"
-          )}
-        >
-          <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-primary">
-            <div className="flex h-full w-full items-center justify-center text-sm font-medium text-white">
-              PH
-            </div>
-          </div>
-          {!collapsed && (
-            <div className="flex flex-col">
-              <span className="text-sm font-medium text-white">Patrice Haure-Pallesi</span>
-              <span className="inline-flex w-fit items-center rounded-[4px] bg-primary px-1.5 py-0.5 text-[10px] font-medium text-white">
-                Plan Pro
-              </span>
-            </div>
-          )}
-        </div>
+        <UserSection collapsed={collapsed} />
       </div>
     </aside>
+  )
+}
+
+function UserSection({ collapsed }: { collapsed: boolean }) {
+  const { user, loading, logout, initials, displayName } = useUser()
+  const planLabel = user?.plan === "pro" ? "Plan Pro" : "Plan Gratuit"
+
+  return (
+    <div className="space-y-1">
+      <div
+        className={cn(
+          "flex items-center gap-3 rounded-md px-3 py-2",
+          collapsed && "justify-center px-0"
+        )}
+      >
+        <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-primary">
+          <div className="flex h-full w-full items-center justify-center text-sm font-medium text-white">
+            {loading ? "…" : initials}
+          </div>
+        </div>
+        {!collapsed && !loading && (
+          <div className="flex flex-col">
+            <span className="text-sm font-medium text-white">{displayName}</span>
+            <span className="inline-flex w-fit items-center rounded-[4px] bg-primary px-1.5 py-0.5 text-[10px] font-medium text-white">
+              {planLabel}
+            </span>
+          </div>
+        )}
+      </div>
+      <button
+        onClick={logout}
+        className={cn(
+          "flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-muted-foreground transition-colors hover:bg-muted hover:text-foreground",
+          collapsed && "justify-center px-0"
+        )}
+      >
+        <IconLogout className="h-4 w-4 shrink-0" />
+        {!collapsed && <span>Déconnexion</span>}
+      </button>
+    </div>
   )
 }
 
@@ -694,12 +717,23 @@ export function DesktopTopBar({ breadcrumbs }: DesktopTopBarProps) {
         </button>
 
         {/* Avatar */}
-        <div className="h-8 w-8 overflow-hidden rounded-full bg-primary">
-          <div className="flex h-full w-full items-center justify-center text-xs font-medium text-white">
-            PH
-          </div>
-        </div>
+        <TopBarAvatar />
       </div>
     </header>
+  )
+}
+
+function TopBarAvatar() {
+  const { initials, loading, logout } = useUser()
+  return (
+    <button
+      onClick={logout}
+      title="Déconnexion"
+      className="h-8 w-8 overflow-hidden rounded-full bg-primary transition-opacity hover:opacity-80"
+    >
+      <div className="flex h-full w-full items-center justify-center text-xs font-medium text-white">
+        {loading ? "…" : initials}
+      </div>
+    </button>
   )
 }
