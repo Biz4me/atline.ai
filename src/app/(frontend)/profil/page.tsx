@@ -1,7 +1,6 @@
 "use client"
 
 import { useRef, useState } from "react"
-import Image from "next/image"
 import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
 import { IconFileText, IconCheck, IconX, IconCamera } from "@tabler/icons-react"
@@ -133,7 +132,8 @@ export default function ProfilPage() {
                 className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-primary focus:outline-none"
               >
                 {avatarSrc ? (
-                  <Image src={avatarSrc} alt="Avatar" fill className="object-cover" />
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={avatarSrc} alt="Avatar" className="absolute inset-0 h-full w-full object-cover" />
                 ) : (
                   <span className="flex h-full w-full items-center justify-center text-xl font-bold text-white">
                     {loading ? "…" : initials}
