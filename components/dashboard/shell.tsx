@@ -38,7 +38,7 @@ export function DashboardShell({ children, breadcrumbs, layout = "standard" }: D
         <DesktopTopBar breadcrumbs={breadcrumbs} />
 
         {/* Page content */}
-        <main className="flex-1 px-4 pb-20 pt-[64px] lg:px-8 lg:pb-8 lg:pt-6">
+        <main className="flex-1 px-4 pb-[84px] pt-[72px] lg:px-8 lg:pb-8 lg:pt-6">
           <div
             className={cn(
               "mx-auto",

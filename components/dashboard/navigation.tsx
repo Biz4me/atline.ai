@@ -39,7 +39,7 @@ function StatsBarLogo() {
       viewBox="0 0 18 18"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className="h-[18px] w-[18px]"
+      className="h-6 w-6"
     >
       <path d="M9 2L17 15H1L9 2Z" fill="#7C6FE8" />
       <path d="M9 5L14 13H4L9 5Z" fill="#06B6D4" fillOpacity="0.6" />
@@ -56,7 +56,7 @@ const statsBarItems = [
 
 export function MobileStatsBar() {
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 flex h-12 items-center border-b border-white/[0.08] bg-[#09090B] px-4 lg:hidden">
+    <header className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center border-b border-white/[0.08] bg-[#09090B] px-4 lg:hidden">
       {/* Triangle logo - links to home */}
       <Link href="/" className="mr-3 flex items-center justify-center">
         <StatsBarLogo />
@@ -75,7 +75,7 @@ export function MobileStatsBar() {
                 href={item.href}
                 className="flex items-center gap-1.5 px-1 py-1"
               >
-                <Icon className="h-5 w-5" style={{ color: item.color }} />
+                <Icon className="h-6 w-6" style={{ color: item.color }} />
                 <span className="font-mono text-[13px] font-bold text-white">
                   {item.value}
                 </span>
@@ -122,7 +122,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 h-[60px] border-t border-white/[0.08] bg-[#18181B] lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 h-[68px] border-t border-white/[0.08] bg-[#18181B] lg:hidden">
       <div className="flex h-full items-center justify-around px-1">
         {bottomNavItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
@@ -136,7 +136,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
                 href={item.href}
                 className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
               >
-                <AtlasTriangleLogo className="h-7 w-7" />
+                <AtlasTriangleLogo className="h-9 w-9" />
                 {isAtlasActive && (
                   <span className="h-1 w-1 rounded-full bg-primary" />
                 )}
@@ -152,7 +152,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
               className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
             >
               <Icon
-                className="h-5 w-5"
+                className="h-7 w-7"
                 style={{ color: isActive ? "#7C6FE8" : "#71717A" }}
               />
               {isActive && (
@@ -166,7 +166,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
           onClick={onPlusClick}
           className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
         >
-          <IconGridDots className="h-5 w-5 text-[#71717A]" />
+          <IconGridDots className="h-7 w-7 text-[#71717A]" />
         </button>
       </div>
     </nav>
@@ -317,7 +317,7 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
                   {item.type === "logo" ? (
                     <div className="flex items-center gap-3">
                       <div
-                        className="flex h-8 w-8 items-center justify-center rounded-lg"
+                        className="flex h-11 w-11 items-center justify-center rounded-lg"
                         style={{ backgroundColor: item.bgColor }}
                       >
                         <AtlineLogo showText={false} size="sm" />
@@ -338,11 +338,11 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
                       className="flex w-full items-center gap-3"
                     >
                       <div
-                        className="flex h-8 w-8 items-center justify-center rounded-lg"
+                        className="flex h-11 w-11 items-center justify-center rounded-lg"
                         style={{ backgroundColor: item.bgColor }}
                       >
                         <item.icon
-                          className="h-4 w-4"
+                          className="h-6 w-6"
                           style={{ color: item.iconColor }}
                         />
                       </div>
