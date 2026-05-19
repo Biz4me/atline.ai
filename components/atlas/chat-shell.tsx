@@ -45,7 +45,7 @@ export function ChatShell({ children, breadcrumbs }: ChatShellProps) {
       </div>
 
       {/* Mobile bottom nav */}
-      <MobileBottomNav onPlusClick={() => setDrawerOpen(true)} />
+      <MobileBottomNav isOpen={drawerOpen} onPlusClick={() => setDrawerOpen((v) => !v)} />
 
       {/* Plus drawer */}
       <PlusDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />
