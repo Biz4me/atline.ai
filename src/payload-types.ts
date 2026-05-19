@@ -69,6 +69,13 @@ export interface Config {
   collections: {
     users: User;
     media: Media;
+    pages: Page;
+    modules: Module;
+    lecons: Lecon;
+    prospects: Prospect;
+    scripts: Script;
+    conversations: Conversation;
+    'societes-mlm': SocietesMlm;
     'payload-kv': PayloadKv;
     'payload-locked-documents': PayloadLockedDocument;
     'payload-preferences': PayloadPreference;
@@ -78,6 +85,13 @@ export interface Config {
   collectionsSelect: {
     users: UsersSelect<false> | UsersSelect<true>;
     media: MediaSelect<false> | MediaSelect<true>;
+    pages: PagesSelect<false> | PagesSelect<true>;
+    modules: ModulesSelect<false> | ModulesSelect<true>;
+    lecons: LeconsSelect<false> | LeconsSelect<true>;
+    prospects: ProspectsSelect<false> | ProspectsSelect<true>;
+    scripts: ScriptsSelect<false> | ScriptsSelect<true>;
+    conversations: ConversationsSelect<false> | ConversationsSelect<true>;
+    'societes-mlm': SocietesMlmSelect<false> | SocietesMlmSelect<true>;
     'payload-kv': PayloadKvSelect<false> | PayloadKvSelect<true>;
     'payload-locked-documents': PayloadLockedDocumentsSelect<false> | PayloadLockedDocumentsSelect<true>;
     'payload-preferences': PayloadPreferencesSelect<false> | PayloadPreferencesSelect<true>;
@@ -168,6 +182,206 @@ export interface Media {
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages".
+ */
+export interface Page {
+  id: number;
+  title: string;
+  /**
+   * URL de la page (ex: "a-propos" → /a-propos)
+   */
+  slug: string;
+  status?: ('draft' | 'published') | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  seo?: {
+    title?: string | null;
+    description?: string | null;
+  };
+  updatedAt: string;
+  createdAt: string;
+  _status?: ('draft' | 'published') | null;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "modules".
+ */
+export interface Module {
+  id: number;
+  title: string;
+  description?: string | null;
+  category?:
+    | ('invitation' | 'presentation' | 'suivi' | 'closing' | 'leadership' | 'mindset' | 'reseaux-sociaux')
+    | null;
+  thumbnail?: (number | null) | Media;
+  /**
+   * Ordre d'affichage (0 = premier)
+   */
+  order?: number | null;
+  /**
+   * Durée estimée (ex: "45 min")
+   */
+  duration?: string | null;
+  published?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lecons".
+ */
+export interface Lecon {
+  id: number;
+  title: string;
+  module: number | Module;
+  order?: number | null;
+  type?: ('video' | 'text' | 'quiz' | 'audio') | null;
+  content?: {
+    root: {
+      type: string;
+      children: {
+        type: any;
+        version: number;
+        [k: string]: unknown;
+      }[];
+      direction: ('ltr' | 'rtl') | null;
+      format: 'left' | 'start' | 'center' | 'right' | 'end' | 'justify' | '';
+      indent: number;
+      version: number;
+    };
+    [k: string]: unknown;
+  } | null;
+  /**
+   * URL YouTube ou Loom
+   */
+  videoUrl?: string | null;
+  /**
+   * Ex: "12 min"
+   */
+  duration?: string | null;
+  /**
+   * Points clés de la leçon
+   */
+  keyPoints?:
+    | {
+        point?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "prospects".
+ */
+export interface Prospect {
+  id: number;
+  firstName: string;
+  lastName?: string | null;
+  phone?: string | null;
+  email?: string | null;
+  source?: ('instagram' | 'facebook' | 'linkedin' | 'tiktok' | 'recommandation' | 'evenement' | 'autre') | null;
+  status?: ('nouveau' | 'contacte' | 'interesse' | 'presentation' | 'reflexion' | 'converti' | 'non-interesse') | null;
+  /**
+   * Score de chaleur (0-10)
+   */
+  score?: number | null;
+  notes?: string | null;
+  /**
+   * Date du prochain suivi
+   */
+  nextFollowUp?: string | null;
+  /**
+   * Utilisateur propriétaire de ce prospect
+   */
+  owner?: (number | null) | User;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scripts".
+ */
+export interface Script {
+  id: number;
+  title: string;
+  category?: ('invitation' | 'suivi' | 'relance' | 'closing' | 'recrutement') | null;
+  platform?: ('whatsapp' | 'instagram' | 'sms' | 'email') | null;
+  /**
+   * Texte du script. Utilise {{prenom}}, {{produit}} pour les variables.
+   */
+  content: string;
+  tags?:
+    | {
+        tag?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  published?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations".
+ */
+export interface Conversation {
+  id: number;
+  /**
+   * Résumé auto-généré de la conversation
+   */
+  title?: string | null;
+  agent?: ('atlas' | 'markline' | 'proline') | null;
+  user: number | User;
+  messages?:
+    | {
+        role?: ('user' | 'assistant') | null;
+        content?: string | null;
+        timestamp?: string | null;
+        id?: string | null;
+      }[]
+    | null;
+  /**
+   * ID de session Flowise pour la continuité mémoire
+   */
+  flowiseSessionId?: string | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "societes-mlm".
+ */
+export interface SocietesMlm {
+  id: number;
+  name: string;
+  sector?: ('sante' | 'bien-etre' | 'finance' | 'energie' | 'technologie' | 'autre') | null;
+  logo?: (number | null) | Media;
+  website?: string | null;
+  /**
+   * Résumé du plan de compensation
+   */
+  compensationPlan?: string | null;
+  active?: boolean | null;
+  updatedAt: string;
+  createdAt: string;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
  * via the `definition` "payload-kv".
  */
 export interface PayloadKv {
@@ -197,6 +411,34 @@ export interface PayloadLockedDocument {
     | ({
         relationTo: 'media';
         value: number | Media;
+      } | null)
+    | ({
+        relationTo: 'pages';
+        value: number | Page;
+      } | null)
+    | ({
+        relationTo: 'modules';
+        value: number | Module;
+      } | null)
+    | ({
+        relationTo: 'lecons';
+        value: number | Lecon;
+      } | null)
+    | ({
+        relationTo: 'prospects';
+        value: number | Prospect;
+      } | null)
+    | ({
+        relationTo: 'scripts';
+        value: number | Script;
+      } | null)
+    | ({
+        relationTo: 'conversations';
+        value: number | Conversation;
+      } | null)
+    | ({
+        relationTo: 'societes-mlm';
+        value: number | SocietesMlm;
       } | null);
   globalSlug?: string | null;
   user: {
@@ -284,6 +526,132 @@ export interface MediaSelect<T extends boolean = true> {
   height?: T;
   focalX?: T;
   focalY?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "pages_select".
+ */
+export interface PagesSelect<T extends boolean = true> {
+  title?: T;
+  slug?: T;
+  status?: T;
+  content?: T;
+  seo?:
+    | T
+    | {
+        title?: T;
+        description?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+  _status?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "modules_select".
+ */
+export interface ModulesSelect<T extends boolean = true> {
+  title?: T;
+  description?: T;
+  category?: T;
+  thumbnail?: T;
+  order?: T;
+  duration?: T;
+  published?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "lecons_select".
+ */
+export interface LeconsSelect<T extends boolean = true> {
+  title?: T;
+  module?: T;
+  order?: T;
+  type?: T;
+  content?: T;
+  videoUrl?: T;
+  duration?: T;
+  keyPoints?:
+    | T
+    | {
+        point?: T;
+        id?: T;
+      };
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "prospects_select".
+ */
+export interface ProspectsSelect<T extends boolean = true> {
+  firstName?: T;
+  lastName?: T;
+  phone?: T;
+  email?: T;
+  source?: T;
+  status?: T;
+  score?: T;
+  notes?: T;
+  nextFollowUp?: T;
+  owner?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "scripts_select".
+ */
+export interface ScriptsSelect<T extends boolean = true> {
+  title?: T;
+  category?: T;
+  platform?: T;
+  content?: T;
+  tags?:
+    | T
+    | {
+        tag?: T;
+        id?: T;
+      };
+  published?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "conversations_select".
+ */
+export interface ConversationsSelect<T extends boolean = true> {
+  title?: T;
+  agent?: T;
+  user?: T;
+  messages?:
+    | T
+    | {
+        role?: T;
+        content?: T;
+        timestamp?: T;
+        id?: T;
+      };
+  flowiseSessionId?: T;
+  updatedAt?: T;
+  createdAt?: T;
+}
+/**
+ * This interface was referenced by `Config`'s JSON-Schema
+ * via the `definition` "societes-mlm_select".
+ */
+export interface SocietesMlmSelect<T extends boolean = true> {
+  name?: T;
+  sector?: T;
+  logo?: T;
+  website?: T;
+  compensationPlan?: T;
+  active?: T;
+  updatedAt?: T;
+  createdAt?: T;
 }
 /**
  * This interface was referenced by `Config`'s JSON-Schema
