@@ -134,7 +134,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
                 href={item.href}
                 className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
               >
-                <AtlasTriangleLogo className="h-7 w-7" />
+                <AtlasTriangleLogo className="h-9 w-9" />
                 {isAtlasActive && (
                   <span className="h-1 w-1 rounded-full bg-primary" />
                 )}
@@ -150,7 +150,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
               className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
             >
               <Icon
-                className="h-7 w-7"
+                className="h-9 w-9"
                 style={{ color: isActive ? "#7C6FE8" : "#71717A" }}
               />
               {isActive && (
@@ -292,7 +292,7 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
           onClick={onClose}
           className="absolute right-4 top-3 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-card"
         >
-          <IconX className="h-7 w-7" />
+          <IconX className="h-9 w-9" />
         </button>
 
         {/* Content */}
@@ -599,9 +599,9 @@ export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarPr
         className="flex h-10 items-center justify-center border-t border-border text-muted-foreground transition-colors hover:text-foreground"
       >
         {collapsed ? (
-          <IconChevronRight className="h-7 w-7" />
+          <IconChevronRight className="h-9 w-9" />
         ) : (
-          <IconChevronLeft className="h-7 w-7" />
+          <IconChevronLeft className="h-9 w-9" />
         )}
       </button>
 
