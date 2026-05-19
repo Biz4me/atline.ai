@@ -1,3 +1,5 @@
+"use server"
+import { after } from "next/server"
 import { NextRequest } from "next/server"
 import { getPayload } from "payload"
 import configPromise from "@payload-config"
@@ -44,7 +46,7 @@ function buildMemoryContext(memory: UserMemory): string {
   return lines.join("\n")
 }
 
-async function getRagContext(query: string): Promise<string> {
+async function getRagContext(query: string, userId?: string): Promise<string> {
   const vpsUrl = process.env.VPS_INGEST_URL
   const vpsKey = process.env.VPS_INGEST_KEY
   if (!vpsUrl || !vpsKey) return ""
@@ -54,6 +56,7 @@ async function getRagContext(query: string): Promise<string> {
     form.append("query", query)
     form.append("agent", "atlas")
     form.append("top_k", "4")
+    if (userId) form.append("user_id", userId)
 
     const res = await fetch(`${vpsUrl}/search`, {
       method: "POST",
@@ -68,6 +71,110 @@ async function getRagContext(query: string): Promise<string> {
     return `[Base de connaissances]\n${chunks.join("\n\n---\n\n")}`
   } catch {
     return ""
+  }
+}
+
+async function updateUserMemory(
+  userId: string,
+  userMessage: string,
+  assistantText: string
+): Promise<void> {
+  const vpsUrl = process.env.VPS_INGEST_URL
+  const vpsKey = process.env.VPS_INGEST_KEY
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
+
+  // Extract structured info from the exchange
+  let extracted: Partial<UserMemory> = {}
+  try {
+    const extraction = await client.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 512,
+      messages: [
+        {
+          role: "user",
+          content: `Analyse cet échange de coaching MLM et extrait les informations sur l'utilisateur.
+Retourne UNIQUEMENT un JSON valide (pas de markdown, pas d'explication).
+N'inclus que les champs pour lesquels tu as des informations claires.
+
+Champs possibles :
+{
+  "prenom": "string",
+  "societe": "string (nom de sa société MLM)",
+  "niveau": "string (débutant | intermédiaire | avancé)",
+  "objectif_revenu": number (mensuel en euros),
+  "points_forts": ["string"],
+  "axes_travail": ["string"],
+  "last_session_summary": "string (1-2 phrases résumant ce dont on a parlé)"
+}
+
+Message utilisateur : ${userMessage}
+Réponse Atlas : ${assistantText}`,
+        },
+      ],
+    })
+
+    const raw =
+      extraction.content[0].type === "text" ? extraction.content[0].text : ""
+    const match = raw.match(/\{[\s\S]*\}/)
+    if (match) extracted = JSON.parse(match[0])
+  } catch {
+    // extraction failed — skip profile update
+  }
+
+  // Update Payload userMemory (merge, don't replace)
+  if (Object.keys(extracted).length > 0) {
+    try {
+      const payload = await getPayload({ config: configPromise })
+      const user = await payload.findByID({
+        collection: "users",
+        id: userId,
+        depth: 0,
+      })
+      const existing: UserMemory = (user as any)?.userMemory ?? {}
+      const merged: UserMemory = { ...existing, ...extracted }
+
+      // Merge arrays without duplicates
+      if (extracted.points_forts && existing.points_forts) {
+        merged.points_forts = [
+          ...new Set([...existing.points_forts, ...extracted.points_forts]),
+        ]
+      }
+      if (extracted.axes_travail && existing.axes_travail) {
+        merged.axes_travail = [
+          ...new Set([...existing.axes_travail, ...extracted.axes_travail]),
+        ]
+      }
+
+      await payload.update({
+        collection: "users",
+        id: userId,
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        data: { userMemory: merged } as any,
+      })
+    } catch {
+      // non-blocking
+    }
+  }
+
+  // Store conversation summary in Qdrant via VPS
+  if (vpsUrl && vpsKey) {
+    try {
+      const form = new FormData()
+      form.append("user_id", userId)
+      form.append("agent", "atlas")
+      form.append(
+        "text",
+        `Utilisateur: ${userMessage}\n\nAtlas: ${assistantText}`
+      )
+      await fetch(`${vpsUrl}/store`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${vpsKey}` },
+        body: form,
+        signal: AbortSignal.timeout(15000),
+      })
+    } catch {
+      // non-blocking
+    }
   }
 }
 
@@ -86,27 +193,27 @@ export async function POST(req: NextRequest) {
       const user = await payload.findByID({ collection: "users", id: userId, depth: 0 })
       const u = user as any
       if (u?.userMemory) memoryContext = buildMemoryContext(u.userMemory as UserMemory)
-      // Enrich system with user first name if available
       if (u?.firstName) memoryContext = `Prénom utilisateur : ${u.firstName}\n` + memoryContext
     } catch {
       // non-blocking
     }
   }
 
-  // RAG context
-  const ragContext = await getRagContext(message)
+  // RAG context (general docs + user memories)
+  const ragContext = await getRagContext(message, userId)
 
-  // Build user message with context
+  // Build enriched message
   const contextParts: string[] = []
   if (memoryContext) contextParts.push(memoryContext)
   if (ragContext) contextParts.push(ragContext)
   contextParts.push(`[Message]\n${message}`)
   const enrichedMessage = contextParts.join("\n\n")
 
-  // Stream from Anthropic
   const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
   const encoder = new TextEncoder()
+  let capturedFullText = ""
+
   const stream = new ReadableStream({
     async start(controller) {
       try {
@@ -123,6 +230,7 @@ export async function POST(req: NextRequest) {
             chunk.delta.type === "text_delta"
           ) {
             const token = chunk.delta.text
+            capturedFullText += token
             const line = `data:${JSON.stringify({ event: "token", data: token })}\n\n`
             controller.enqueue(encoder.encode(line))
           }
@@ -131,12 +239,25 @@ export async function POST(req: NextRequest) {
         controller.enqueue(encoder.encode("data:[DONE]\n\n"))
       } catch (err) {
         console.error("Atlas stream error:", err)
-        controller.enqueue(encoder.encode(`data:${JSON.stringify({ event: "error", data: "Erreur" })}\n\n`))
+        controller.enqueue(
+          encoder.encode(
+            `data:${JSON.stringify({ event: "error", data: "Erreur" })}\n\n`
+          )
+        )
       } finally {
         controller.close()
       }
     },
   })
+
+  // After response is sent — update user memory in background
+  if (userId) {
+    after(async () => {
+      if (capturedFullText) {
+        await updateUserMemory(userId, message, capturedFullText)
+      }
+    })
+  }
 
   return new Response(stream, {
     headers: {
