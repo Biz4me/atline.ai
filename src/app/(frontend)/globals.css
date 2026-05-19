@@ -1,35 +1,68 @@
 @import 'tailwindcss';
 
+/* ── Class-based dark mode for next-themes ── */
+@variant dark (&:is(.dark *));
+
+/* ── Theme tokens — overridable per class ── */
+:root, .dark {
+  color-scheme: dark;
+  --bg:          #09090B;
+  --fg:          #FFFFFF;
+  --card:        #18181B;
+  --card-fg:     #FFFFFF;
+  --muted:       #18181B;
+  --muted-fg:    #71717A;
+  --border:      rgba(255,255,255,0.08);
+  --input:       rgba(255,255,255,0.08);
+  --nav-top:     #09090B;
+  --nav-bottom:  #18181B;
+}
+
+.light {
+  color-scheme: light;
+  --bg:          #F4F4F5;
+  --fg:          #09090B;
+  --card:        #FFFFFF;
+  --card-fg:     #09090B;
+  --muted:       #E4E4E7;
+  --muted-fg:    #71717A;
+  --border:      rgba(0,0,0,0.08);
+  --input:       rgba(0,0,0,0.06);
+  --nav-top:     #FFFFFF;
+  --nav-bottom:  #FFFFFF;
+}
+
+/* ── Tailwind theme ── */
 @theme inline {
-  --color-background: #09090B;
-  --color-foreground: #FFFFFF;
-  --color-card: #18181B;
-  --color-card-foreground: #FFFFFF;
-  --color-primary: #7C6FE8;
+  --color-background:         var(--bg);
+  --color-foreground:         var(--fg);
+  --color-card:               var(--card);
+  --color-card-foreground:    var(--card-fg);
+  --color-primary:            #7C6FE8;
   --color-primary-foreground: #FFFFFF;
-  --color-secondary: #18181B;
-  --color-secondary-foreground: #FFFFFF;
-  --color-accent: #06B6D4;
-  --color-accent-foreground: #FFFFFF;
-  --color-muted: #18181B;
-  --color-muted-foreground: #71717A;
-  --color-destructive: #EF4444;
+  --color-secondary:          var(--muted);
+  --color-secondary-foreground: var(--fg);
+  --color-accent:             #06B6D4;
+  --color-accent-foreground:  #FFFFFF;
+  --color-muted:              var(--muted);
+  --color-muted-foreground:   var(--muted-fg);
+  --color-destructive:        #EF4444;
   --color-destructive-foreground: #FFFFFF;
-  --color-success: #10B981;
+  --color-success:            #10B981;
   --color-success-foreground: #FFFFFF;
-  --color-warning: #F59E0B;
-  --color-warning-foreground: #09090B;
-  --color-gold: #EAB308;
-  --color-gold-foreground: #09090B;
-  --color-border: rgba(255,255,255,0.08);
-  --color-input: rgba(255,255,255,0.08);
-  --color-ring: #7C6FE8;
-  
-  --font-sans: var(--font-dm-sans), system-ui, sans-serif;
+  --color-warning:            #F59E0B;
+  --color-warning-foreground: var(--bg);
+  --color-gold:               #EAB308;
+  --color-gold-foreground:    var(--bg);
+  --color-border:             var(--border);
+  --color-input:              var(--input);
+  --color-ring:               #7C6FE8;
+
+  --font-sans:    var(--font-dm-sans), system-ui, sans-serif;
   --font-heading: var(--font-plus-jakarta), system-ui, sans-serif;
-  --font-mono: var(--font-jetbrains), monospace;
-  --font-logo: var(--font-space-grotesk), system-ui, sans-serif;
-  
+  --font-mono:    var(--font-jetbrains), monospace;
+  --font-logo:    var(--font-space-grotesk), system-ui, sans-serif;
+
   --radius-lg: 16px;
   --radius-md: 10px;
   --radius-sm: 6px;
@@ -37,7 +70,7 @@
 
 * {
   box-sizing: border-box;
-  border-color: var(--color-border);
+  border-color: var(--border);
 }
 
 html {
@@ -47,28 +80,19 @@ html {
 
 body {
   font-family: var(--font-sans);
-  background-color: var(--color-background);
-  color: var(--color-foreground);
+  background-color: var(--bg);
+  color: var(--fg);
   margin: 0;
   padding: 0;
   min-height: 100vh;
 }
 
-/* Scrollbar styling for dark theme */
-::-webkit-scrollbar {
-  width: 8px;
-  height: 8px;
-}
+/* ── Nav bars follow theme ── */
+.mobile-nav-top    { background-color: var(--nav-top) !important; }
+.mobile-nav-bottom { background-color: var(--nav-bottom) !important; }
 
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-
-::-webkit-scrollbar-thumb {
-  background: rgba(255,255,255,0.1);
-  border-radius: 4px;
-}
-
-::-webkit-scrollbar-thumb:hover {
-  background: rgba(255,255,255,0.2);
-}
+/* ── Scrollbar ── */
+::-webkit-scrollbar { width: 8px; height: 8px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+::-webkit-scrollbar-thumb:hover { background: var(--muted-fg); }

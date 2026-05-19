@@ -60,7 +60,7 @@ const statsBarItems = [
 
 export function MobileStatsBar() {
   return (
-    <header className="fixed left-0 right-0 top-0 z-50 flex h-14 items-center border-b border-white/[0.08] bg-[#09090B] px-4 lg:hidden">
+    <header className="mobile-nav-top fixed left-0 right-0 top-0 z-50 flex h-14 items-center border-b border-white/[0.08] px-4 lg:hidden">
       {/* Triangle logo - links to home */}
       <Link href="/" className="mr-3 flex items-center justify-center">
         <StatsBarLogo />
@@ -126,7 +126,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 h-[68px] border-t border-white/[0.08] bg-[#18181B] lg:hidden">
+    <nav className="mobile-nav-bottom fixed bottom-0 left-0 right-0 z-50 h-[68px] border-t border-white/[0.08] lg:hidden">
       <div className="flex h-full items-center justify-around px-1">
         {bottomNavItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
