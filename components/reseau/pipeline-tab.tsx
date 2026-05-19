@@ -114,16 +114,11 @@ import { cn } from "@/lib/utils"
 export function PipelineTab() {
   return (
     <div className="mt-4">
-      {/* Mobile: horizontal scroll */}
-      <div className="-mx-4 overflow-hidden lg:mx-0">
-        <div
-          className="flex gap-4 overflow-x-auto px-4 pb-4 lg:grid lg:grid-cols-5 lg:gap-4 lg:overflow-visible lg:px-0"
-          style={{ WebkitOverflowScrolling: "touch" }}
-        >
+      <div className="flex flex-col gap-6 lg:grid lg:grid-cols-5 lg:gap-4">
           {pipelineData.map((column) => (
             <div
               key={column.id}
-              className="w-[280px] shrink-0 lg:w-auto"
+              className="w-full"
             >
               {/* Column header */}
               <div className="mb-3 flex items-center gap-2">
@@ -149,7 +144,6 @@ export function PipelineTab() {
               </div>
             </div>
           ))}
-        </div>
       </div>
     </div>
   )
