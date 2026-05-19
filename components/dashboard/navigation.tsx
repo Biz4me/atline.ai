@@ -29,7 +29,7 @@ import {
   IconMoon,
   IconTrophy,
 } from "@tabler/icons-react"
-import { AtlineLogo } from "./logo"
+import { AtlineLogo, AtlineMark } from "./logo"
 import { useUser } from "@/hooks/use-user"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 
@@ -108,19 +108,9 @@ export function MobileStatsBar() {
 // MOBILE BOTTOM NAV (5 tabs)
 // ═══════════════════════════════════════════════════════════════
 
-// Triangle logo SVG for Atlas center tab
+// Atlas center tab — uses the real Atline logo mark
 function AtlasTriangleLogo({ className }: { className?: string }) {
-  return (
-    <svg
-      viewBox="0 0 28 28"
-      fill="none"
-      xmlns="http://www.w3.org/2000/svg"
-      className={className}
-    >
-      <path d="M14 4L24 22H4L14 4Z" fill="#7C6FE8" />
-      <path d="M14 8L20 20H8L14 8Z" fill="#06B6D4" fillOpacity="0.6" />
-    </svg>
-  )
+  return <AtlineMark className={className} />
 }
 
 const bottomNavItems = [
