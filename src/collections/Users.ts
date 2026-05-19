@@ -41,5 +41,12 @@ export const Users: CollectionConfig = {
         { label: 'Pro', value: 'pro' },
       ],
     },
+    {
+      name: 'userMemory',
+      type: 'json',
+      admin: {
+        description: 'Mémoire persistante Atlas — JSON structuré mis à jour après chaque session',
+      },
+    },
   ],
 }

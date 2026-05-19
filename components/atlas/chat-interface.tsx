@@ -70,7 +70,7 @@ export function ChatInterface() {
       const res = await fetch("/api/atlas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: content, sessionId }),
+        body: JSON.stringify({ message: content, sessionId, userId: user?.id }),
         signal: abortRef.current.signal,
       })
 
