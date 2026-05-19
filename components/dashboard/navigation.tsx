@@ -64,9 +64,9 @@ export function MobileStatsBar() {
   const avatarUrl = (user as any)?.avatarUrl ?? null
 
   return (
-    <header className="mobile-nav-top fixed left-0 right-0 top-0 z-50 flex h-14 items-center border-b border-white/[0.08] px-4 lg:hidden">
-      <Link href="/profil" className="mr-3 shrink-0">
-        <div className="relative h-9 w-9 overflow-hidden rounded-full bg-primary">
+    <header className="mobile-nav-top fixed left-0 right-0 top-0 z-50 flex h-14 items-center border-b border-white/[0.08] px-3 lg:hidden">
+      <Link href="/profil" className="mr-2 shrink-0">
+        <div className="relative h-10 w-10 overflow-hidden rounded-full bg-primary">
           {avatarUrl ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img src={avatarUrl} alt="Avatar" className="absolute inset-0 h-full w-full object-cover" />
@@ -78,22 +78,22 @@ export function MobileStatsBar() {
         </div>
       </Link>
 
-      <div className="flex flex-1 items-center justify-between">
+      <div className="flex flex-1 items-center justify-around">
         {statsBarItems.map((item) => {
           const Icon = item.icon
           return (
             <Link
               key={item.href}
               href={item.href}
-              className="flex items-center gap-1.5"
+              className="flex items-center gap-1"
             >
               <div
-                className="flex h-9 w-9 items-center justify-center rounded-xl"
+                className="flex h-8 w-8 items-center justify-center rounded-lg"
                 style={{ backgroundColor: item.bg }}
               >
-                <Icon className="h-5 w-5" style={{ color: item.color }} />
+                <Icon className="h-[18px] w-[18px]" style={{ color: item.color }} />
               </div>
-              <span className="font-mono text-[13px] font-bold" style={{ color: item.color }}>
+              <span className="font-mono text-[12px] font-bold" style={{ color: item.color }}>
                 {item.value}
               </span>
             </Link>
