@@ -5,10 +5,20 @@ import configPromise from "@payload-config"
 
 export const runtime = "nodejs"
 
+function getAuthHeaders(req: NextRequest): Headers {
+  const headers = new Headers(req.headers)
+  const cookie = req.headers.get("cookie") ?? ""
+  const match = cookie.match(/payload-token=([^;]+)/)
+  if (match?.[1]) {
+    headers.set("Authorization", `JWT ${decodeURIComponent(match[1])}`)
+  }
+  return headers
+}
+
 export async function POST(req: NextRequest) {
   try {
     const payload = await getPayload({ config: configPromise })
-    const { user } = await payload.auth({ headers: req.headers })
+    const { user } = await payload.auth({ headers: getAuthHeaders(req) })
 
     if (!user) {
       return NextResponse.json({ error: "Non authentifié" }, { status: 401 })

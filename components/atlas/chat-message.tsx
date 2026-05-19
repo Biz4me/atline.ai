@@ -12,13 +12,7 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
   const isUser = role === "user"
 
   return (
-    <div
-      className={cn(
-        "flex w-full",
-        isUser ? "justify-end" : "justify-start"
-      )}
-    >
-      {/* Message bubble */}
+    <div className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}>
       <div
         className={cn(
           "rounded-[12px] px-4 py-3",
@@ -27,14 +21,12 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
             : "max-w-[85%] border border-border bg-card text-foreground lg:max-w-[70%]"
         )}
       >
-        <p className="whitespace-pre-wrap text-sm leading-relaxed">{content}</p>
-        {isStreaming && (
-          <div className="mt-2 flex gap-1">
-            <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]" />
-            <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]" />
-            <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground" />
-          </div>
-        )}
+        <p className="whitespace-pre-wrap text-sm leading-relaxed">
+          {content}
+          {isStreaming && (
+            <span className="ml-0.5 inline-block h-[14px] w-[2px] translate-y-[1px] animate-pulse rounded-sm bg-current opacity-70" />
+          )}
+        </p>
       </div>
     </div>
   )
