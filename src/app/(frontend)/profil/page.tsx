@@ -1,9 +1,9 @@
 "use client"
 
-import { useRef, useState } from "react"
+import { useRef, useState, useEffect } from "react"
 import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
-import { IconFileText, IconCheck, IconX, IconCamera } from "@tabler/icons-react"
+import { IconFileText, IconCheck, IconX, IconCamera, IconPhoto } from "@tabler/icons-react"
 import { useUser } from "@/hooks/use-user"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { cn } from "@/lib/utils"
@@ -32,9 +32,24 @@ export default function ProfilPage() {
   const { user, loading, initials, displayName, updateProfile } = useUser()
 
   // Avatar upload
-  const fileInputRef = useRef<HTMLInputElement>(null)
+  const cameraInputRef = useRef<HTMLInputElement>(null)
+  const galleryInputRef = useRef<HTMLInputElement>(null)
+  const avatarMenuRef = useRef<HTMLDivElement>(null)
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
+  const [avatarMenuOpen, setAvatarMenuOpen] = useState(false)
+
+  // Close avatar menu on outside click
+  useEffect(() => {
+    if (!avatarMenuOpen) return
+    function handleClickOutside(e: MouseEvent) {
+      if (avatarMenuRef.current && !avatarMenuRef.current.contains(e.target as Node)) {
+        setAvatarMenuOpen(false)
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside)
+    return () => document.removeEventListener("mousedown", handleClickOutside)
+  }, [avatarMenuOpen])
 
   // Edit mode
   const [editing, setEditing] = useState(false)
@@ -89,6 +104,7 @@ export default function ProfilPage() {
     setAvatarPreview(URL.createObjectURL(file))
     setUploadingAvatar(true)
     setFeedback(null)
+    setAvatarMenuOpen(false)
 
     try {
       const fd = new FormData()
@@ -107,7 +123,8 @@ export default function ProfilPage() {
       setFeedback({ type: "error", message: e instanceof Error ? e.message : "Erreur upload" })
     } finally {
       setUploadingAvatar(false)
-      if (fileInputRef.current) fileInputRef.current.value = ""
+      if (cameraInputRef.current) cameraInputRef.current.value = ""
+      if (galleryInputRef.current) galleryInputRef.current.value = ""
     }
   }
 
@@ -124,36 +141,69 @@ export default function ProfilPage() {
           <div className="space-y-4">
             {/* Avatar + nom */}
             <div className="flex items-center gap-4 rounded-xl border border-white/[0.08] bg-card p-6">
-              {/* Avatar clickable */}
-              <button
-                type="button"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={uploadingAvatar}
-                className="group relative h-16 w-16 shrink-0 overflow-hidden rounded-full bg-primary focus:outline-none"
-              >
-                {avatarSrc ? (
-                  // eslint-disable-next-line @next/next/no-img-element
-                  <img src={avatarSrc} alt="Avatar" className="absolute inset-0 h-full w-full object-cover" />
-                ) : (
-                  <span className="flex h-full w-full items-center justify-center text-xl font-bold text-white">
-                    {loading ? "…" : initials}
-                  </span>
-                )}
-                <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
-                  {uploadingAvatar ? (
-                    <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              {/* Avatar with action menu */}
+              <div ref={avatarMenuRef} className="relative shrink-0">
+                <button
+                  type="button"
+                  onClick={() => !uploadingAvatar && setAvatarMenuOpen((v) => !v)}
+                  disabled={uploadingAvatar}
+                  className="group relative h-16 w-16 overflow-hidden rounded-full bg-primary focus:outline-none"
+                >
+                  {avatarSrc ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={avatarSrc} alt="Avatar" className="absolute inset-0 h-full w-full object-cover" />
                   ) : (
-                    <IconCamera className="h-5 w-5 text-white" />
+                    <span className="flex h-full w-full items-center justify-center text-xl font-bold text-white">
+                      {loading ? "…" : initials}
+                    </span>
                   )}
-                </span>
-              </button>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept="image/*"
-                className="hidden"
-                onChange={handleAvatarChange}
-              />
+                  <span className="absolute inset-0 flex items-center justify-center rounded-full bg-black/50 opacity-0 transition-opacity group-hover:opacity-100">
+                    {uploadingAvatar ? (
+                      <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                    ) : (
+                      <IconCamera className="h-5 w-5 text-white" />
+                    )}
+                  </span>
+                </button>
+
+                {/* Action menu */}
+                {avatarMenuOpen && (
+                  <div className="absolute left-0 top-[72px] z-20 w-52 overflow-hidden rounded-xl border border-white/[0.08] bg-card shadow-xl">
+                    <button
+                      onClick={() => cameraInputRef.current?.click()}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white transition-colors hover:bg-white/[0.05]"
+                    >
+                      <IconCamera className="h-4 w-4 text-primary" />
+                      Prendre une photo
+                    </button>
+                    <div className="mx-4 border-t border-white/[0.06]" />
+                    <button
+                      onClick={() => galleryInputRef.current?.click()}
+                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white transition-colors hover:bg-white/[0.05]"
+                    >
+                      <IconPhoto className="h-4 w-4 text-accent" />
+                      Choisir depuis la galerie
+                    </button>
+                  </div>
+                )}
+
+                {/* Hidden inputs */}
+                <input
+                  ref={cameraInputRef}
+                  type="file"
+                  accept="image/*"
+                  capture="user"
+                  className="hidden"
+                  onChange={handleAvatarChange}
+                />
+                <input
+                  ref={galleryInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handleAvatarChange}
+                />
+              </div>
 
               <div>
                 <p className="font-semibold text-white">{loading ? "Chargement…" : displayName}</p>

@@ -60,10 +60,22 @@ const statsBarItems = [
 ]
 
 export function MobileStatsBar() {
+  const { user, initials } = useUser()
+  const avatarUrl = (user as any)?.avatarUrl ?? null
+
   return (
     <header className="mobile-nav-top fixed left-0 right-0 top-0 z-50 flex h-14 items-center border-b border-white/[0.08] px-4 lg:hidden">
-      <Link href="/" className="mr-3 flex items-center justify-center">
-        <StatsBarLogo />
+      <Link href="/profil" className="mr-3 shrink-0">
+        <div className="relative h-9 w-9 overflow-hidden rounded-full bg-primary">
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl} alt="Avatar" className="absolute inset-0 h-full w-full object-cover" />
+          ) : (
+            <span className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
+              {initials}
+            </span>
+          )}
+        </div>
       </Link>
 
       <div className="flex flex-1 items-center justify-between">
@@ -616,19 +628,26 @@ export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarPr
 function UserSection({ collapsed }: { collapsed: boolean }) {
   const { user, loading, logout, initials, displayName } = useUser()
   const planLabel = user?.plan === "pro" ? "Plan Pro" : "Plan Gratuit"
+  const avatarUrl = (user as any)?.avatarUrl ?? null
 
   return (
     <div className="space-y-1">
-      <div
+      <Link
+        href="/profil"
         className={cn(
-          "flex items-center gap-3 rounded-md px-3 py-2",
+          "flex items-center gap-3 rounded-md px-3 py-2 transition-colors hover:bg-muted",
           collapsed && "justify-center px-0"
         )}
       >
-        <div className="h-9 w-9 shrink-0 overflow-hidden rounded-full bg-primary">
-          <div className="flex h-full w-full items-center justify-center text-sm font-medium text-white">
-            {loading ? "…" : initials}
-          </div>
+        <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-primary">
+          {avatarUrl ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={avatarUrl} alt="Avatar" className="absolute inset-0 h-full w-full object-cover" />
+          ) : (
+            <div className="flex h-full w-full items-center justify-center text-sm font-medium text-white">
+              {loading ? "…" : initials}
+            </div>
+          )}
         </div>
         {!collapsed && !loading && (
           <div className="flex flex-col">
@@ -638,7 +657,7 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
             </span>
           </div>
         )}
-      </div>
+      </Link>
       <button
         onClick={logout}
         className={cn(
