@@ -8,8 +8,8 @@ export const Prospects: CollectionConfig = {
   },
   access: {
     read: ({ req }) => {
-      if (req.user?.role === 'admin') return true
-      return { owner: { equals: req.user?.id } }
+      if (!req.user) return false
+      return { owner: { equals: req.user.id } }
     },
   },
   fields: [
