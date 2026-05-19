@@ -52,7 +52,7 @@ export function DashboardShell({ children, breadcrumbs, layout = "standard" }: D
       </div>
 
       {/* Mobile bottom nav */}
-      <MobileBottomNav onPlusClick={() => setDrawerOpen(true)} />
+      <MobileBottomNav isOpen={drawerOpen} onPlusClick={() => setDrawerOpen((v) => !v)} />
 
       {/* Plus drawer */}
       <PlusDrawer isOpen={drawerOpen} onClose={() => setDrawerOpen(false)} />

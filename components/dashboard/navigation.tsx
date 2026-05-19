@@ -131,14 +131,15 @@ const bottomNavItems = [
 ]
 
 interface MobileBottomNavProps {
+  isOpen: boolean
   onPlusClick: () => void
 }
 
-export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
+export function MobileBottomNav({ isOpen, onPlusClick }: MobileBottomNavProps) {
   const pathname = usePathname()
 
   return (
-    <nav className="mobile-nav-bottom fixed bottom-0 left-0 right-0 z-50 h-[68px] border-t border-white/[0.08] lg:hidden">
+    <nav className="mobile-nav-bottom fixed bottom-0 left-0 right-0 z-[65] h-[68px] border-t border-white/[0.08] lg:hidden">
       <div className="flex h-full items-center justify-around px-1">
         {bottomNavItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
@@ -186,8 +187,14 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
           onClick={onPlusClick}
           className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
         >
-          <div className="flex h-12 w-12 items-center justify-center rounded-xl" style={{ backgroundColor: "rgba(113,113,122,0.15)" }}>
-            <IconGridDots className="h-7 w-7 text-[#71717A]" />
+          <div
+            className="flex h-12 w-12 items-center justify-center rounded-xl transition-colors"
+            style={{ backgroundColor: isOpen ? "rgba(124,111,232,0.2)" : "rgba(113,113,122,0.15)" }}
+          >
+            {isOpen
+              ? <IconX className="h-7 w-7 text-primary" />
+              : <IconGridDots className="h-7 w-7 text-[#71717A]" />
+            }
           </div>
         </button>
       </div>
@@ -243,9 +250,9 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
 
   return (
     <>
-      <div className="fixed inset-0 z-[60] bg-black/60 lg:hidden" onClick={onClose} />
+      <div className="fixed inset-x-0 top-0 bottom-[68px] z-[60] bg-black/60 lg:hidden" onClick={onClose} />
 
-      <div className="fixed bottom-0 left-0 right-0 z-[70] rounded-t-[24px] bg-background lg:hidden">
+      <div className="fixed bottom-[68px] left-0 right-0 z-[70] rounded-t-[24px] bg-background lg:hidden">
         {/* Handle */}
         <div className="flex justify-center py-3">
           <div className="h-[3px] w-10 rounded-full bg-white/20" />
@@ -259,7 +266,7 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
           <IconX className="h-5 w-5" />
         </button>
 
-        <div className="max-h-[75vh] overflow-y-auto pb-10">
+        <div className="max-h-[calc(75vh-68px)] overflow-y-auto pb-6">
 
           {/* ── Compte ── */}
           <DrawerItem>
