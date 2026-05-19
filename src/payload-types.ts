@@ -123,6 +123,11 @@ export interface UserAuthOperations {
  */
 export interface User {
   id: number;
+  firstName?: string | null;
+  lastName?: string | null;
+  mlmCompany?: string | null;
+  mlmLevel?: ('debutant' | 'intermediaire' | 'senior' | 'expert') | null;
+  plan?: ('free' | 'pro') | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -240,6 +245,11 @@ export interface PayloadMigration {
  * via the `definition` "users_select".
  */
 export interface UsersSelect<T extends boolean = true> {
+  firstName?: T;
+  lastName?: T;
+  mlmCompany?: T;
+  mlmLevel?: T;
+  plan?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

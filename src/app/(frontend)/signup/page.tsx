@@ -66,7 +66,6 @@ export default function SignupPage() {
         return
       }
 
-      // Auto-login after signup
       const loginRes = await fetch("/api/users/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
