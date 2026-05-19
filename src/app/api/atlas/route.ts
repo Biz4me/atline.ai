@@ -54,8 +54,9 @@ export async function POST(req: NextRequest) {
         id: userId,
         depth: 0,
       })
-      if (user?.userMemory) {
-        memoryContext = buildMemoryContext(user.userMemory as UserMemory)
+      const u = user as any
+      if (u?.userMemory) {
+        memoryContext = buildMemoryContext(u.userMemory as UserMemory)
       }
     } catch {
       // Memory injection is non-blocking
