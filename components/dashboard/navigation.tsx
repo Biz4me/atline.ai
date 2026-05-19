@@ -75,7 +75,7 @@ export function MobileStatsBar() {
                 href={item.href}
                 className="flex items-center gap-1.5 px-1 py-1"
               >
-                <Icon className="h-4 w-4" style={{ color: item.color }} />
+                <Icon className="h-5 w-5" style={{ color: item.color }} />
                 <span className="font-mono text-[13px] font-bold text-white">
                   {item.value}
                 </span>
@@ -136,7 +136,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
                 href={item.href}
                 className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
               >
-                <AtlasTriangleLogo className="h-9 w-9" />
+                <AtlasTriangleLogo className="h-7 w-7" />
                 {isAtlasActive && (
                   <span className="h-1 w-1 rounded-full bg-primary" />
                 )}
@@ -152,7 +152,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
               className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
             >
               <Icon
-                className="h-9 w-9"
+                className="h-5 w-5"
                 style={{ color: isActive ? "#7C6FE8" : "#71717A" }}
               />
               {isActive && (
@@ -712,7 +712,7 @@ export function DesktopTopBar({ breadcrumbs }: DesktopTopBarProps) {
                   href={item.href}
                   className="flex items-center gap-1.5 px-1"
                 >
-                  <Icon className="h-4 w-4" style={{ color: item.color }} />
+                  <Icon className="h-5 w-5" style={{ color: item.color }} />
                   <span className="font-mono text-xs font-bold text-white">
                     {item.value}
                   </span>

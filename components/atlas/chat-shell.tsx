@@ -28,7 +28,7 @@ export function ChatShell({ children, breadcrumbs }: ChatShellProps) {
       <div
         className={cn(
           "flex flex-1 flex-col overflow-hidden transition-all duration-300",
-          "pt-11 pb-14", // Mobile: stats bar (44px) + bottom nav (56px)
+          "pt-12 pb-[60px]", // Mobile: stats bar h-12 (48px) + bottom nav h-[60px]
           "lg:pt-0 lg:pb-0",
           sidebarCollapsed ? "lg:pl-16" : "lg:pl-60"
         )}

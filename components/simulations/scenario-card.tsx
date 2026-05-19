@@ -49,7 +49,7 @@ export function ScenarioCard({
     <button
       onClick={() => onClick(id)}
       className={cn(
-        "flex w-full items-center gap-3 rounded-[8px] border bg-card p-3 text-left transition-colors hover:border-primary/30",
+        "flex h-full w-full items-center gap-3 rounded-[8px] border bg-card p-3 text-left transition-colors hover:border-primary/30",
         isFreeform ? "border-dashed border-border" : "border-border"
       )}
     >

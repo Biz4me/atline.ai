@@ -41,7 +41,7 @@ function FormationContent() {
       <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
         <div className="min-w-0 flex-1 lg:max-w-[680px]">
           <div className="mb-6">
-            <h1 className="font-heading text-2xl font-semibold text-white">Formation</h1>
+            <h1 className="font-heading text-xl font-semibold text-white">Formation</h1>
             <p className="mt-1 text-sm text-muted-foreground">Methode Go Pro — Eric Worre</p>
           </div>
           <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />

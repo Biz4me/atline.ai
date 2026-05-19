@@ -34,6 +34,15 @@ export const metadata = {
   title: "Atline.ai - AI Coaching for MLM Success",
   description:
     "Atline.ai is your AI-powered coaching assistant designed to help MLM distributors succeed with personalized training and prospect management.",
+  manifest: "/manifest.json",
+  appleWebApp: {
+    capable: true,
+    statusBarStyle: "black-translucent",
+    title: "Atline",
+  },
+  icons: {
+    apple: "/icon-192.png",
+  },
 }
 
 export const viewport = {

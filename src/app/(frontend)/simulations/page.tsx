@@ -81,7 +81,7 @@ function SimulationsContent() {
   return (
     <DashboardShell>
       <div className="mb-6">
-        <h1 className="font-heading text-2xl font-semibold text-white">Simulations</h1>
+        <h1 className="font-heading text-xl font-semibold text-white">Simulations</h1>
         <p className="mt-1 text-[12px] text-muted-foreground">Entraîne-toi avant chaque appel réel</p>
       </div>
       <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
