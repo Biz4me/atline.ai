@@ -120,7 +120,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
   const pathname = usePathname()
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 z-50 h-[52px] border-t border-white/[0.08] bg-[#18181B] lg:hidden">
+    <nav className="fixed bottom-0 left-0 right-0 z-50 h-[68px] border-t border-white/[0.08] bg-[#18181B] lg:hidden">
       <div className="flex h-full items-center justify-around px-1">
         {bottomNavItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
@@ -150,7 +150,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
               className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
             >
               <Icon
-                className="h-5 w-5"
+                className="h-7 w-7"
                 style={{ color: isActive ? "#7C6FE8" : "#71717A" }}
               />
               {isActive && (
@@ -292,7 +292,7 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
           onClick={onClose}
           className="absolute right-4 top-3 flex h-8 w-8 items-center justify-center rounded-full text-muted-foreground hover:bg-card"
         >
-          <IconX className="h-5 w-5" />
+          <IconX className="h-7 w-7" />
         </button>
 
         {/* Content */}
@@ -310,7 +310,7 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
               {section.items.map((item, index) => (
                 <div
                   key={index}
-                  className="flex h-[52px] items-center border-b border-white/[0.05] px-4"
+                  className="flex h-[68px] items-center border-b border-white/[0.05] px-4"
                 >
                   {item.type === "logo" ? (
                     <div className="flex items-center gap-3">
@@ -599,9 +599,9 @@ export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarPr
         className="flex h-10 items-center justify-center border-t border-border text-muted-foreground transition-colors hover:text-foreground"
       >
         {collapsed ? (
-          <IconChevronRight className="h-5 w-5" />
+          <IconChevronRight className="h-7 w-7" />
         ) : (
-          <IconChevronLeft className="h-5 w-5" />
+          <IconChevronLeft className="h-7 w-7" />
         )}
       </button>
 
