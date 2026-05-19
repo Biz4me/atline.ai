@@ -3,7 +3,7 @@ import { NextRequest, NextResponse } from "next/server"
 const AUTH_PATHS = ["/login", "/signup"]
 const SKIP_PATHS = ["/admin", "/api", "/_next", "/favicon.ico"]
 
-export function middleware(request: NextRequest) {
+export function proxy(request: NextRequest) {
   const { pathname } = request.nextUrl
 
   if (SKIP_PATHS.some((p) => pathname.startsWith(p))) {
