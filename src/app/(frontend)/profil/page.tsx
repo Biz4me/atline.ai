@@ -5,6 +5,7 @@ import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
 import { IconFileText } from "@tabler/icons-react"
 import { useUser } from "@/hooks/use-user"
+import { ToggleSwitch } from "@/components/ui/toggle-switch"
 
 const tabs = ["Mon Profil", "Abonnement", "Préférences", "Mes Documents", "Zone Danger"]
 
@@ -17,6 +18,9 @@ const MLM_LEVEL_LABELS: Record<string, string> = {
 
 export default function ProfilPage() {
   const [activeTab, setActiveTab] = useState("Mon Profil")
+  const [notifSuivi, setNotifSuivi] = useState(true)
+  const [notifFilleuls, setNotifFilleuls] = useState(true)
+  const [notifResume, setNotifResume] = useState(false)
   const { user, loading, initials, displayName } = useUser()
 
   return (
@@ -99,10 +103,14 @@ export default function ProfilPage() {
             </div>
             <div className="border-t border-white/[0.08] pt-4">
               <h2 className="text-sm font-medium text-white mb-3">Notifications</h2>
-              {["Rappels de suivi", "Alertes filleuls", "Résumé hebdomadaire"].map((notif) => (
-                <div key={notif} className="flex items-center justify-between py-2">
-                  <p className="text-sm text-muted-foreground">{notif}</p>
-                  <div className="h-5 w-9 rounded-full bg-primary" />
+              {[
+                { label: "Rappels de suivi", value: notifSuivi, setter: setNotifSuivi },
+                { label: "Alertes filleuls", value: notifFilleuls, setter: setNotifFilleuls },
+                { label: "Résumé hebdomadaire", value: notifResume, setter: setNotifResume },
+              ].map((notif) => (
+                <div key={notif.label} className="flex items-center justify-between py-2">
+                  <p className="text-sm text-muted-foreground">{notif.label}</p>
+                  <ToggleSwitch enabled={notif.value} onChange={notif.setter} />
                 </div>
               ))}
             </div>

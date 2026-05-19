@@ -31,6 +31,7 @@ import {
 } from "@tabler/icons-react"
 import { AtlineLogo } from "./logo"
 import { useUser } from "@/hooks/use-user"
+import { ToggleSwitch } from "@/components/ui/toggle-switch"
 
 // ═══════════════════════════════════════════════════════════════
 // MOBILE STATS BAR (replaces header)
@@ -52,39 +53,38 @@ function StatsBarLogo() {
 }
 
 const statsBarItems = [
-  { href: "/croissance", icon: IconFlame, value: "12", color: "#F59E0B" },
-  { href: "/proline", icon: IconChartBar, value: "4", color: "#10B981" },
-  { href: "/markline", icon: IconBroadcast, value: "5", color: "#06B6D4" },
-  { href: "/reseau", icon: IconUsers, value: "24", color: "#7C6FE8" },
+  { href: "/croissance", icon: IconFlame,    value: "12", color: "#F59E0B", bg: "rgba(245,158,11,0.15)" },
+  { href: "/proline",    icon: IconChartBar, value: "4",  color: "#10B981", bg: "rgba(16,185,129,0.15)" },
+  { href: "/markline",   icon: IconBroadcast,value: "5",  color: "#06B6D4", bg: "rgba(6,182,212,0.15)"  },
+  { href: "/reseau",     icon: IconUsers,    value: "24", color: "#7C6FE8", bg: "rgba(124,111,232,0.15)"},
 ]
 
 export function MobileStatsBar() {
   return (
     <header className="mobile-nav-top fixed left-0 right-0 top-0 z-50 flex h-14 items-center border-b border-white/[0.08] px-4 lg:hidden">
-      {/* Triangle logo - links to home */}
       <Link href="/" className="mr-3 flex items-center justify-center">
         <StatsBarLogo />
       </Link>
 
-      {/* Stats */}
       <div className="flex flex-1 items-center justify-between">
-        {statsBarItems.map((item, index) => {
+        {statsBarItems.map((item) => {
           const Icon = item.icon
           return (
-            <div key={item.href} className="flex items-center">
-              {index > 0 && (
-                <div className="mr-2 h-4 w-px bg-white/[0.08]" />
-              )}
-              <Link
-                href={item.href}
-                className="flex items-center gap-1.5 px-1 py-1"
+            <Link
+              key={item.href}
+              href={item.href}
+              className="flex items-center gap-1.5"
+            >
+              <div
+                className="flex h-9 w-9 items-center justify-center rounded-xl"
+                style={{ backgroundColor: item.bg }}
               >
-                <Icon className="h-6 w-6" style={{ color: item.color }} />
-                <span className="font-mono text-[13px] font-bold text-white">
-                  {item.value}
-                </span>
-              </Link>
-            </div>
+                <Icon className="h-5 w-5" style={{ color: item.color }} />
+              </div>
+              <span className="font-mono text-[13px] font-bold" style={{ color: item.color }}>
+                {item.value}
+              </span>
+            </Link>
           )
         })}
       </div>
@@ -112,10 +112,10 @@ function AtlasTriangleLogo({ className }: { className?: string }) {
 }
 
 const bottomNavItems = [
-  { href: "/formation", icon: IconSchool, label: "Formation" },
-  { href: "/simulations", icon: IconBarbell, label: "Simulations" },
-  { href: "/atlas", icon: null, label: "Atlas", isCenter: true },
-  { href: "/agenda", icon: IconCalendar, label: "Agenda" },
+  { href: "/formation",  icon: IconSchool,   label: "Formation",   color: "#7C6FE8", bg: "rgba(124,111,232,0.15)" },
+  { href: "/simulations",icon: IconBarbell,  label: "Simulations", color: "#06B6D4", bg: "rgba(6,182,212,0.15)"   },
+  { href: "/atlas",      icon: null,         label: "Atlas",       color: "",        bg: "",  isCenter: true       },
+  { href: "/agenda",     icon: IconCalendar, label: "Agenda",      color: "#10B981", bg: "rgba(16,185,129,0.15)"  },
 ]
 
 interface MobileBottomNavProps {
@@ -131,7 +131,7 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
         {bottomNavItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
           
-          // Atlas center tab - special rendering
+          // Atlas center tab
           if (item.isCenter) {
             const isAtlasActive = pathname === "/atlas" || pathname.startsWith("/atlas/")
             return (
@@ -140,28 +140,32 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
                 href={item.href}
                 className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
               >
-                <AtlasTriangleLogo className="h-9 w-9" />
-                {isAtlasActive && (
-                  <span className="h-1 w-1 rounded-full bg-primary" />
-                )}
+                <div className={cn(
+                  "flex h-11 w-11 items-center justify-center rounded-xl transition-opacity",
+                  isAtlasActive ? "opacity-100" : "opacity-70"
+                )} style={{ backgroundColor: "rgba(124,111,232,0.2)" }}>
+                  <AtlasTriangleLogo className="h-7 w-7" />
+                </div>
+                {isAtlasActive && <span className="h-1 w-1 rounded-full bg-primary" />}
               </Link>
             )
           }
-          
+
           const Icon = item.icon!
+          const activeOpacity = isActive ? "opacity-100" : "opacity-50"
           return (
             <Link
               key={item.href}
               href={item.href}
               className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
             >
-              <Icon
-                className="h-7 w-7"
-                style={{ color: isActive ? "#7C6FE8" : "#71717A" }}
-              />
-              {isActive && (
-                <span className="h-1 w-1 rounded-full bg-primary" />
-              )}
+              <div
+                className={cn("flex h-11 w-11 items-center justify-center rounded-xl transition-opacity", activeOpacity)}
+                style={{ backgroundColor: item.bg }}
+              >
+                <Icon className="h-6 w-6" style={{ color: item.color }} />
+              </div>
+              {isActive && <span className="h-1 w-1 rounded-full bg-primary" />}
             </Link>
           )
         })}
@@ -170,7 +174,9 @@ export function MobileBottomNav({ onPlusClick }: MobileBottomNavProps) {
           onClick={onPlusClick}
           className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2"
         >
-          <IconGridDots className="h-7 w-7 text-[#71717A]" />
+          <div className="flex h-11 w-11 items-center justify-center rounded-xl" style={{ backgroundColor: "rgba(113,113,122,0.15)" }}>
+            <IconGridDots className="h-6 w-6 text-[#71717A]" />
+          </div>
         </button>
       </div>
     </nav>
@@ -317,20 +323,10 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
               <span className="flex-1 text-sm font-medium text-white">
                 {isDark ? "Mode sombre" : "Mode clair"}
               </span>
-              <button
-                onClick={() => setTheme(isDark ? "light" : "dark")}
-                className={cn(
-                  "relative h-6 w-11 rounded-full transition-colors",
-                  isDark ? "bg-primary" : "bg-muted"
-                )}
-              >
-                <span
-                  className={cn(
-                    "absolute top-0.5 h-5 w-5 rounded-full bg-white shadow transition-transform",
-                    isDark ? "translate-x-5" : "translate-x-0.5"
-                  )}
-                />
-              </button>
+              <ToggleSwitch
+                enabled={isDark}
+                onChange={(v) => setTheme(v ? "dark" : "light")}
+              />
             </div>
           </DrawerItem>
 

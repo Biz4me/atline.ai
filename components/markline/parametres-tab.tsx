@@ -4,7 +4,7 @@ import { useState } from "react"
 import { IconBrandInstagram, IconBrandFacebook, IconBrandTiktok, IconLock } from "@tabler/icons-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
-import { cn } from "@/lib/utils"
+import { ToggleSwitch } from "@/components/ui/toggle-switch"
 
 interface Account {
   platform: "instagram" | "facebook" | "tiktok"
@@ -30,32 +30,6 @@ const platformNames = {
   tiktok: "TikTok",
 }
 
-interface ToggleProps {
-  enabled: boolean
-  onChange: (enabled: boolean) => void
-  disabled?: boolean
-}
-
-function Toggle({ enabled, onChange, disabled }: ToggleProps) {
-  return (
-    <button
-      onClick={() => !disabled && onChange(!enabled)}
-      disabled={disabled}
-      className={cn(
-        "relative h-6 w-11 shrink-0 rounded-full transition-colors",
-        enabled ? "bg-accent" : "bg-border",
-        disabled && "opacity-50"
-      )}
-    >
-      <span
-        className={cn(
-          "absolute top-0.5 h-5 w-5 rounded-full bg-white transition-transform",
-          enabled ? "translate-x-[22px]" : "translate-x-0.5"
-        )}
-      />
-    </button>
-  )
-}
 
 export function ParametresTab() {
   const [bestTime, setBestTime] = useState(true)
@@ -107,7 +81,7 @@ export function ParametresTab() {
               <p className="text-sm font-medium text-white">Meilleur moment</p>
               <p className="text-xs text-muted-foreground">Publie aux heures optimales</p>
             </div>
-            <Toggle enabled={bestTime} onChange={setBestTime} />
+            <ToggleSwitch enabled={bestTime} onChange={setBestTime} />
           </Card>
 
           <Card className="flex items-center justify-between p-3">
@@ -115,7 +89,7 @@ export function ParametresTab() {
               <p className="text-sm font-medium text-white">Auto-hashtags</p>
               <p className="text-xs text-muted-foreground">Ajoute des hashtags pertinents</p>
             </div>
-            <Toggle enabled={autoHashtags} onChange={setAutoHashtags} />
+            <ToggleSwitch enabled={autoHashtags} onChange={setAutoHashtags} />
           </Card>
 
           <Card className="flex items-center justify-between p-3">
@@ -123,7 +97,7 @@ export function ParametresTab() {
               <p className="text-sm font-medium text-white">Filigrane</p>
               <p className="text-xs text-muted-foreground">Ajoute ton logo sur les images</p>
             </div>
-            <Toggle enabled={watermark} onChange={setWatermark} />
+            <ToggleSwitch enabled={watermark} onChange={setWatermark} />
           </Card>
         </div>
       </div>
@@ -142,7 +116,7 @@ export function ParametresTab() {
               <IconLock className="h-4 w-4 text-muted-foreground" />
               <p className="text-sm text-muted-foreground">Réponds automatiquement aux DMs</p>
             </div>
-            <Toggle enabled={autoDM} onChange={setAutoDM} disabled />
+            <ToggleSwitch enabled={autoDM} onChange={setAutoDM} disabled />
           </div>
           <Button variant="outline" className="mt-3 w-full" size="sm">
             Passer à Elite
