@@ -6,6 +6,7 @@ import * as migration_20260519_164020_add_phone_avatar from './20260519_164020_a
 import * as migration_20260520_rag_globals from './20260520_rag_globals';
 import * as migration_20260520_163000_rag_tables from './20260520_163000_rag_tables';
 import * as migration_20260520_180000_gamification from './20260520_180000_gamification';
+import * as migration_20260520_190000_seed_atlas_prompt from './20260520_190000_seed_atlas_prompt';
 
 export const migrations = [
   {
@@ -47,5 +48,10 @@ export const migrations = [
     up: migration_20260520_180000_gamification.up,
     down: migration_20260520_180000_gamification.down,
     name: '20260520_180000_gamification',
+  },
+  {
+    up: migration_20260520_190000_seed_atlas_prompt.up,
+    down: migration_20260520_190000_seed_atlas_prompt.down,
+    name: '20260520_190000_seed_atlas_prompt',
   },
 ];
