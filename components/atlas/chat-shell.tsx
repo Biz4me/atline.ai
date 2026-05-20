@@ -39,7 +39,7 @@ export function ChatShell({ children, breadcrumbs, hideSidebar = false }: ChatSh
         )}
       >
         {/* Desktop top bar */}
-        <DesktopTopBar breadcrumbs={breadcrumbs} />
+        {!hideSidebar && <DesktopTopBar breadcrumbs={breadcrumbs} />}
 
         {/* Chat content - full width like other pages */}
         <main className="flex flex-1 flex-col overflow-hidden">
