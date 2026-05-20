@@ -327,36 +327,36 @@ export default function AdminPage() {
 
   return (
     <DashboardShell breadcrumbs={[{ label: "Administration — Documents RAG" }]}>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2" style={{ height: "calc(100dvh - 120px)" }}>
 
         {/* ── Colonne gauche : Upload ── */}
-        <div className="flex flex-col gap-3">
-          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+        <div className="flex h-full flex-col gap-3">
+          <form onSubmit={handleSubmit} className="flex flex-1 flex-col gap-3">
 
-            {/* Drop zone — compact */}
+            {/* Drop zone — grande */}
             <div
               onDrop={handleDrop}
               onDragOver={(e) => e.preventDefault()}
               onClick={() => fileInputRef.current?.click()}
-              className="flex cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed border-white/20 bg-card px-5 py-4 transition-colors hover:border-primary/60 hover:bg-primary/5"
+              className="flex flex-1 cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-white/20 bg-card px-6 py-8 transition-colors hover:border-primary/60 hover:bg-primary/5"
             >
               <input ref={fileInputRef} type="file" accept={ACCEPTED} onChange={handleFileChange} className="hidden" />
               {file ? (
                 <>
-                  <FileText className="h-6 w-6 flex-shrink-0 text-primary" />
-                  <div className="min-w-0">
-                    <p className="truncate text-sm font-medium text-white">{file.name}</p>
-                    <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                  <FileText className="h-10 w-10 text-primary" />
+                  <div className="text-center">
+                    <p className="text-sm font-medium text-white">{file.name}</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                   </div>
                 </>
               ) : (
                 <>
-                  <Upload className="h-6 w-6 flex-shrink-0 text-muted-foreground" />
-                  <div>
+                  <Upload className="h-10 w-10 text-muted-foreground/50" />
+                  <div className="text-center">
                     <p className="text-sm text-muted-foreground">
                       Glisse un fichier ou <span className="text-primary">clique pour sélectionner</span>
                     </p>
-                    <p className="text-xs text-muted-foreground/60">PDF, DOCX, TXT, MD, XLSX, MP4, MP3…</p>
+                    <p className="mt-0.5 text-xs text-muted-foreground/50">PDF, DOCX, TXT, MD, XLSX, MP4, MP3…</p>
                   </div>
                 </>
               )}
@@ -441,7 +441,7 @@ export default function AdminPage() {
         </div>
 
         {/* ── Colonne droite : Bibliothèque ── */}
-        <div className="flex flex-col gap-3" style={{ height: "calc(100dvh - 120px)" }}>
+        <div className="flex h-full flex-col gap-3">
           {/* Header + filtres */}
           <div className="flex flex-col gap-2 rounded-xl border border-white/[0.08] bg-card p-3">
             <div className="flex items-center justify-between">
