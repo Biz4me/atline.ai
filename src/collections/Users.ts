@@ -8,6 +8,8 @@ export const Users: CollectionConfig = {
   auth: true,
   access: {
     create: () => true,
+    read: ({ req }) => !!req.user,
+    update: ({ req }) => !!req.user,
   },
   fields: [
     {
