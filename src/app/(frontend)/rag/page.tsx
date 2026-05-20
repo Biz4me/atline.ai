@@ -203,6 +203,7 @@ export default function AdminPage() {
   const [filterTheme, setFilterTheme] = useState("")
   const [deletingId, setDeletingId] = useState<string | null>(null)
 
+
   const fetchTags = useCallback(async () => {
     if (!user?.id) return
     const res = await fetch("/api/rag-tags", { headers: { "x-user-id": user.id } })
@@ -233,15 +234,15 @@ export default function AdminPage() {
   useEffect(() => { fetchTags() }, [fetchTags])
   useEffect(() => { fetchDocs() }, [fetchDocs])
 
-  const handleDelete = async (id: string) => {
+  const handleDelete = async (id: string | number) => {
     if (!user?.id) return
-    setDeletingId(id)
+    setDeletingId(String(id))
     try {
-      await fetch(`/api/rag-documents?id=${id}`, {
+      const res = await fetch(`/api/rag-documents?id=${id}`, {
         method: "DELETE",
         headers: { "x-user-id": user.id },
       })
-      setDocs((prev) => prev.filter((d) => d.id !== id))
+      if (res.ok) setDocs((prev) => prev.filter((d) => String(d.id) !== String(id)))
     } finally {
       setDeletingId(null)
     }
@@ -317,162 +318,123 @@ export default function AdminPage() {
 
   return (
     <DashboardShell breadcrumbs={[{ label: "Administration — Documents RAG" }]}>
-      <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2">
 
         {/* ── Colonne gauche : Upload ── */}
-        <div className="flex flex-col gap-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Drop zone */}
+        <div className="flex flex-col gap-3">
+          <form onSubmit={handleSubmit} className="flex flex-col gap-3">
+
+            {/* Drop zone — compact */}
             <div
               onDrop={handleDrop}
               onDragOver={(e) => e.preventDefault()}
               onClick={() => fileInputRef.current?.click()}
-              className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-white/20 bg-card p-10 transition-colors hover:border-primary/60 hover:bg-primary/5"
+              className="flex cursor-pointer items-center gap-4 rounded-xl border-2 border-dashed border-white/20 bg-card px-5 py-4 transition-colors hover:border-primary/60 hover:bg-primary/5"
             >
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept={ACCEPTED}
-                onChange={handleFileChange}
-                className="hidden"
-              />
+              <input ref={fileInputRef} type="file" accept={ACCEPTED} onChange={handleFileChange} className="hidden" />
               {file ? (
                 <>
-                  <FileText className="h-8 w-8 text-primary" />
-                  <p className="font-medium text-white">{file.name}</p>
-                  <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                  <FileText className="h-6 w-6 flex-shrink-0 text-primary" />
+                  <div className="min-w-0">
+                    <p className="truncate text-sm font-medium text-white">{file.name}</p>
+                    <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
+                  </div>
                 </>
               ) : (
                 <>
-                  <Upload className="h-8 w-8 text-muted-foreground" />
-                  <p className="text-sm text-muted-foreground">
-                    Glisse un fichier ici ou <span className="text-primary">clique pour sélectionner</span>
-                  </p>
-                  <p className="text-xs text-muted-foreground">PDF, DOCX, TXT, MD, HTML, XLSX, MP4, MP3…</p>
+                  <Upload className="h-6 w-6 flex-shrink-0 text-muted-foreground" />
+                  <div>
+                    <p className="text-sm text-muted-foreground">
+                      Glisse un fichier ou <span className="text-primary">clique pour sélectionner</span>
+                    </p>
+                    <p className="text-xs text-muted-foreground/60">PDF, DOCX, TXT, MD, XLSX, MP4, MP3…</p>
+                  </div>
                 </>
               )}
             </div>
 
-            {/* URL vidéo */}
-            <div className="rounded-xl border border-white/[0.08] bg-card p-5 space-y-3">
-              <div className="flex items-center gap-2">
-                <div className="h-5 w-5 rounded bg-red-500/20 flex items-center justify-center flex-shrink-0">
-                  <span className="text-[10px] font-bold text-red-400">▶</span>
-                </div>
-                <p className="text-xs font-semibold text-foreground">Vidéo YouTube / Loom</p>
-                <span className="ml-auto text-[10px] rounded-full bg-amber-500/15 text-amber-400 px-2 py-0.5 font-medium">Bientôt disponible</span>
+            {/* URL vidéo — inline */}
+            <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-card px-4 py-2.5">
+              <div className="h-4 w-4 rounded bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                <span className="text-[9px] font-bold text-red-400">▶</span>
               </div>
               <input
                 type="url"
                 disabled
-                placeholder="https://youtube.com/watch?v=... ou https://loom.com/share/..."
-                className="w-full rounded-lg border border-border bg-background/50 px-3 py-2 text-sm text-muted-foreground placeholder:text-muted-foreground/50 cursor-not-allowed opacity-60"
+                placeholder="YouTube / Loom URL — bientôt disponible"
+                className="flex-1 bg-transparent text-sm text-muted-foreground placeholder:text-muted-foreground/40 cursor-not-allowed focus:outline-none"
               />
+              <span className="text-[10px] rounded-full bg-amber-500/15 text-amber-400 px-2 py-0.5 font-medium flex-shrink-0">Bientôt</span>
             </div>
 
-            {/* Metadata */}
-            <div className="rounded-xl border border-white/[0.08] bg-card p-5 space-y-4">
-              <div className="grid gap-4 sm:grid-cols-2">
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">Agent cible</label>
-                  <select
-                    value={agent}
-                    onChange={(e) => setAgent(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
-                  >
+            {/* Metadata — compact */}
+            <div className="rounded-xl border border-white/[0.08] bg-card px-4 py-3 space-y-3">
+              <div className="grid gap-3 grid-cols-2">
+                <div className="space-y-1">
+                  <label className="text-[11px] font-medium text-muted-foreground">Agent cible</label>
+                  <select value={agent} onChange={(e) => setAgent(e.target.value)}
+                    className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none">
                     {AGENTS.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}
                   </select>
                 </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">Type de document</label>
-                  <select
-                    value={docType}
-                    onChange={(e) => setDocType(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
-                  >
+                <div className="space-y-1">
+                  <label className="text-[11px] font-medium text-muted-foreground">Type</label>
+                  <select value={docType} onChange={(e) => setDocType(e.target.value)}
+                    className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none">
                     {DOC_TYPES.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
                   </select>
                 </div>
-
-                <div className="space-y-1.5 sm:col-span-2">
-                  <label className="text-xs font-medium text-muted-foreground">Titre</label>
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
+                <div className="space-y-1 col-span-2">
+                  <label className="text-[11px] font-medium text-muted-foreground">Titre</label>
+                  <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
                     placeholder="Titre du document"
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
-                  />
+                    className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none" />
                 </div>
-
-                <div className="space-y-1.5 sm:col-span-2">
-                  <label className="text-xs font-medium text-muted-foreground">Thème</label>
-                  <ThemeAutocomplete
-                    userId={user!.id}
-                    allTags={allTags}
-                    value={theme}
-                    onChange={setTheme}
-                    onTagsChange={setAllTags}
-                  />
+                <div className="space-y-1 col-span-2">
+                  <label className="text-[11px] font-medium text-muted-foreground">Thème</label>
+                  <ThemeAutocomplete userId={user!.id} allTags={allTags} value={theme} onChange={setTheme} onTagsChange={setAllTags} />
                 </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">Langue</label>
-                  <select
-                    value={language}
-                    onChange={(e) => setLanguage(e.target.value)}
-                    className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
-                  >
+                <div className="space-y-1">
+                  <label className="text-[11px] font-medium text-muted-foreground">Langue</label>
+                  <select value={language} onChange={(e) => setLanguage(e.target.value)}
+                    className="w-full rounded-lg border border-border bg-background px-2.5 py-1.5 text-sm text-foreground focus:border-primary focus:outline-none">
                     {LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
                   </select>
                 </div>
+                <div className="flex items-end">
+                  <button type="submit" disabled={!file || isUploading}
+                    className="flex w-full items-center justify-center gap-2 rounded-lg bg-primary px-3 py-1.5 text-sm font-semibold text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50">
+                    {isUploading ? <><Loader2 className="h-4 w-4 animate-spin" />En cours…</> : <><Upload className="h-4 w-4" />Indexer</>}
+                  </button>
+                </div>
               </div>
             </div>
-
-            <button
-              type="submit"
-              disabled={!file || isUploading}
-              className="flex w-full items-center justify-center gap-2 rounded-xl bg-primary py-3 text-sm font-semibold text-white transition-colors hover:bg-primary/90 disabled:cursor-not-allowed disabled:opacity-50"
-            >
-              {isUploading ? (
-                <><Loader2 className="h-4 w-4 animate-spin" />Traitement en cours…</>
-              ) : (
-                <><Upload className="h-4 w-4" />Indexer le document</>
-              )}
-            </button>
           </form>
 
           {result && (
-            <div className="flex items-start gap-3 rounded-xl border border-green-500/30 bg-green-500/10 p-4">
-              <CheckCircle className="h-5 w-5 shrink-0 text-green-400 mt-0.5" />
+            <div className="flex items-start gap-3 rounded-xl border border-green-500/30 bg-green-500/10 p-3">
+              <CheckCircle className="h-4 w-4 shrink-0 text-green-400 mt-0.5" />
               <div>
-                <p className="font-medium text-green-300">Document indexé avec succès</p>
-                <p className="mt-0.5 text-sm text-muted-foreground">
-                  {result.points_inserted} chunks insérés pour l&apos;agent <span className="text-white">{result.agent}</span>.
-                  {(result as any).payloadError && (
-                    <span className="block mt-1 text-xs text-red-400">Erreur Payload : {(result as any).payloadError}</span>
-                  )}
-                </p>
+                <p className="text-sm font-medium text-green-300">Indexé — {result.points_inserted} chunks · agent <span className="text-white">{result.agent}</span></p>
+                {(result as any).payloadError && (
+                  <p className="mt-0.5 text-xs text-red-400">Erreur Payload : {(result as any).payloadError}</p>
+                )}
               </div>
             </div>
           )}
 
           {error && (
-            <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-4">
-              <XCircle className="h-5 w-5 shrink-0 text-red-400 mt-0.5" />
-              <div>
-                <p className="font-medium text-red-300">Erreur</p>
-                <p className="mt-0.5 text-sm text-muted-foreground">{error}</p>
-              </div>
+            <div className="flex items-start gap-3 rounded-xl border border-red-500/30 bg-red-500/10 p-3">
+              <XCircle className="h-4 w-4 shrink-0 text-red-400 mt-0.5" />
+              <p className="text-sm text-muted-foreground">{error}</p>
             </div>
           )}
         </div>
 
         {/* ── Colonne droite : Bibliothèque ── */}
-        <div className="flex flex-col gap-4">
+        <div className="flex flex-col gap-3" style={{ height: "calc(100dvh - 120px)" }}>
           {/* Header + filtres */}
-          <div className="flex flex-col gap-3 rounded-xl border border-white/[0.08] bg-card p-4">
+          <div className="flex flex-col gap-2 rounded-xl border border-white/[0.08] bg-card p-3">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold text-foreground">
@@ -483,81 +445,56 @@ export default function AdminPage() {
                 </p>
                 <p className="text-xs text-muted-foreground">{docs.length} document{docs.length !== 1 ? "s" : ""}</p>
               </div>
-              <button
-                onClick={fetchDocs}
-                disabled={docsLoading}
-                className="flex items-center gap-1.5 rounded-lg border border-border px-3 py-1.5 text-xs text-muted-foreground hover:text-foreground transition disabled:opacity-50"
-              >
-                <RefreshCw className={cn("h-3.5 w-3.5", docsLoading && "animate-spin")} />
+              <button onClick={fetchDocs} disabled={docsLoading}
+                className="flex items-center gap-1.5 rounded-lg border border-border px-2.5 py-1.5 text-xs text-muted-foreground hover:text-foreground transition disabled:opacity-50">
+                <RefreshCw className={cn("h-3 w-3", docsLoading && "animate-spin")} />
                 Actualiser
               </button>
             </div>
-
-            {/* Filtres */}
             <div className="grid grid-cols-2 gap-2">
-              <select
-                value={filterAgent}
-                onChange={(e) => setFilterAgent(e.target.value)}
-                className="rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none"
-              >
+              <select value={filterAgent} onChange={(e) => setFilterAgent(e.target.value)}
+                className="rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none">
                 <option value="">Tous les agents</option>
                 {AGENTS.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}
               </select>
-
-              <select
-                value={filterDocType}
-                onChange={(e) => setFilterDocType(e.target.value)}
-                className="rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none"
-              >
+              <select value={filterDocType} onChange={(e) => setFilterDocType(e.target.value)}
+                className="rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none">
                 <option value="">Tous les types</option>
                 {DOC_TYPES.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
               </select>
-
-              <select
-                value={filterTheme}
-                onChange={(e) => setFilterTheme(e.target.value)}
-                className="col-span-2 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none"
-              >
+              <select value={filterTheme} onChange={(e) => setFilterTheme(e.target.value)}
+                className="col-span-2 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none">
                 <option value="">Tous les thèmes</option>
                 {allTags.map((t) => <option key={t.id} value={String(t.id)}>{t.name}</option>)}
               </select>
             </div>
           </div>
 
-          {/* Liste */}
-          <div className="flex flex-col gap-2 overflow-y-auto" style={{ maxHeight: "calc(100dvh - 280px)" }}>
+          {/* Liste scrollable */}
+          <div className="flex-1 overflow-y-auto flex flex-col gap-2 pr-0.5">
             {docsLoading ? (
-              <div className="flex items-center justify-center py-12">
+              <div className="flex items-center justify-center py-10">
                 <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               </div>
             ) : docs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 py-12 text-center">
-                <FileText className="h-8 w-8 text-muted-foreground/40" />
+              <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 py-10 text-center">
+                <FileText className="h-7 w-7 text-muted-foreground/40" />
                 <p className="text-sm text-muted-foreground">Aucun document trouvé</p>
               </div>
             ) : (
               docs.map((doc) => {
                 const ext = getExt(doc.fileName)
                 return (
-                  <div
-                    key={doc.id}
-                    className="flex items-start justify-between gap-3 rounded-xl border border-white/[0.06] bg-card px-4 py-3 hover:border-white/[0.12] transition"
-                  >
+                  <div key={doc.id}
+                    className="flex items-start justify-between gap-3 rounded-xl border border-white/[0.06] bg-card px-3 py-2.5 hover:border-white/[0.12] transition">
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-foreground">{doc.title}</p>
-                      <p className="mt-0.5 truncate text-xs text-muted-foreground">{doc.fileName}</p>
-                      <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                        <span className={cn(
-                          "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
-                          AGENT_COLORS[doc.agent] ?? "bg-white/10 text-white"
-                        )}>
+                      <div className="mt-1.5 flex flex-wrap items-center gap-1">
+                        <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide", AGENT_COLORS[doc.agent] ?? "bg-white/10 text-white")}>
                           {doc.agent}
                         </span>
                         {ext && (
-                          <span className={cn(
-                            "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
-                            FORMAT_COLORS[ext] ?? "bg-white/10 text-white"
-                          )}>
+                          <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide", FORMAT_COLORS[ext] ?? "bg-white/10 text-white")}>
                             {ext}
                           </span>
                         )}
@@ -566,25 +503,20 @@ export default function AdminPage() {
                         </span>
                         {doc.theme && (
                           <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] text-primary">
-                            <Tag className="h-2.5 w-2.5" />
-                            {doc.theme.name}
+                            <Tag className="h-2.5 w-2.5" />{doc.theme.name}
                           </span>
                         )}
-                        <span className="text-[10px] text-muted-foreground/60">
-                          {doc.chunksCount} chunks
-                        </span>
+                        <span className="text-[10px] text-muted-foreground/50">{doc.chunksCount} chunks</span>
                       </div>
                     </div>
-
                     <button
                       onClick={() => handleDelete(doc.id)}
-                      disabled={deletingId === doc.id}
+                      disabled={deletingId === String(doc.id)}
                       className="mt-0.5 flex-shrink-0 rounded-md p-1.5 text-muted-foreground hover:text-red-400 hover:bg-red-500/10 transition disabled:opacity-40"
                     >
-                      {deletingId === doc.id
+                      {deletingId === String(doc.id)
                         ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
-                        : <Trash2 className="h-3.5 w-3.5" />
-                      }
+                        : <Trash2 className="h-3.5 w-3.5" />}
                     </button>
                   </div>
                 )
