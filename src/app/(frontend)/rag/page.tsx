@@ -26,7 +26,7 @@ const LANGUAGES = [
   { value: "en", label: "Anglais" },
 ]
 
-const ACCEPTED = ".pdf,.docx,.doc,.txt,.md,.html,.htm,.xlsx,.xls"
+const ACCEPTED = ".pdf,.docx,.doc,.txt,.md,.html,.htm,.xlsx,.xls,.mp4,.mov,.mp3,.m4a,.wav"
 
 const FORMAT_COLORS: Record<string, string> = {
   pdf:  "bg-red-500/15 text-red-400",
@@ -355,9 +355,26 @@ export default function AdminPage() {
                   <p className="text-sm text-muted-foreground">
                     Glisse un fichier ici ou <span className="text-primary">clique pour sélectionner</span>
                   </p>
-                  <p className="text-xs text-muted-foreground">PDF, DOCX, TXT, MD, HTML, XLSX</p>
+                  <p className="text-xs text-muted-foreground">PDF, DOCX, TXT, MD, HTML, XLSX, MP4, MP3…</p>
                 </>
               )}
+            </div>
+
+            {/* URL vidéo */}
+            <div className="rounded-xl border border-white/[0.08] bg-card p-5 space-y-3">
+              <div className="flex items-center gap-2">
+                <div className="h-5 w-5 rounded bg-red-500/20 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[10px] font-bold text-red-400">▶</span>
+                </div>
+                <p className="text-xs font-semibold text-foreground">Vidéo YouTube / Loom</p>
+                <span className="ml-auto text-[10px] rounded-full bg-amber-500/15 text-amber-400 px-2 py-0.5 font-medium">Bientôt disponible</span>
+              </div>
+              <input
+                type="url"
+                disabled
+                placeholder="https://youtube.com/watch?v=... ou https://loom.com/share/..."
+                className="w-full rounded-lg border border-border bg-background/50 px-3 py-2 text-sm text-muted-foreground placeholder:text-muted-foreground/50 cursor-not-allowed opacity-60"
+              />
             </div>
 
             {/* Metadata */}
@@ -396,6 +413,17 @@ export default function AdminPage() {
                   />
                 </div>
 
+                <div className="space-y-1.5 sm:col-span-2">
+                  <label className="text-xs font-medium text-muted-foreground">Thème</label>
+                  <ThemeAutocomplete
+                    userId={user!.id}
+                    allTags={allTags}
+                    value={theme}
+                    onChange={setTheme}
+                    onTagsChange={setAllTags}
+                  />
+                </div>
+
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-muted-foreground">Langue</label>
                   <select
@@ -405,17 +433,6 @@ export default function AdminPage() {
                   >
                     {LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
                   </select>
-                </div>
-
-                <div className="space-y-1.5">
-                  <label className="text-xs font-medium text-muted-foreground">Thème</label>
-                  <ThemeAutocomplete
-                    userId={user!.id}
-                    allTags={allTags}
-                    value={theme}
-                    onChange={setTheme}
-                    onTagsChange={setAllTags}
-                  />
                 </div>
               </div>
             </div>
