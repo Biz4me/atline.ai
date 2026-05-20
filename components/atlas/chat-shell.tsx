@@ -15,7 +15,7 @@ export function ChatShell({ children, breadcrumbs, hideSidebar = false }: ChatSh
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   return (
-    <div className="flex h-screen flex-col overflow-hidden bg-background">
+    <div className="flex h-[100dvh] flex-col overflow-hidden bg-background">
       {/* Mobile stats bar */}
       <MobileStatsBar />
 
