@@ -7,9 +7,10 @@ import { cn } from "@/lib/utils"
 interface ChatShellProps {
   children: React.ReactNode
   breadcrumbs?: { label: string; href?: string }[]
+  hideSidebar?: boolean
 }
 
-export function ChatShell({ children, breadcrumbs }: ChatShellProps) {
+export function ChatShell({ children, breadcrumbs, hideSidebar = false }: ChatShellProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -18,19 +19,23 @@ export function ChatShell({ children, breadcrumbs }: ChatShellProps) {
       {/* Mobile stats bar */}
       <MobileStatsBar />
 
-      {/* Desktop sidebar */}
-      <DesktopSidebar
-        collapsed={sidebarCollapsed}
-        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-      />
+      {/* Desktop sidebar — hidden when Atlas sidebar takes over */}
+      {!hideSidebar && (
+        <DesktopSidebar
+          collapsed={sidebarCollapsed}
+          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+        />
+      )}
 
       {/* Main content area */}
       <div
         className={cn(
           "flex flex-1 flex-col overflow-hidden transition-all duration-300",
-          "pt-14 pb-[68px]", // Mobile: stats bar h-14 (56px) + bottom nav h-[68px]
+          "pt-14 pb-[68px]",
           "lg:pt-0 lg:pb-0",
-          sidebarCollapsed ? "lg:pl-16" : "lg:pl-60"
+          hideSidebar
+            ? "lg:pl-0"
+            : sidebarCollapsed ? "lg:pl-16" : "lg:pl-60"
         )}
       >
         {/* Desktop top bar */}

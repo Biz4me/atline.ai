@@ -1,8 +1,23 @@
 "use client"
 
 import { useState, useEffect, useCallback } from "react"
-import { Plus, Trash2, X, BookOpen } from "lucide-react"
+import Link from "next/link"
+import { usePathname } from "next/navigation"
+import { Plus, Trash2, X } from "lucide-react"
+import {
+  IconSchool,
+  IconBarbell,
+  IconUsers,
+  IconCalendar,
+  IconBroadcast,
+  IconChartBar,
+  IconUpload,
+  IconTrophy,
+  IconUser,
+  IconLogout,
+} from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
+import { useUser } from "@/hooks/use-user"
 
 export const ATLAS_MODULES = [
   { id: "mindset",      num: 1, label: "Mindset",        welcome: "Parlons mindset MLM. Quel est ton plus grand blocage en ce moment — la peur du rejet, le regard des autres, ou autre chose ?" },
@@ -13,6 +28,17 @@ export const ATLAS_MODULES = [
   { id: "closing",      num: 6, label: "Closing",        welcome: "Le closing. Quelle est la phrase que tu utilises pour conclure une présentation ? On va la perfectionner." },
   { id: "suivi",        num: 7, label: "Suivi",          welcome: "Le suivi, c'est là où se fait l'argent. Combien de prospects tu as en attente de relance en ce moment ?" },
   { id: "duplication",  num: 8, label: "Duplication",    welcome: "La duplication. Tu as une équipe ou tu en es à construire tes premiers filleuls ? Raconte-moi où tu en es." },
+]
+
+const NAV_ITEMS = [
+  { href: "/formation",    icon: IconSchool,    label: "Formation"     },
+  { href: "/simulations",  icon: IconBarbell,   label: "Simulations"   },
+  { href: "/reseau",       icon: IconUsers,     label: "Réseau"        },
+  { href: "/agenda",       icon: IconCalendar,  label: "Agenda"        },
+  { href: "/markline",     icon: IconBroadcast, label: "Markline"      },
+  { href: "/proline",      icon: IconChartBar,  label: "Proline"       },
+  { href: "/enrichir-atlas", icon: IconUpload,  label: "Enrichir Atlas" },
+  { href: "/croissance",   icon: IconTrophy,    label: "Croissance"    },
 ]
 
 interface Conversation {
@@ -34,10 +60,8 @@ interface Props {
 }
 
 function groupByDate(convs: Conversation[]) {
-  const now = new Date()
-  const todayStart = new Date(now); todayStart.setHours(0, 0, 0, 0)
+  const todayStart = new Date(); todayStart.setHours(0, 0, 0, 0)
   const weekStart = new Date(todayStart); weekStart.setDate(weekStart.getDate() - 7)
-
   const groups: { label: string; items: Conversation[] }[] = [
     { label: "Aujourd'hui", items: [] },
     { label: "Cette semaine", items: [] },
@@ -45,7 +69,7 @@ function groupByDate(convs: Conversation[]) {
   ]
   for (const c of convs) {
     const d = new Date(c.updatedAt)
-    if (d >= todayStart) groups[0].items.push(c)
+    if (d >= todayStart)  groups[0].items.push(c)
     else if (d >= weekStart) groups[1].items.push(c)
     else groups[2].items.push(c)
   }
@@ -62,10 +86,13 @@ export function AtlasSidebar({
   onMobileClose,
   refreshKey,
 }: Props) {
+  const pathname = usePathname()
+  const { user, logout, initials, displayName } = useUser()
+  const avatarUrl = (user as any)?.avatarUrl ?? null
+
   const [conversations, setConversations] = useState<Conversation[]>([])
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
-  const [modulesOpen, setModulesOpen] = useState(false)
 
   const fetchConversations = useCallback(async () => {
     try {
@@ -76,9 +103,7 @@ export function AtlasSidebar({
     } catch {}
   }, [])
 
-  useEffect(() => {
-    fetchConversations()
-  }, [fetchConversations, refreshKey])
+  useEffect(() => { fetchConversations() }, [fetchConversations, refreshKey])
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
@@ -95,12 +120,16 @@ export function AtlasSidebar({
 
   const groups = groupByDate(conversations)
 
+  const isNavActive = (href: string) =>
+    pathname === href || pathname.startsWith(href + "/")
+
   const SidebarContent = () => (
-    <div className="flex h-full flex-col">
-      {/* Header */}
+    <div className="flex h-full flex-col overflow-hidden">
+
+      {/* ── Header Atlas ── */}
       <div className="flex items-center justify-between px-3 py-3 border-b border-border">
         <div className="flex items-center gap-2">
-          <div className="h-6 w-6 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-white">A</div>
+          <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-white">A</div>
           <span className="font-semibold text-sm text-foreground">Atlas</span>
         </div>
         <button onClick={onMobileClose} className="lg:hidden p-1 text-muted-foreground hover:text-foreground">
@@ -108,7 +137,7 @@ export function AtlasSidebar({
         </button>
       </div>
 
-      {/* New chat button */}
+      {/* ── Nouveau chat ── */}
       <div className="px-3 pt-3 pb-2">
         <button
           onClick={() => { onNewChat(); onMobileClose() }}
@@ -119,10 +148,10 @@ export function AtlasSidebar({
         </button>
       </div>
 
-      {/* Conversation history */}
-      <div className="flex-1 overflow-y-auto px-2 pb-2">
+      {/* ── Historique conversations (scrollable) ── */}
+      <div className="min-h-0 flex-1 overflow-y-auto px-2">
         {groups.length === 0 ? (
-          <p className="px-2 py-4 text-xs text-muted-foreground text-center">Aucune conversation</p>
+          <p className="px-2 py-3 text-xs text-muted-foreground text-center">Aucune conversation</p>
         ) : (
           groups.map((group) => (
             <div key={group.label} className="mb-3">
@@ -159,40 +188,69 @@ export function AtlasSidebar({
         )}
       </div>
 
-      {/* Formation modules */}
-      <div className="border-t border-border px-2 pt-2 pb-3">
-        <button
-          onClick={() => setModulesOpen((v) => !v)}
-          className="flex w-full items-center gap-2 px-2 py-1.5 text-xs font-semibold uppercase tracking-wider text-muted-foreground hover:text-foreground transition"
-        >
-          <BookOpen className="h-3.5 w-3.5" />
-          Formation
-          <span className="ml-auto">{modulesOpen ? "▲" : "▼"}</span>
-        </button>
-        {modulesOpen && (
-          <div className="mt-1 space-y-0.5">
-            {ATLAS_MODULES.map((mod) => (
-              <button
-                key={mod.id}
-                onClick={() => { onSelectModule(mod.id, mod.welcome); onMobileClose() }}
-                className="flex w-full items-center gap-2 rounded-md px-2 py-1.5 text-left text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition"
+      {/* ── Navigation principale ── */}
+      <div className="border-t border-border px-2 pt-2 pb-1">
+        <p className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
+          Navigation
+        </p>
+        <div className="space-y-0.5">
+          {NAV_ITEMS.map((item) => {
+            const Icon = item.icon
+            const active = isNavActive(item.href)
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition",
+                  active
+                    ? "bg-primary/10 text-primary"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
               >
-                <span className="flex h-4 w-4 flex-shrink-0 items-center justify-center rounded-full bg-primary/20 text-[10px] font-bold text-primary">
-                  {mod.num}
-                </span>
-                <span className="truncate">{mod.label}</span>
-              </button>
-            ))}
-          </div>
-        )}
+                <Icon className="h-4 w-4 flex-shrink-0" />
+                <span>{item.label}</span>
+              </Link>
+            )
+          })}
+        </div>
       </div>
+
+      {/* ── User section ── */}
+      <div className="border-t border-border px-3 py-2">
+        <Link
+          href="/profil"
+          className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition"
+        >
+          <div className="h-6 w-6 flex-shrink-0 overflow-hidden rounded-full bg-primary">
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <span className="flex h-full w-full items-center justify-center text-[10px] font-bold text-white">
+                {initials}
+              </span>
+            )}
+          </div>
+          <span className="flex-1 truncate text-xs">{displayName}</span>
+          <IconUser className="h-3.5 w-3.5 flex-shrink-0" />
+        </Link>
+        <button
+          onClick={logout}
+          className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition"
+        >
+          <IconLogout className="h-4 w-4 flex-shrink-0" />
+          <span className="text-xs">Déconnexion</span>
+        </button>
+      </div>
+
     </div>
   )
 
   return (
     <>
-      {/* Desktop sidebar */}
-      <aside className="hidden lg:flex w-56 flex-shrink-0 flex-col border-r border-border bg-card">
+      {/* Desktop */}
+      <aside className="hidden lg:flex w-60 flex-shrink-0 flex-col border-r border-border bg-card h-full">
         <SidebarContent />
       </aside>
 
