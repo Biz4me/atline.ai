@@ -11,6 +11,12 @@ interface ChatMessageProps {
   isStreaming?: boolean
 }
 
+// Convert single newlines to hard breaks so ✅/❌/→ items each appear on their own line.
+// Double newlines (paragraph breaks) and code fences are preserved.
+function toHardBreaks(content: string): string {
+  return content.replace(/(?<!\n)\n(?!\n)/g, "  \n")
+}
+
 export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
   const isUser = role === "user"
 
@@ -99,7 +105,7 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
                 },
               }}
             >
-              {content}
+              {toHardBreaks(content)}
             </ReactMarkdown>
             {isStreaming && (
               <span className="ml-0.5 inline-block h-[15px] w-[2px] translate-y-[2px] animate-pulse rounded-sm bg-current opacity-70" />
