@@ -462,8 +462,13 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
   return (
     <div className="relative" ref={menuRef}>
       {/* Popup menu */}
-      {menuOpen && !collapsed && (
-        <div className="absolute bottom-full left-0 right-0 mb-2 rounded-lg border border-border bg-card p-1 shadow-lg overflow-hidden">
+      {menuOpen && (
+        <div className={cn(
+          "absolute z-[100] rounded-lg border border-border bg-card p-1 shadow-lg overflow-hidden",
+          collapsed
+            ? "bottom-0 left-full ml-2 w-52"
+            : "bottom-full left-0 right-0 mb-2"
+        )}>
           <Link
             href="/profil"
             onClick={() => setMenuOpen(false)}
