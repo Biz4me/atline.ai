@@ -435,7 +435,7 @@ export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarPr
       </button>
 
       {/* User section */}
-      <div className="border-t border-border p-3">
+      <div className={cn("border-t border-border", collapsed ? "flex justify-center py-2" : "p-3")}>
         <UserSection collapsed={collapsed} />
       </div>
     </aside>
