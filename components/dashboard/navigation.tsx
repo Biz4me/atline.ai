@@ -358,7 +358,7 @@ export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarPr
       {/* Navigation */}
       <nav className={cn(
         "flex flex-col px-2 py-1",
-        !isAtlas && "flex-1 justify-end",
+        (!isAtlas || collapsed) && "flex-1 justify-end",
         collapsed ? "overflow-visible" : "overflow-y-auto"
       )}>
         <div className="space-y-0.5">
