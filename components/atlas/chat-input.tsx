@@ -79,7 +79,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
   }
 
   return (
-    <div className="border-t border-border bg-background">
+    <div className="border-t border-border bg-background" style={{ paddingBottom: "env(safe-area-inset-bottom)" }}>
       <form onSubmit={handleSubmit} className="flex items-end gap-2 p-3 lg:gap-3 lg:p-4">
 
         {/* Microphone */}
@@ -105,7 +105,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Pose une question… (Shift+Entrée pour sauter une ligne)"
+          placeholder="Pose une question…"
           disabled={disabled}
           rows={1}
           style={{ height: MIN_HEIGHT }}
