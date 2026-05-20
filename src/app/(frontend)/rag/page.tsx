@@ -440,6 +440,9 @@ export default function AdminPage() {
                 <p className="font-medium text-green-300">Document indexé avec succès</p>
                 <p className="mt-0.5 text-sm text-muted-foreground">
                   {result.points_inserted} chunks insérés pour l&apos;agent <span className="text-white">{result.agent}</span>.
+                  {(result as any).payloadError && (
+                    <span className="block mt-1 text-xs text-red-400">Erreur Payload : {(result as any).payloadError}</span>
+                  )}
                 </p>
               </div>
             </div>

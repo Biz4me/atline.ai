@@ -44,6 +44,8 @@ export async function POST(req: NextRequest) {
 
   const json = await res.json()
 
+  let payloadError: string | null = null
+
   if (res.ok) {
     try {
       await payload.create({
@@ -61,10 +63,11 @@ export async function POST(req: NextRequest) {
         } as any,
         overrideAccess: true,
       })
-    } catch (e) {
+    } catch (e: any) {
+      payloadError = String(e?.message ?? e)
       console.error("Failed to save rag document to Payload:", e)
     }
   }
 
-  return NextResponse.json(json, { status: res.status })
+  return NextResponse.json({ ...json, payloadError }, { status: res.status })
 }
