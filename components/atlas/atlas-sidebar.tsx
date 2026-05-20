@@ -193,19 +193,22 @@ export function AtlasSidebar({
       <div className="border-t border-border px-3 py-2">
         <button
           onClick={() => setUserMenuOpen((v) => !v)}
-          className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition"
+          className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-muted transition"
         >
-          <div className="h-6 w-6 flex-shrink-0 overflow-hidden rounded-full bg-primary">
+          <div className="h-8 w-8 flex-shrink-0 overflow-hidden rounded-full bg-primary">
             {avatarUrl ? (
               // eslint-disable-next-line @next/next/no-img-element
               <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
             ) : (
-              <span className="flex h-full w-full items-center justify-center text-[10px] font-bold text-white">
+              <span className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
                 {initials}
               </span>
             )}
           </div>
-          <span className="flex-1 truncate text-xs text-left">{displayName}</span>
+          <div className="min-w-0 flex-1 text-left">
+            <p className="truncate text-sm font-medium text-foreground">{displayName}</p>
+            <p className="text-[11px] text-muted-foreground">{planLabel}</p>
+          </div>
         </button>
       </div>
 

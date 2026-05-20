@@ -498,11 +498,9 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
           )}
         </div>
         {!collapsed && !loading && (
-          <div className="flex flex-col items-start min-w-0">
-            <span className="text-sm font-medium text-foreground truncate max-w-[140px]">{displayName}</span>
-            <span className="inline-flex items-center rounded-[4px] bg-primary px-1.5 py-0.5 text-[10px] font-medium text-white">
-              {planLabel}
-            </span>
+          <div className="min-w-0 flex-1 text-left">
+            <p className="truncate text-sm font-medium text-foreground">{displayName}</p>
+            <p className="text-[11px] text-muted-foreground">{planLabel}</p>
           </div>
         )}
       </button>
