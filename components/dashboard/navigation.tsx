@@ -497,8 +497,10 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
       <button
         onClick={() => setMenuOpen((v) => !v)}
         className={cn(
-          "flex w-full items-center gap-3 rounded-md px-2 py-2 transition-colors hover:bg-muted",
-          collapsed && "justify-center px-0"
+          "flex items-center gap-3 rounded-md transition-colors hover:bg-muted",
+          collapsed
+            ? "h-9 w-9 justify-center p-0"
+            : "w-full px-2 py-2"
         )}
       >
         <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-primary">
