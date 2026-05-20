@@ -1,3 +1,3 @@
 {
-  "buildCommand": "npx payload migrate && npx next build"
+  "buildCommand": "yes | npx payload migrate; npx next build"
 }
