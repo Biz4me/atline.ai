@@ -2,19 +2,11 @@
 
 import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
 import { Plus, Trash2, X } from "lucide-react"
 import {
-  IconSchool,
-  IconBarbell,
-  IconUsers,
-  IconCalendar,
-  IconBroadcast,
-  IconChartBar,
-  IconUpload,
-  IconTrophy,
   IconUser,
   IconLogout,
+  IconLayoutDashboard,
 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { useUser } from "@/hooks/use-user"
@@ -30,16 +22,6 @@ export const ATLAS_MODULES = [
   { id: "duplication",  num: 8, label: "Duplication",    welcome: "La duplication. Tu as une équipe ou tu en es à construire tes premiers filleuls ? Raconte-moi où tu en es." },
 ]
 
-const NAV_ITEMS = [
-  { href: "/formation",    icon: IconSchool,    label: "Formation"     },
-  { href: "/simulations",  icon: IconBarbell,   label: "Simulations"   },
-  { href: "/reseau",       icon: IconUsers,     label: "Réseau"        },
-  { href: "/agenda",       icon: IconCalendar,  label: "Agenda"        },
-  { href: "/markline",     icon: IconBroadcast, label: "Markline"      },
-  { href: "/proline",      icon: IconChartBar,  label: "Proline"       },
-  { href: "/enrichir-atlas", icon: IconUpload,  label: "Enrichir Atlas" },
-  { href: "/croissance",   icon: IconTrophy,    label: "Croissance"    },
-]
 
 interface Conversation {
   id: string
@@ -86,7 +68,6 @@ export function AtlasSidebar({
   onMobileClose,
   refreshKey,
 }: Props) {
-  const pathname = usePathname()
   const { user, logout, initials, displayName } = useUser()
   const avatarUrl = (user as any)?.avatarUrl ?? null
 
@@ -120,9 +101,6 @@ export function AtlasSidebar({
 
   const groups = groupByDate(conversations)
 
-  const isNavActive = (href: string) =>
-    pathname === href || pathname.startsWith(href + "/")
-
   const SidebarContent = () => (
     <div className="flex h-full flex-col overflow-hidden">
 
@@ -132,9 +110,18 @@ export function AtlasSidebar({
           <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-white">A</div>
           <span className="font-semibold text-sm text-foreground">Atlas</span>
         </div>
-        <button onClick={onMobileClose} className="lg:hidden p-1 text-muted-foreground hover:text-foreground">
-          <X className="h-4 w-4" />
-        </button>
+        <div className="flex items-center gap-1">
+          <Link
+            href="/dashboard"
+            className="p-1 text-muted-foreground hover:text-foreground transition"
+            title="Retour au dashboard"
+          >
+            <IconLayoutDashboard className="h-4 w-4" />
+          </Link>
+          <button onClick={onMobileClose} className="lg:hidden p-1 text-muted-foreground hover:text-foreground">
+            <X className="h-4 w-4" />
+          </button>
+        </div>
       </div>
 
       {/* ── Nouveau chat ── */}
@@ -188,35 +175,7 @@ export function AtlasSidebar({
         )}
       </div>
 
-      {/* ── Navigation principale ── */}
-      <div className="border-t border-border px-2 pt-2 pb-1">
-        <p className="px-2 py-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">
-          Navigation
-        </p>
-        <div className="space-y-0.5">
-          {NAV_ITEMS.map((item) => {
-            const Icon = item.icon
-            const active = isNavActive(item.href)
-            return (
-              <Link
-                key={item.href}
-                href={item.href}
-                className={cn(
-                  "flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm transition",
-                  active
-                    ? "bg-primary/10 text-primary"
-                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
-              >
-                <Icon className="h-4 w-4 flex-shrink-0" />
-                <span>{item.label}</span>
-              </Link>
-            )
-          })}
-        </div>
-      </div>
-
-      {/* ── User section ── */}
+{/* ── User section ── */}
       <div className="border-t border-border px-3 py-2">
         <Link
           href="/profil"
