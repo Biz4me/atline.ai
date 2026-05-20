@@ -5,23 +5,29 @@ import configPromise from "@payload-config"
 
 export const runtime = "nodejs"
 
-function getAuthHeaders(req: NextRequest): Headers {
-  const headers = new Headers(req.headers)
-  const cookie = req.headers.get("cookie") ?? ""
-  const match = cookie.match(/payload-token=([^;]+)/)
-  if (match?.[1]) {
-    headers.set("Authorization", `JWT ${decodeURIComponent(match[1])}`)
-  }
-  return headers
+
+async function getAuthUser(req: NextRequest) {
+  const payload = await getPayload({ config: configPromise })
+  try {
+    const { user } = await payload.auth({ headers: req.headers })
+    if (user) return { payload, user }
+  } catch {}
+  try {
+    const cookie = req.headers.get("cookie") ?? ""
+    const match = cookie.match(/payload-token=([^;]+)/)
+    if (match?.[1]) {
+      const headers = new Headers(req.headers)
+      headers.set("Authorization", `JWT ${decodeURIComponent(match[1])}`)
+      const { user } = await payload.auth({ headers })
+      if (user) return { payload, user }
+    }
+  } catch {}
+  return { payload, user: null }
 }
 
 export async function POST(req: NextRequest) {
   try {
-    const payload = await getPayload({ config: configPromise })
-    let user = (await payload.auth({ headers: req.headers })).user
-    if (!user) {
-      user = (await payload.auth({ headers: getAuthHeaders(req) })).user
-    }
+    const { payload, user } = await getAuthUser(req)
 
     if (!user) {
       return NextResponse.json({ error: "Non authentifié" }, { status: 401 })
