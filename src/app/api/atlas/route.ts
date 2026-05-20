@@ -285,7 +285,7 @@ export async function POST(req: NextRequest) {
   let temperature = 0.7
   let maxTokens = 1024
   try {
-    const config = await payload.findGlobal({ slug: "atlas-config" as any })
+    const config = await payload.findGlobal({ slug: "atlas-config" } as any)
     if ((config as any)?.systemPrompt) promptTemplate = (config as any).systemPrompt
     if ((config as any)?.temperature != null) temperature = Number((config as any).temperature)
     if ((config as any)?.maxTokens) maxTokens = Number((config as any).maxTokens)
