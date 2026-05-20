@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState, useEffect, useCallback, useRef } from "react"
 import Link from "next/link"
 import { Plus, Trash2, X, ChevronLeft, ChevronRight } from "lucide-react"
 import {
@@ -77,6 +77,7 @@ export function AtlasSidebar({
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [collapsed, setCollapsed] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
+  const userSectionRef = useRef<HTMLDivElement>(null)
 
   const fetchConversations = useCallback(async () => {
     try {
@@ -88,6 +89,16 @@ export function AtlasSidebar({
   }, [])
 
   useEffect(() => { fetchConversations() }, [fetchConversations, refreshKey])
+
+  useEffect(() => {
+    function handleClick(e: MouseEvent) {
+      if (userSectionRef.current && !userSectionRef.current.contains(e.target as Node)) {
+        setUserMenuOpen(false)
+      }
+    }
+    if (userMenuOpen) document.addEventListener("mousedown", handleClick)
+    return () => document.removeEventListener("mousedown", handleClick)
+  }, [userMenuOpen])
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
@@ -189,36 +200,11 @@ export function AtlasSidebar({
         </Link>
       </div>
 
-      {/* ── User trigger ── */}
-      <div className="border-t border-border px-3 py-2">
-        <button
-          onClick={() => setUserMenuOpen((v) => !v)}
-          className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-muted transition"
-        >
-          <div className="h-8 w-8 flex-shrink-0 overflow-hidden rounded-full bg-primary">
-            {avatarUrl ? (
-              // eslint-disable-next-line @next/next/no-img-element
-              <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
-            ) : (
-              <span className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
-                {initials}
-              </span>
-            )}
-          </div>
-          <div className="min-w-0 flex-1 text-left">
-            <p className="truncate text-sm font-medium text-foreground">{displayName}</p>
-            <p className="text-[11px] text-muted-foreground">{planLabel}</p>
-          </div>
-        </button>
-      </div>
-
-      {/* ── Bottom sheet user menu ── */}
-      {userMenuOpen && (
-        <div className="absolute inset-x-0 bottom-0 top-[108px] z-20 flex flex-col">
-          {/* Transparent backdrop — clic pour fermer */}
-          <div className="flex-1" onClick={() => setUserMenuOpen(false)} />
-          {/* Panel qui monte du bas */}
-          <div className="rounded-t-xl border border-border bg-card shadow-xl">
+      {/* ── User section (avatar fixe en bas, menu s'ouvre au-dessus) ── */}
+      <div className="relative border-t border-border px-3 py-2" ref={userSectionRef}>
+        {/* Menu — monte depuis le bas, au-dessus de l'avatar */}
+        {userMenuOpen && (
+          <div className="absolute bottom-full left-0 right-0 z-30 overflow-hidden rounded-t-xl border border-b-0 border-border bg-card shadow-xl">
             {/* User info */}
             <div className="flex items-center gap-2.5 border-b border-border px-4 py-3">
               <div className="h-8 w-8 flex-shrink-0 overflow-hidden rounded-full bg-primary">
@@ -264,8 +250,29 @@ export function AtlasSidebar({
               </button>
             </div>
           </div>
-        </div>
-      )}
+        )}
+
+        {/* Avatar trigger — toujours visible */}
+        <button
+          onClick={() => setUserMenuOpen((v) => !v)}
+          className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm hover:bg-muted transition"
+        >
+          <div className="h-8 w-8 flex-shrink-0 overflow-hidden rounded-full bg-primary">
+            {avatarUrl ? (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+            ) : (
+              <span className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
+                {initials}
+              </span>
+            )}
+          </div>
+          <div className="min-w-0 flex-1 text-left">
+            <p className="truncate text-sm font-medium text-foreground">{displayName}</p>
+            <p className="text-[11px] text-muted-foreground">{planLabel}</p>
+          </div>
+        </button>
+      </div>
 
     </div>
   )
