@@ -38,8 +38,8 @@ export function ChatShell({ children, breadcrumbs, hideSidebar = false }: ChatSh
             : sidebarCollapsed ? "lg:pl-16" : "lg:pl-60"
         )}
       >
-        {/* Desktop top bar */}
-        {!hideSidebar && <DesktopTopBar breadcrumbs={breadcrumbs} />}
+        {/* Desktop top bar — masqué si pas de breadcrumbs */}
+        {!hideSidebar && breadcrumbs && breadcrumbs.length > 0 && <DesktopTopBar breadcrumbs={breadcrumbs} />}
 
         {/* Chat content - full width like other pages */}
         <main className="flex flex-1 flex-col overflow-hidden">

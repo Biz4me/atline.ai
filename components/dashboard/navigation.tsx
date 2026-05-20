@@ -287,6 +287,8 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
 // ═══════════════════════════════════════════════════════════════
 // DESKTOP SIDEBAR — flat nav, style Claude
 // ═══════════════════════════════════════════════════════════════
+import { Suspense } from "react"
+import { AtlasConversations } from "./atlas-conversations"
 
 const navItems = [
   { href: "/formation",     icon: IconSchool,    label: "Formation"      },
@@ -307,6 +309,7 @@ interface DesktopSidebarProps {
 export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarProps) {
   const pathname = usePathname()
   const { user } = useUser()
+  const isAtlas = pathname === "/atlas" || pathname.startsWith("/atlas/")
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/")
 
@@ -345,8 +348,19 @@ export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarPr
         )}
       </div>
 
+      {/* Atlas conversation history */}
+      {isAtlas && !collapsed && (
+        <Suspense>
+          <AtlasConversations />
+        </Suspense>
+      )}
+
       {/* Navigation */}
-      <nav className={cn("flex flex-1 flex-col justify-end px-2 py-1", collapsed ? "overflow-visible" : "overflow-y-auto")}>
+      <nav className={cn(
+        "flex flex-col px-2 py-1",
+        !isAtlas && "flex-1 justify-end",
+        collapsed ? "overflow-visible" : "overflow-y-auto"
+      )}>
         <div className="space-y-0.5">
           {navItems.map((item) => {
             const Icon = item.icon

@@ -6,7 +6,6 @@ import { Plus, Trash2, X, ChevronLeft, ChevronRight } from "lucide-react"
 import {
   IconUser,
   IconLogout,
-  IconLayoutDashboard,
   IconCreditCard,
 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
@@ -39,6 +38,7 @@ interface Props {
   mobileOpen: boolean
   onMobileClose: () => void
   refreshKey?: number
+  mobileOnly?: boolean
 }
 
 function groupByDate(convs: Conversation[]) {
@@ -67,6 +67,7 @@ export function AtlasSidebar({
   mobileOpen,
   onMobileClose,
   refreshKey,
+  mobileOnly = false,
 }: Props) {
   const { user, logout, initials, displayName } = useUser()
   const avatarUrl = (user as any)?.avatarUrl ?? null
@@ -189,17 +190,6 @@ export function AtlasSidebar({
         )}
       </div>
 
-      {/* ── Retour accueil ── */}
-      <div className="border-t border-border px-3 py-1">
-        <Link
-          href="/"
-          className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition"
-        >
-          <IconLayoutDashboard className="h-4 w-4 flex-shrink-0" />
-          <span className="text-xs">Go Pro</span>
-        </Link>
-      </div>
-
       {/* ── User section (avatar fixe en bas, menu s'ouvre au-dessus) ── */}
       <div className="relative border-t border-border px-3 py-2" ref={userSectionRef}>
         {/* Menu — monte depuis le bas, au-dessus de l'avatar */}
@@ -279,9 +269,10 @@ export function AtlasSidebar({
 
   return (
     <>
-      {/* Desktop */}
+      {/* Desktop — masqué si mobileOnly (DesktopSidebar gère la nav) */}
       <aside className={cn(
-        "hidden lg:flex flex-shrink-0 flex-col border-r border-border bg-card h-full transition-all duration-300",
+        "flex-shrink-0 flex-col border-r border-border bg-card h-full transition-all duration-300",
+        mobileOnly ? "hidden" : "hidden lg:flex",
         collapsed ? "w-10" : "w-60"
       )}>
         {collapsed ? (

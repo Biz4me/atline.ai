@@ -13,7 +13,6 @@ function AtlasContent() {
 
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [moduleWelcome, setModuleWelcome] = useState<string | undefined>(undefined)
-  const [refreshKey, setRefreshKey] = useState(0)
 
   const handleNewChat = useCallback(() => {
     setModuleWelcome(undefined)
@@ -25,32 +24,33 @@ function AtlasContent() {
     router.push(`/atlas?c=${id}`)
   }, [router])
 
-  const handleSelectModule = useCallback((moduleId: string, welcome: string) => {
+  const handleSelectModule = useCallback((_moduleId: string, welcome: string) => {
     setModuleWelcome(welcome)
     router.push("/atlas")
   }, [router])
 
   const handleConversationCreated = useCallback((id: string) => {
     router.replace(`/atlas?c=${id}`)
-    setRefreshKey((k) => k + 1)
+    window.dispatchEvent(new Event("atlas:refresh"))
   }, [router])
 
   const handleExchangeComplete = useCallback(() => {
-    setRefreshKey((k) => k + 1)
+    window.dispatchEvent(new Event("atlas:refresh"))
   }, [])
 
   return (
-    <ChatShell hideSidebar>
+    <ChatShell>
       <div className="flex h-full overflow-hidden">
+        {/* Mobile-only sidebar overlay */}
         <AtlasSidebar
+          mobileOnly
           activeConversationId={conversationId}
           onNewChat={handleNewChat}
           onSelectConversation={handleSelectConversation}
           onSelectModule={handleSelectModule}
-          onDeleteConversation={() => setRefreshKey((k) => k + 1)}
+          onDeleteConversation={() => window.dispatchEvent(new Event("atlas:refresh"))}
           mobileOpen={sidebarOpen}
           onMobileClose={() => setSidebarOpen(false)}
-          refreshKey={refreshKey}
         />
         <ChatInterface
           key={conversationId ?? "new"}
