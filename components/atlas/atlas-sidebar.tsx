@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect, useCallback, useRef } from "react"
+import { useState, useEffect, useCallback } from "react"
 import Link from "next/link"
 import { Plus, Trash2, X, ChevronLeft, ChevronRight } from "lucide-react"
 import {
@@ -77,7 +77,6 @@ export function AtlasSidebar({
   const [deletingId, setDeletingId] = useState<string | null>(null)
   const [collapsed, setCollapsed] = useState(false)
   const [userMenuOpen, setUserMenuOpen] = useState(false)
-  const userMenuRef = useRef<HTMLDivElement>(null)
 
   const fetchConversations = useCallback(async () => {
     try {
@@ -89,16 +88,6 @@ export function AtlasSidebar({
   }, [])
 
   useEffect(() => { fetchConversations() }, [fetchConversations, refreshKey])
-
-  useEffect(() => {
-    function handleClick(e: MouseEvent) {
-      if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
-        setUserMenuOpen(false)
-      }
-    }
-    if (userMenuOpen) document.addEventListener("mousedown", handleClick)
-    return () => document.removeEventListener("mousedown", handleClick)
-  }, [userMenuOpen])
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
@@ -116,7 +105,7 @@ export function AtlasSidebar({
   const groups = groupByDate(conversations)
 
   const SidebarContent = () => (
-    <div className="flex h-full flex-col overflow-hidden">
+    <div className="relative flex h-full flex-col overflow-hidden">
 
       {/* ── Header Atlas ── */}
       <div className="flex items-center justify-between px-3 py-3 border-b border-border">
@@ -200,41 +189,8 @@ export function AtlasSidebar({
         </Link>
       </div>
 
-      {/* ── User section ── */}
-      <div className="relative border-t border-border px-3 py-2" ref={userMenuRef}>
-        {/* Popup menu */}
-        {userMenuOpen && (
-          <div className="absolute bottom-full left-2 right-2 mb-1 rounded-lg border border-border bg-card shadow-lg overflow-hidden z-10">
-            <Link
-              href="/profil"
-              onClick={() => setUserMenuOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-foreground hover:bg-muted transition"
-            >
-              <IconUser className="h-4 w-4 flex-shrink-0" />
-              <span>Mon profil</span>
-            </Link>
-            <Link
-              href="/abonnement"
-              onClick={() => setUserMenuOpen(false)}
-              className="flex items-center gap-2.5 px-3 py-2.5 text-sm text-foreground hover:bg-muted transition"
-            >
-              <IconCreditCard className="h-4 w-4 flex-shrink-0" />
-              <div>
-                <div>Abonnement</div>
-                <div className="text-[11px] text-muted-foreground">{planLabel}</div>
-              </div>
-            </Link>
-            <div className="border-t border-border" />
-            <button
-              onClick={() => { logout(); setUserMenuOpen(false) }}
-              className="flex w-full items-center gap-2.5 px-3 py-2.5 text-sm text-red-400 hover:bg-muted transition"
-            >
-              <IconLogout className="h-4 w-4 flex-shrink-0" />
-              <span>Déconnexion</span>
-            </button>
-          </div>
-        )}
-
+      {/* ── User trigger ── */}
+      <div className="border-t border-border px-3 py-2">
         <button
           onClick={() => setUserMenuOpen((v) => !v)}
           className="flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition"
@@ -252,6 +208,61 @@ export function AtlasSidebar({
           <span className="flex-1 truncate text-xs text-left">{displayName}</span>
         </button>
       </div>
+
+      {/* ── Bottom sheet user menu ── */}
+      {userMenuOpen && (
+        <div className="absolute inset-x-0 bottom-0 top-[108px] z-20 flex flex-col">
+          {/* Transparent backdrop — clic pour fermer */}
+          <div className="flex-1" onClick={() => setUserMenuOpen(false)} />
+          {/* Panel qui monte du bas */}
+          <div className="rounded-t-xl border border-border bg-card shadow-xl">
+            {/* User info */}
+            <div className="flex items-center gap-2.5 border-b border-border px-4 py-3">
+              <div className="h-8 w-8 flex-shrink-0 overflow-hidden rounded-full bg-primary">
+                {avatarUrl ? (
+                  // eslint-disable-next-line @next/next/no-img-element
+                  <img src={avatarUrl} alt="" className="h-full w-full object-cover" />
+                ) : (
+                  <span className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
+                    {initials}
+                  </span>
+                )}
+              </div>
+              <div className="min-w-0">
+                <p className="truncate text-sm font-medium text-foreground">{displayName}</p>
+                <p className="text-[11px] text-muted-foreground">{planLabel}</p>
+              </div>
+            </div>
+            {/* Items */}
+            <div className="p-1">
+              <Link
+                href="/profil"
+                onClick={() => setUserMenuOpen(false)}
+                className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-foreground hover:bg-muted transition"
+              >
+                <IconUser className="h-4 w-4 flex-shrink-0" />
+                <span>Mon profil</span>
+              </Link>
+              <Link
+                href="/abonnement"
+                onClick={() => setUserMenuOpen(false)}
+                className="flex items-center gap-2.5 rounded-md px-3 py-2 text-sm text-foreground hover:bg-muted transition"
+              >
+                <IconCreditCard className="h-4 w-4 flex-shrink-0" />
+                <span>Abonnement</span>
+              </Link>
+              <div className="my-1 border-t border-border" />
+              <button
+                onClick={() => { logout(); setUserMenuOpen(false) }}
+                className="flex w-full items-center gap-2.5 rounded-md px-3 py-2 text-sm text-red-400 hover:bg-muted transition"
+              >
+                <IconLogout className="h-4 w-4 flex-shrink-0" />
+                <span>Déconnexion</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
     </div>
   )
