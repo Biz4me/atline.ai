@@ -14,6 +14,10 @@ import { Prospects } from './collections/Prospects'
 import { Scripts } from './collections/Scripts'
 import { Conversations } from './collections/Conversations'
 import { SocietesMlm } from './collections/SocietesMlm'
+import { RagDocuments } from './collections/RagDocuments'
+import { AtlasConfig } from './globals/AtlasConfig'
+import { MarklineConfig } from './globals/MarklineConfig'
+import { ProlineConfig } from './globals/ProlineConfig'
 
 const filename = fileURLToPath(import.meta.url)
 const dirname = path.dirname(filename)
@@ -35,6 +39,12 @@ export default buildConfig({
     Scripts,
     Conversations,
     SocietesMlm,
+    RagDocuments,
+  ],
+  globals: [
+    AtlasConfig,
+    MarklineConfig,
+    ProlineConfig,
   ],
   editor: lexicalEditor(),
   secret: process.env.PAYLOAD_SECRET || '',

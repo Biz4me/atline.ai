@@ -5,16 +5,17 @@ import configPromise from "@payload-config"
 export const runtime = "nodejs"
 
 export async function POST(req: NextRequest) {
-  // Verify user is authenticated and is admin
   const authHeader = req.headers.get("x-user-id")
   if (!authHeader) {
     return NextResponse.json({ error: "Non authentifié" }, { status: 401 })
   }
 
+  const payload = await getPayload({ config: configPromise })
+
+  let user: any
   try {
-    const payload = await getPayload({ config: configPromise })
-    const user = await payload.findByID({ collection: "users", id: authHeader, depth: 0 })
-    if (!(user as any)?.isAdmin) {
+    user = await payload.findByID({ collection: "users", id: authHeader, depth: 0 })
+    if (!user?.isAdmin) {
       return NextResponse.json({ error: "Accès refusé" }, { status: 403 })
     }
   } catch {
@@ -27,8 +28,13 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "Service ingest non configuré" }, { status: 503 })
   }
 
-  // Forward the multipart form data to VPS
   const formData = await req.formData()
+  const agent = formData.get("agent") as string ?? "atlas"
+  const docType = formData.get("doc_type") as string ?? "autre"
+  const title = formData.get("title") as string ?? ""
+  const language = formData.get("language") as string ?? "fr"
+  const file = formData.get("file") as File | null
+
   const res = await fetch(`${vpsUrl}/ingest`, {
     method: "POST",
     headers: { Authorization: `Bearer ${vpsKey}` },
@@ -36,5 +42,27 @@ export async function POST(req: NextRequest) {
   })
 
   const json = await res.json()
+
+  if (res.ok) {
+    try {
+      await payload.create({
+        collection: "rag-documents",
+        data: {
+          title: title || file?.name || "Document",
+          fileName: file?.name ?? null,
+          agent,
+          docType,
+          language,
+          status: "indexed",
+          chunksCount: json.points_inserted ?? json.chunks ?? 0,
+          uploadedBy: user.id,
+        } as any,
+        overrideAccess: true,
+      })
+    } catch (e) {
+      console.error("Failed to save rag document to Payload:", e)
+    }
+  }
+
   return NextResponse.json(json, { status: res.status })
 }

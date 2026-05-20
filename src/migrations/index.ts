@@ -3,6 +3,7 @@ import * as migration_20260519_085421 from './20260519_085421';
 import * as migration_20260519_102408 from './20260519_102408';
 import * as migration_20260519_133320 from './20260519_133320';
 import * as migration_20260519_164020_add_phone_avatar from './20260519_164020_add_phone_avatar';
+import * as migration_20260520_rag_globals from './20260520_rag_globals';
 
 export const migrations = [
   {
@@ -29,5 +30,10 @@ export const migrations = [
     up: migration_20260519_164020_add_phone_avatar.up,
     down: migration_20260519_164020_add_phone_avatar.down,
     name: '20260519_164020_add_phone_avatar'
+  },
+  {
+    up: migration_20260520_rag_globals.up,
+    down: migration_20260520_rag_globals.down,
+    name: '20260520_rag_globals',
   },
 ];
