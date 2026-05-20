@@ -162,7 +162,7 @@ export default function AdminPage() {
                 <select
                   value={agent}
                   onChange={(e) => setAgent(e.target.value)}
-                  className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-white focus:border-primary focus:outline-none"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
                 >
                   {AGENTS.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}
                 </select>
@@ -174,7 +174,7 @@ export default function AdminPage() {
                 <select
                   value={docType}
                   onChange={(e) => setDocType(e.target.value)}
-                  className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-white focus:border-primary focus:outline-none"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
                 >
                   {DOC_TYPES.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
                 </select>
@@ -188,7 +188,7 @@ export default function AdminPage() {
                   value={title}
                   onChange={(e) => setTitle(e.target.value)}
                   placeholder="Titre du document"
-                  className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-white placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
                 />
               </div>
 
@@ -198,7 +198,7 @@ export default function AdminPage() {
                 <select
                   value={language}
                   onChange={(e) => setLanguage(e.target.value)}
-                  className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-white focus:border-primary focus:outline-none"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
                 >
                   {LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
                 </select>

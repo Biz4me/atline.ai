@@ -29,7 +29,7 @@ export function MonPlanTab() {
         <select
           value={society}
           onChange={(e) => setSociety(e.target.value)}
-          className="h-11 w-full appearance-none rounded-lg border border-border bg-card px-3 pr-10 text-sm font-medium text-white focus:border-primary focus:outline-none"
+          className="h-11 w-full appearance-none rounded-lg border border-border bg-card px-3 pr-10 text-sm font-medium text-foreground focus:border-primary focus:outline-none"
         >
           <option value="Herbalife">Herbalife</option>
           <option value="Forever Living">Forever Living</option>

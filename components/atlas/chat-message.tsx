@@ -15,16 +15,16 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
     <div className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}>
       <div
         className={cn(
-          "rounded-[12px] px-4 py-3",
+          "rounded-[14px] px-4 py-3",
           isUser
-            ? "max-w-[80%] bg-primary text-white lg:max-w-[60%]"
-            : "max-w-[85%] border border-border bg-card text-foreground lg:max-w-[70%]"
+            ? "max-w-[78%] bg-primary text-white lg:max-w-[55%]"
+            : "w-full border border-border bg-card text-foreground"
         )}
       >
-        <p className="whitespace-pre-wrap text-sm leading-relaxed">
+        <p className="whitespace-pre-wrap text-base leading-relaxed">
           {content}
           {isStreaming && (
-            <span className="ml-0.5 inline-block h-[14px] w-[2px] translate-y-[1px] animate-pulse rounded-sm bg-current opacity-70" />
+            <span className="ml-0.5 inline-block h-[16px] w-[2px] translate-y-[2px] animate-pulse rounded-sm bg-current opacity-70" />
           )}
         </p>
       </div>
@@ -35,7 +35,7 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
 export function TypingIndicator() {
   return (
     <div className="flex w-full">
-      <div className="rounded-[12px] border border-border bg-card px-4 py-3">
+      <div className="rounded-[14px] border border-border bg-card px-4 py-3">
         <div className="flex gap-1">
           <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]" />
           <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]" />

@@ -36,9 +36,9 @@ export function ChatShell({ children, breadcrumbs }: ChatShellProps) {
         {/* Desktop top bar */}
         <DesktopTopBar breadcrumbs={breadcrumbs} />
 
-        {/* Chat content - centered at 672px on desktop */}
+        {/* Chat content - full width like other pages */}
         <main className="flex flex-1 flex-col overflow-hidden">
-          <div className="mx-auto flex h-full w-full max-w-2xl flex-col">
+          <div className="flex h-full w-full flex-col">
             {children}
           </div>
         </main>

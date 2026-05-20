@@ -131,7 +131,7 @@ export function PublicationsTab() {
 
             <textarea
               placeholder="Décris ton post ou laisse Atlas générer..."
-              className="mb-4 h-32 w-full resize-none rounded-lg border border-border bg-background p-3 text-sm text-white placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+              className="mb-4 h-32 w-full resize-none rounded-lg border border-border bg-background p-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
             />
 
             <div className="mb-4">

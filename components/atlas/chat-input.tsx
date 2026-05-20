@@ -53,13 +53,8 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
       setMessage(transcript)
     }
 
-    recognition.onend = () => {
-      setIsRecording(false)
-    }
-
-    recognition.onerror = () => {
-      setIsRecording(false)
-    }
+    recognition.onend = () => setIsRecording(false)
+    recognition.onerror = () => setIsRecording(false)
 
     recognitionRef.current = recognition
     recognition.start()
@@ -68,7 +63,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
 
   return (
     <div className="border-t border-border bg-background">
-      <form onSubmit={handleSubmit} className="flex items-center gap-1.5 p-3 lg:gap-2 lg:p-4 lg:px-6">
+      <form onSubmit={handleSubmit} className="flex items-center gap-2 p-3 lg:gap-3 lg:p-4">
         {/* Microphone button */}
         <Button
           type="button"
@@ -76,7 +71,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           size="icon"
           onClick={toggleRecording}
           className={cn(
-            "h-9 w-9 shrink-0 rounded-full lg:h-10 lg:w-10",
+            "h-11 w-11 shrink-0 rounded-full lg:h-12 lg:w-12",
             isRecording && "animate-pulse text-accent"
           )}
         >
@@ -93,9 +88,9 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           type="text"
           value={message}
           onChange={(e) => setMessage(e.target.value)}
-          placeholder="Pose une question..."
+          placeholder="Pose une question…"
           disabled={disabled}
-          className="h-9 min-w-0 flex-1 rounded-full border border-border bg-card px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50 lg:h-10 lg:px-4"
+          className="h-11 min-w-0 flex-1 rounded-full border border-border bg-card px-4 text-base text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none focus:ring-1 focus:ring-primary disabled:opacity-50 lg:h-12 lg:px-5"
         />
 
         {/* Send button */}
@@ -103,9 +98,9 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           type="submit"
           size="icon"
           disabled={!message.trim() || disabled}
-          className="h-9 w-9 shrink-0 rounded-full bg-primary text-white hover:bg-primary/90 disabled:opacity-50 lg:h-10 lg:w-10"
+          className="h-11 w-11 shrink-0 rounded-full bg-primary text-white hover:bg-primary/90 disabled:opacity-50 lg:h-12 lg:w-12"
         >
-          <Send className="h-4 w-4 lg:h-5 lg:w-5" />
+          <Send className="h-5 w-5" />
           <span className="sr-only">Envoyer</span>
         </Button>
       </form>

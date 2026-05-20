@@ -139,9 +139,30 @@ export interface User {
   id: number;
   firstName?: string | null;
   lastName?: string | null;
+  phone?: string | null;
+  /**
+   * URL publique Vercel Blob de la photo de profil
+   */
+  avatarUrl?: string | null;
   mlmCompany?: string | null;
   mlmLevel?: ('debutant' | 'intermediaire' | 'senior' | 'expert') | null;
   plan?: ('free' | 'pro') | null;
+  /**
+   * Accès admin — upload de documents RAG
+   */
+  isAdmin?: boolean | null;
+  /**
+   * Mémoire persistante Atlas — JSON structuré mis à jour après chaque session
+   */
+  userMemory?:
+    | {
+        [k: string]: unknown;
+      }
+    | unknown[]
+    | string
+    | number
+    | boolean
+    | null;
   updatedAt: string;
   createdAt: string;
   email: string;
@@ -489,9 +510,13 @@ export interface PayloadMigration {
 export interface UsersSelect<T extends boolean = true> {
   firstName?: T;
   lastName?: T;
+  phone?: T;
+  avatarUrl?: T;
   mlmCompany?: T;
   mlmLevel?: T;
   plan?: T;
+  isAdmin?: T;
+  userMemory?: T;
   updatedAt?: T;
   createdAt?: T;
   email?: T;

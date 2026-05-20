@@ -86,9 +86,9 @@ export default function SignupPage() {
   }
 
   const inputClass =
-    "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-white placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+    "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
   const selectClass =
-    "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-white focus:border-primary focus:outline-none"
+    "h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:border-primary focus:outline-none"
 
   return (
     <div className="flex min-h-screen flex-col items-center justify-center bg-background p-4">

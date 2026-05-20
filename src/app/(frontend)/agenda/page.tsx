@@ -124,7 +124,7 @@ export default function AgendaPage() {
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
                       <span className="font-mono text-sm font-medium text-white">{event.time}</span>
-                      <span className="text-sm text-white">{event.title}</span>
+                      <span className="text-sm text-foreground">{event.title}</span>
                     </div>
                     {event.prospect && (
                       <p className="text-sm text-muted-foreground">{event.prospect}</p>
@@ -165,7 +165,7 @@ export default function AgendaPage() {
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
                     <span className="font-mono text-sm text-muted-foreground">{event.time}</span>
-                    <span className="text-sm text-white">{event.title}</span>
+                    <span className="text-sm text-foreground">{event.title}</span>
                   </div>
                   {event.prospect && (
                     <p className="text-xs text-muted-foreground">{event.prospect}</p>
@@ -184,7 +184,7 @@ export default function AgendaPage() {
             <IconSparkles className="h-4 w-4 text-primary" />
           </div>
           <div className="flex-1">
-            <p className="text-sm text-white">
+            <p className="text-sm text-foreground">
               Tu as 2 suivis en retard cette semaine.
             </p>
             <p className="text-sm text-muted-foreground">
@@ -215,13 +215,13 @@ export default function AgendaPage() {
               <input
                 type="text"
                 placeholder="Titre"
-                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-white placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
               />
               <input
                 type="datetime-local"
-                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-white focus:border-primary focus:outline-none"
+                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:border-primary focus:outline-none"
               />
-              <select className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-white focus:border-primary focus:outline-none">
+              <select className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground focus:border-primary focus:outline-none">
                 <option value="appel">Appel prospect</option>
                 <option value="presentation">Présentation</option>
                 <option value="suivi">Suivi</option>
@@ -230,7 +230,7 @@ export default function AgendaPage() {
               <input
                 type="text"
                 placeholder="Prospect (optionnel)"
-                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-white placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                className="h-11 w-full rounded-lg border border-border bg-background px-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
               />
             </div>
 

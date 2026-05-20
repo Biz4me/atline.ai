@@ -26,7 +26,7 @@ export function XpNiveauTab() {
           <div className="mt-4">
             <div className="flex items-baseline justify-between">
               <span className="font-mono text-2xl font-bold text-white">{currentXP.toLocaleString()}</span>
-              <span className="text-sm text-white/70">/ {nextLevelXP.toLocaleString()} XP</span>
+              <span className="text-sm text-foreground/70">/ {nextLevelXP.toLocaleString()} XP</span>
             </div>
             <div className="mt-2 h-2 overflow-hidden rounded-full bg-white/20">
               <div
@@ -34,7 +34,7 @@ export function XpNiveauTab() {
                 style={{ width: `${progress}%` }}
               />
             </div>
-            <p className="mt-2 text-sm text-white/70">
+            <p className="mt-2 text-sm text-foreground/70">
               Prochain niveau: 🎯 Recruteur
             </p>
           </div>

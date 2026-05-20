@@ -255,7 +255,7 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
       <div className="fixed bottom-[68px] left-0 right-0 z-[70] rounded-t-[24px] bg-background lg:hidden">
         {/* Handle */}
         <div className="flex justify-center py-3">
-          <div className="h-[3px] w-10 rounded-full bg-white/20" />
+          <div className="h-[3px] w-10 rounded-full bg-foreground/20" />
         </div>
 
         {/* Close button */}
@@ -272,7 +272,7 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
           <DrawerItem>
             <Link href="/profil" onClick={onClose} className="flex w-full items-center gap-3">
               <DrawerIcon bg="rgba(113,113,122,0.12)" color="#71717A" icon={IconUser} />
-              <span className="flex-1 text-sm font-medium text-white">Profil</span>
+              <span className="flex-1 text-sm font-medium text-foreground">Profil</span>
             </Link>
           </DrawerItem>
 
@@ -280,7 +280,7 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
             <Link href="/abonnement" onClick={onClose} className="flex w-full items-center gap-3">
               <DrawerIcon bg="rgba(124,111,232,0.15)" color="#7C6FE8" icon={IconCreditCard} />
               <div className="flex flex-1 flex-col">
-                <span className="text-sm font-medium text-white">Abonnement</span>
+                <span className="text-sm font-medium text-foreground">Abonnement</span>
                 <span className="text-[11px] text-muted-foreground">Plan Pro · Actif</span>
               </div>
             </Link>
@@ -292,7 +292,7 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
           <DrawerItem>
             <Link href="/enrichir-atlas" onClick={onClose} className="flex w-full items-center gap-3">
               <DrawerIcon bg="rgba(124,111,232,0.12)" color="#7C6FE8" icon={IconUpload} />
-              <span className="flex-1 text-sm font-medium text-white">Enrichir Atlas</span>
+              <span className="flex-1 text-sm font-medium text-foreground">Enrichir Atlas</span>
               <span className="rounded bg-primary/20 px-1.5 py-0.5 text-[10px] font-medium text-primary">Pro</span>
             </Link>
           </DrawerItem>
@@ -307,20 +307,20 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
               className="flex w-full items-center gap-3"
             >
               <DrawerIcon bg="rgba(6,182,212,0.12)" color="#06B6D4" icon={IconLanguage} />
-              <span className="flex-1 text-left text-sm font-medium text-white">Langue</span>
+              <span className="flex-1 text-left text-sm font-medium text-foreground">Langue</span>
               <span className="text-sm text-muted-foreground">{currentLang.flag} {currentLang.label}</span>
             </button>
           </DrawerItem>
 
           {langOpen && (
-            <div className="mx-4 mb-1 overflow-hidden rounded-xl border border-white/[0.08] bg-card">
+            <div className="mx-4 mb-1 overflow-hidden rounded-xl border border-border bg-card">
               {LANGUAGES.map((l) => (
                 <button
                   key={l.code}
                   onClick={() => { setLang(l.code); setLangOpen(false) }}
                   className={cn(
                     "flex w-full items-center gap-3 px-4 py-3 text-sm transition-colors",
-                    lang === l.code ? "text-primary" : "text-white hover:bg-white/[0.04]"
+                    lang === l.code ? "text-primary" : "text-foreground hover:bg-muted"
                   )}
                 >
                   <span className="text-base">{l.flag}</span>
@@ -339,7 +339,7 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
                 color={isDark ? "#71717A" : "#F59E0B"}
                 icon={isDark ? IconMoon : IconSun}
               />
-              <span className="flex-1 text-sm font-medium text-white">
+              <span className="flex-1 text-sm font-medium text-foreground">
                 {isDark ? "Mode sombre" : "Mode clair"}
               </span>
               <ToggleSwitch
@@ -651,14 +651,14 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
             // eslint-disable-next-line @next/next/no-img-element
             <img src={avatarUrl} alt="Avatar" className="absolute inset-0 h-full w-full object-cover" />
           ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm font-medium text-white">
+            <div className="flex h-full w-full items-center justify-center text-sm font-medium text-foreground">
               {loading ? "…" : initials}
             </div>
           )}
         </div>
         {!collapsed && !loading && (
           <div className="flex flex-col">
-            <span className="text-sm font-medium text-white">{displayName}</span>
+            <span className="text-sm font-medium text-foreground">{displayName}</span>
             <span className="inline-flex w-fit items-center rounded-[4px] bg-primary px-1.5 py-0.5 text-[10px] font-medium text-white">
               {planLabel}
             </span>

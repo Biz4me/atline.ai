@@ -64,7 +64,7 @@ export function ObjectionsTab() {
           value={search}
           onChange={(e) => setSearch(e.target.value)}
           placeholder="Rechercher une objection..."
-          className="h-11 w-full rounded-lg border border-border bg-card pl-10 pr-3 text-sm text-white placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+          className="h-11 w-full rounded-lg border border-border bg-card pl-10 pr-3 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
         />
       </div>
 

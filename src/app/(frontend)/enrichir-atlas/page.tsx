@@ -174,14 +174,14 @@ function EnrichirTab({ userId }: { userId: string }) {
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Agent cible</label>
             <select value={agent} onChange={(e) => setAgent(e.target.value)}
-              className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-white focus:border-primary focus:outline-none">
+              className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
               {AGENTS.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}
             </select>
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Type de document</label>
             <select value={docType} onChange={(e) => setDocType(e.target.value)}
-              className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-white focus:border-primary focus:outline-none">
+              className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
               {DOC_TYPES.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
             </select>
           </div>
@@ -189,12 +189,12 @@ function EnrichirTab({ userId }: { userId: string }) {
             <label className="text-xs font-medium text-muted-foreground">Titre</label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
               placeholder="Titre du document"
-              className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-white placeholder:text-muted-foreground focus:border-primary focus:outline-none" />
+              className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none" />
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Langue</label>
             <select value={language} onChange={(e) => setLanguage(e.target.value)}
-              className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-white focus:border-primary focus:outline-none">
+              className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
               {LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
             </select>
           </div>
@@ -431,7 +431,7 @@ function ConfigurationTab() {
                 onChange={(e) => update(key, "systemPrompt", e.target.value)}
                 rows={6}
                 placeholder={`Tu es ${label}, un assistant IA spécialisé…`}
-                className="w-full resize-y rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-white placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                className="w-full resize-y rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -444,7 +444,7 @@ function ConfigurationTab() {
                   step={0.05}
                   value={configs[key].temperature}
                   onChange={(e) => update(key, "temperature", parseFloat(e.target.value))}
-                  className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-white focus:border-primary focus:outline-none"
+                  className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
                 />
               </div>
               <div className="space-y-1.5">
@@ -456,7 +456,7 @@ function ConfigurationTab() {
                   step={256}
                   value={configs[key].maxTokens}
                   onChange={(e) => update(key, "maxTokens", parseInt(e.target.value))}
-                  className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-white focus:border-primary focus:outline-none"
+                  className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
                 />
               </div>
             </div>

@@ -22,7 +22,7 @@ const MLM_LEVEL_LABELS: Record<string, string> = Object.fromEntries(
 )
 
 const inputClass =
-  "w-full rounded-lg border border-white/[0.12] bg-background px-3 py-2 text-sm text-white outline-none focus:border-primary/60 transition-colors placeholder:text-muted-foreground/50"
+  "w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary/60 transition-colors placeholder:text-muted-foreground/50"
 
 export default function ProfilPage() {
   const [activeTab, setActiveTab] = useState("Mon Profil")
@@ -171,7 +171,7 @@ export default function ProfilPage() {
                   <div className="absolute left-0 top-[72px] z-20 w-52 overflow-hidden rounded-xl border border-white/[0.08] bg-card shadow-xl">
                     <button
                       onClick={() => cameraInputRef.current?.click()}
-                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white transition-colors hover:bg-white/[0.05]"
+                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground transition-colors hover:bg-muted"
                     >
                       <IconCamera className="h-4 w-4 text-primary" />
                       Prendre une photo
@@ -179,7 +179,7 @@ export default function ProfilPage() {
                     <div className="mx-4 border-t border-white/[0.06]" />
                     <button
                       onClick={() => galleryInputRef.current?.click()}
-                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-white transition-colors hover:bg-white/[0.05]"
+                      className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground transition-colors hover:bg-muted"
                     >
                       <IconPhoto className="h-4 w-4 text-accent" />
                       Choisir depuis la galerie
@@ -279,7 +279,7 @@ export default function ProfilPage() {
                   ].map((field) => (
                     <div key={field.label} className="space-y-1">
                       <p className="text-xs text-muted-foreground">{field.label}</p>
-                      <div className="rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-white">
+                      <div className="rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground">
                         {field.value}
                       </div>
                     </div>
@@ -333,7 +333,7 @@ export default function ProfilPage() {
             <h2 className="text-sm font-medium text-white">Apparence</h2>
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">Thème</p>
-              <span className="text-sm text-white">Dark (défaut)</span>
+              <span className="text-sm text-foreground">Dark (défaut)</span>
             </div>
             <div className="border-t border-white/[0.08] pt-4">
               <h2 className="text-sm font-medium text-white mb-3">Notifications</h2>
