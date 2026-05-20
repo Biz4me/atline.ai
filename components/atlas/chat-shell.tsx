@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { MobileStatsBar, MobileBottomNav, PlusDrawer, DesktopSidebar, DesktopTopBar } from "@/components/dashboard/navigation"
 import { cn } from "@/lib/utils"
 
@@ -11,8 +11,15 @@ interface ChatShellProps {
 }
 
 export function ChatShell({ children, breadcrumbs, hideSidebar = false }: ChatShellProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    if (typeof window === "undefined") return false
+    return localStorage.getItem("sidebar-collapsed") === "true"
+  })
   const [drawerOpen, setDrawerOpen] = useState(false)
+
+  useEffect(() => {
+    localStorage.setItem("sidebar-collapsed", String(sidebarCollapsed))
+  }, [sidebarCollapsed])
 
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-background">
