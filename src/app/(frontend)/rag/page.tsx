@@ -246,7 +246,7 @@ export default function AdminPage() {
       })
       const json = await res.json().catch(() => ({}))
       if (res.ok) {
-        setDocs((prev) => prev.filter((d) => String(d.id) !== String(id)))
+        await fetchDocs()
       } else {
         setDeleteError(json.error ?? `Erreur ${res.status}`)
       }
