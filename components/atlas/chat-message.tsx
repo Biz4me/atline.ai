@@ -1,32 +1,13 @@
 "use client"
 
+import ReactMarkdown from "react-markdown"
+import remarkGfm from "remark-gfm"
 import { cn } from "@/lib/utils"
 
 interface ChatMessageProps {
   role: "user" | "assistant"
   content: string
   isStreaming?: boolean
-}
-
-function renderContent(content: string, isStreaming?: boolean) {
-  const paragraphs = content.split(/\n\n+/)
-  return paragraphs.map((para, i) => {
-    const isLast = i === paragraphs.length - 1
-    const lines = para.split("\n")
-    return (
-      <p key={i} className={cn("text-base leading-snug", !isLast && "mb-2")}>
-        {lines.map((line, j) => (
-          <span key={j}>
-            {line}
-            {j < lines.length - 1 && <br />}
-          </span>
-        ))}
-        {isLast && isStreaming && (
-          <span className="ml-0.5 inline-block h-[15px] w-[2px] translate-y-[2px] animate-pulse rounded-sm bg-current opacity-70" />
-        )}
-      </p>
-    )
-  })
 }
 
 export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
@@ -43,11 +24,63 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
         )}
       >
         {isUser ? (
-          <p className="text-base leading-snug whitespace-pre-wrap">
-            {content}
-          </p>
+          <p className="text-base leading-snug whitespace-pre-wrap">{content}</p>
         ) : (
-          renderContent(content, isStreaming)
+          <div className="text-base">
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              components={{
+                h2: ({ children }) => (
+                  <h2 className="font-bold mb-2 mt-3 first:mt-0 text-base">{children}</h2>
+                ),
+                h3: ({ children }) => (
+                  <h3 className="font-semibold mb-1.5 mt-2.5 first:mt-0 text-base">{children}</h3>
+                ),
+                p: ({ children }) => (
+                  <p className="leading-snug mb-2 last:mb-0">{children}</p>
+                ),
+                ul: ({ children }) => (
+                  <ul className="mb-2 pl-4 space-y-0.5 list-disc">{children}</ul>
+                ),
+                ol: ({ children }) => (
+                  <ol className="mb-2 pl-4 space-y-0.5 list-decimal">{children}</ol>
+                ),
+                li: ({ children }) => (
+                  <li className="leading-snug">{children}</li>
+                ),
+                pre: ({ children }) => <>{children}</>,
+                code: ({ className, children }) => {
+                  const isBlock = /language-/.test(className ?? "")
+                  if (isBlock) {
+                    return (
+                      <pre className="bg-muted rounded-md p-3 mb-2 overflow-x-auto text-sm font-mono whitespace-pre-wrap">
+                        {String(children).replace(/\n$/, "")}
+                      </pre>
+                    )
+                  }
+                  return (
+                    <code className="bg-muted px-1 py-0.5 rounded text-sm font-mono">
+                      {children}
+                    </code>
+                  )
+                },
+                blockquote: ({ children }) => (
+                  <blockquote className="border-l-2 border-primary/60 pl-3 mb-2 text-muted-foreground">
+                    {children}
+                  </blockquote>
+                ),
+                strong: ({ children }) => (
+                  <strong className="font-bold">{children}</strong>
+                ),
+                hr: () => <hr className="border-border my-2" />,
+              }}
+            >
+              {content}
+            </ReactMarkdown>
+            {isStreaming && (
+              <span className="ml-0.5 inline-block h-[15px] w-[2px] translate-y-[2px] animate-pulse rounded-sm bg-current opacity-70" />
+            )}
+          </div>
         )}
       </div>
     </div>

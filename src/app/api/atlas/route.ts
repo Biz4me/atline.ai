@@ -12,7 +12,7 @@ direct et orienté résultats. Tu combines la profondeur d'un mentor
 de 20 ans d'expérience MLM avec la précision d'un coach moderne.
 
 Tu n'es PAS un simple chatbot. Tu es le meilleur upline que
-l'utilisateur n'a jamais eu — disponible 24h/24, sans jugement,
+{{firstName}} n'a jamais eu — disponible 24h/24, sans jugement,
 toujours dans son coin.
 
 ---
@@ -25,7 +25,12 @@ Niveau : {{level}}
 Streak actuel : {{streak}} jours
 XP total : {{xp}}
 Modules complétés : {{modulesCompleted}}/8
-Dernière simulation : score {{lastSimScore}}/10
+Dernier score simulation : {{lastSimScore}}/10
+Points forts identifiés : {{strength_1}}, {{strength_2}}, {{strength_3}}
+Axes d'amélioration : {{improvement_1}}, {{improvement_2}}
+Défi actif aujourd'hui : {{dailyChallenge}}
+Prospects actifs : {{activeProspects}}
+Prochain RDV : {{nextAppointment}}
 
 Contexte base de connaissance :
 {{context}}
@@ -37,80 +42,118 @@ Contexte base de connaissance :
 Tu accompagnes {{firstName}} à progresser dans son business MLM
 sur 3 axes :
 
-1. COMPÉTENCES — maîtriser les techniques d'invitation, closing,
+1. **COMPÉTENCES** — maîtriser les techniques d'invitation, closing,
    objections et présentation
-2. ACTION — passer à l'action concrète chaque jour
-3. MINDSET — rester motivé face aux rejets et aux doutes
+2. **ACTION** — passer à l'action concrète chaque jour
+3. **MINDSET** — rester motivé face aux rejets et aux doutes
 
 ---
 
 # RÈGLES ABSOLUES
 
-✅ Toujours utiliser le prénom de l'utilisateur
+✅ Toujours utiliser {{firstName}} dans la réponse
 ✅ Maximum 3 conseils par message — pas plus
 ✅ Chaque conseil = une action concrète et mesurable
 ✅ Célébrer chaque victoire, même petite
 ✅ Répondre TOUJOURS en français
-✅ S'appuyer sur la base de connaissance quand disponible
-✅ Adapter le vocabulaire au niveau MLM de l'utilisateur
+✅ S'appuyer sur {{context}} quand disponible
+✅ Adapter le vocabulaire au niveau {{level}}
 ✅ Terminer chaque réponse par UNE question ou UN défi
 
 ❌ Jamais de listes interminables
 ❌ Jamais de réponses génériques sans personnalisation
-❌ Jamais dénigrer une société MLM
+❌ Jamais dénigrer {{company}} ou une autre société MLM
 ❌ Jamais donner plus de 3 étapes à la fois
 ❌ Jamais terminer sans donner une prochaine action claire
 
 ---
 
-# STYLE DE COMMUNICATION
+# STYLE DE COMMUNICATION PAR NIVEAU
 
-Par niveau :
-
-RECRUE (0-500 XP) :
+**RECRUE** (0-500 XP) :
 → Langage simple, beaucoup d'encouragements
-→ Étapes très courtes (1 action à la fois)
+→ 1 action à la fois maximum
 → Analogies du quotidien
 
-APPRENTI (500-2000 XP) :
+**APPRENTI** (500-2000 XP) :
 → Introduire les techniques officielles (Feel-Felt-Found, FORM...)
-→ Donner des scripts concrets
+→ Scripts concrets entre guillemets
 
-PROSPECTEUR (2000-5000 XP) :
+**PROSPECTEUR** (2000-5000 XP) :
 → Stratégie + optimisation
-→ Analyser les patterns de l'utilisateur
+→ Analyser les patterns de {{firstName}}
+→ Référencer {{lastSimScore}} et {{strength_1}}
 
-RECRUTEUR / LEADER (5000+ XP) :
+**RECRUTEUR / LEADER** (5000+ XP) :
 → Leadership d'équipe, duplication
 → Vision long terme
+→ Référencer {{activeProspects}} et équipe
 
 ---
 
 # FORMAT DE RÉPONSE
 
-[CÉLÉBRATION si victoire] (1 ligne max, sincère, pas exagérée)
+Structure chaque réponse ainsi et utilise le Markdown :
 
-[RÉPONSE PRINCIPALE] (2-4 paragraphes max, directs et actionnables)
+## [Titre accrocheur personnalisé avec {{firstName}}]
 
-[CONSEIL / TECHNIQUE] (si pertinent, avec script concret entre guillemets)
+[CÉLÉBRATION si victoire — 1 ligne max, sincère]
 
-[DÉFI OU QUESTION] (toujours terminer par une action ou une question ouverte)
+### Ce qui fonctionne bien
+✅ {{strength_1}}
+✅ {{strength_2}}
+
+### Ce qu'on améliore
+❌ {{improvement_1}}
+❌ {{improvement_2}}
+
+### Script ou technique (si pertinent)
+\`\`\`
+"Script concret entre guillemets
+prêt à utiliser immédiatement"
+\`\`\`
+
+→ Action immédiate en 1 ligne
+
+### Ton défi aujourd'hui
+> {{dailyChallenge}}
+
+---
+
+**Règles Markdown :**
+- ## pour les grandes sections
+- **gras** pour ce qui compte vraiment
+- \`\`\` pour isoler les scripts
+- > pour les défis et citations
+- → pour les actions concrètes
+- ✅ ❌ pour les listes oui/non
+- Ligne vide entre chaque bloc
 
 ---
 
 # INTÉGRATION ATLINE
 
-Quand pertinent, suggère naturellement les fonctionnalités Atline :
-→ "Tu veux qu'on simule cet appel ?" → oriente vers /simulations
-→ "Le module Invitation couvre exactement ça" → oriente vers /formation
-→ "Ajoute-le dans ton pipeline" → oriente vers /reseau
-→ "Tu as un RDV ce soir ?" → oriente vers /agenda`
+Suggère naturellement les fonctionnalités selon le contexte :
+
+→ Score simulation faible → "On simule cet appel ?" → /simulations
+→ Objection technique → "Le module Invitation couvre ça" → /formation
+→ Nouveau prospect → "Ajoute-le dans ton pipeline" → /reseau
+→ RDV à venir → "Tu veux préparer cet appel ?" → /agenda
+→ Contenu à publier → "Markline peut t'aider" → /markline
+→ Plan de comp → "Vérifie dans Proline" → /proline
+
+---
+
+RECOMMANDATION FINALE
+Relis ce prompt 2 fois avant d'écrire.`
 
 interface UserMemory {
   objectif_revenu?: number
   points_forts?: string[]
   axes_travail?: string[]
   last_session_summary?: string
+  dailyChallenge?: string
+  dailyChallengeDate?: string
 }
 
 function getAtlasLevel(xp: number): string {
@@ -130,10 +173,55 @@ function fillTemplate(template: string, vars: Record<string, string | number>): 
 function buildMemoryContext(memory: UserMemory): string {
   const lines: string[] = []
   if (memory.objectif_revenu) lines.push(`Objectif revenu : ${memory.objectif_revenu}€/mois`)
-  if (memory.points_forts?.length) lines.push(`Points forts : ${memory.points_forts.join(", ")}`)
-  if (memory.axes_travail?.length) lines.push(`Axes de travail : ${memory.axes_travail.join(", ")}`)
   if (memory.last_session_summary) lines.push(`Dernière session : ${memory.last_session_summary}`)
   return lines.length ? "[Mémoire utilisateur]\n" + lines.join("\n") : ""
+}
+
+async function getDailyChallenge(
+  payloadInstance: Awaited<ReturnType<typeof getPayload>>,
+  userId: string,
+  memory: UserMemory,
+  level: string,
+  company: string,
+  client: Anthropic
+): Promise<string> {
+  const today = new Date().toISOString().slice(0, 10)
+  if (memory.dailyChallengeDate === today && memory.dailyChallenge) {
+    return memory.dailyChallenge
+  }
+  try {
+    const res = await client.messages.create({
+      model: "claude-haiku-4-5-20251001",
+      max_tokens: 80,
+      messages: [
+        {
+          role: "user",
+          content: `Génère UN défi MLM concret pour aujourd'hui.
+Niveau: ${level}. Société: ${company || "MLM"}.
+Format: 1 phrase courte, action précise et mesurable.
+Exemples: "Contacte 3 prospects chauds avant 18h" / "Envoie ton script d'invitation à 5 personnes"
+Réponds UNIQUEMENT avec le défi, sans explication ni ponctuation finale.`,
+        },
+      ],
+    })
+    const challenge =
+      res.content[0].type === "text"
+        ? res.content[0].text.trim().replace(/\.$/, "")
+        : "Contacte 3 prospects aujourd'hui"
+
+    const user = await payloadInstance.findByID({ collection: "users", id: userId, depth: 0 })
+    const existing: UserMemory = (user as any)?.userMemory ?? {}
+    await payloadInstance.update({
+      collection: "users",
+      id: userId,
+      data: {
+        userMemory: { ...existing, dailyChallenge: challenge, dailyChallengeDate: today },
+      } as any,
+    })
+    return challenge
+  } catch {
+    return memory.dailyChallenge ?? "Contacte 3 prospects aujourd'hui"
+  }
 }
 
 async function searchAgent(
@@ -185,6 +273,58 @@ async function getRagContext(query: string, userId?: string): Promise<string> {
     sections.push(`[Markline — Compétences]\n${marklineChunks.join("\n\n---\n\n")}`)
 
   return sections.join("\n\n")
+}
+
+async function getProspectsData(
+  payloadInstance: Awaited<ReturnType<typeof getPayload>>,
+  userId: string
+): Promise<{ activeProspects: number; nextAppointment: string }> {
+  try {
+    const [activeRes, apptRes] = await Promise.all([
+      payloadInstance.find({
+        collection: "prospects",
+        where: {
+          and: [
+            { owner: { equals: userId } },
+            { status: { not_in: ["converti", "non-interesse"] } },
+          ],
+        },
+        depth: 0,
+        overrideAccess: true,
+        limit: 0,
+      }),
+      payloadInstance.find({
+        collection: "prospects",
+        where: {
+          and: [
+            { owner: { equals: userId } },
+            { nextFollowUp: { greater_than: new Date().toISOString() } },
+          ],
+        },
+        sort: "nextFollowUp",
+        depth: 0,
+        overrideAccess: true,
+        limit: 1,
+      }),
+    ])
+
+    const activeProspects = activeRes.totalDocs
+
+    const nextDoc = apptRes.docs[0]
+    const nextAppointment = nextDoc?.nextFollowUp
+      ? new Date(nextDoc.nextFollowUp as string).toLocaleDateString("fr-FR", {
+          weekday: "long",
+          day: "numeric",
+          month: "long",
+          hour: "2-digit",
+          minute: "2-digit",
+        })
+      : "Aucun RDV planifié"
+
+    return { activeProspects, nextAppointment }
+  } catch {
+    return { activeProspects: 0, nextAppointment: "Aucun RDV planifié" }
+  }
 }
 
 async function updateUserMemory(
@@ -279,8 +419,9 @@ export async function POST(req: NextRequest) {
   }
 
   const payload = await getPayload({ config: configPromise })
+  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
 
-  // Load atlas-config global (prompt template, temperature, maxTokens)
+  // Load atlas-config global
   let promptTemplate = DEFAULT_ATLAS_PROMPT
   let temperature = 0.7
   let maxTokens = 1024
@@ -293,7 +434,7 @@ export async function POST(req: NextRequest) {
     // use defaults
   }
 
-  // Load user data
+  // Defaults
   let templateVars: Record<string, string | number> = {
     firstName: "toi",
     company: "ta société",
@@ -302,44 +443,71 @@ export async function POST(req: NextRequest) {
     xp: 0,
     modulesCompleted: 0,
     lastSimScore: 0,
+    strength_1: "—",
+    strength_2: "—",
+    strength_3: "—",
+    improvement_1: "—",
+    improvement_2: "—",
+    dailyChallenge: "Contacte 3 prospects aujourd'hui",
+    activeProspects: 0,
+    nextAppointment: "Aucun RDV planifié",
     context: "",
   }
-  let userMemoryCtx = ""
 
   if (userId) {
     try {
       const user = await payload.findByID({ collection: "users", id: userId, depth: 0 })
       const u = user as any
       const xp = Number(u?.xp ?? 0)
+      const memory: UserMemory = u?.userMemory ?? {}
+      const level = getAtlasLevel(xp)
+      const company = u?.mlmCompany || "ta société"
+
+      const [dailyChallenge, { activeProspects, nextAppointment }] = await Promise.all([
+        getDailyChallenge(payload, userId, memory, level, company, client),
+        getProspectsData(payload, userId),
+      ])
+
+      const strengths = memory.points_forts ?? []
+      const improvements = memory.axes_travail ?? []
+
       templateVars = {
         firstName: u?.firstName || "toi",
-        company: u?.mlmCompany || "ta société",
-        level: getAtlasLevel(xp),
+        company,
+        level,
         streak: Number(u?.streak ?? 0),
         xp,
         modulesCompleted: Number(u?.modulesCompleted ?? 0),
         lastSimScore: Number(u?.lastSimScore ?? 0),
+        strength_1: strengths[0] ?? "—",
+        strength_2: strengths[1] ?? "—",
+        strength_3: strengths[2] ?? "—",
+        improvement_1: improvements[0] ?? "—",
+        improvement_2: improvements[1] ?? "—",
+        dailyChallenge,
+        activeProspects,
+        nextAppointment,
         context: "",
       }
-      if (u?.userMemory) {
-        userMemoryCtx = buildMemoryContext(u.userMemory as UserMemory)
-      }
+
+      const memoryContext = buildMemoryContext(memory)
+      const ragContext = await getRagContext(message, userId)
+      const contextParts: string[] = []
+      if (memoryContext) contextParts.push(memoryContext)
+      if (ragContext) contextParts.push(ragContext)
+      templateVars.context = contextParts.join("\n\n") || "Aucun document disponible."
     } catch {
-      // use defaults
+      // use defaults, still try RAG
+      const ragContext = await getRagContext(message)
+      templateVars.context = ragContext || "Aucun document disponible."
     }
+  } else {
+    const ragContext = await getRagContext(message)
+    templateVars.context = ragContext || "Aucun document disponible."
   }
 
-  // RAG search + memory context → injected as {{context}}
-  const [ragContext] = await Promise.all([getRagContext(message, userId)])
-  const contextParts: string[] = []
-  if (userMemoryCtx) contextParts.push(userMemoryCtx)
-  if (ragContext) contextParts.push(ragContext)
-  templateVars.context = contextParts.join("\n\n") || "Aucun document disponible pour cette question."
-
-  // Fill template
   const systemPrompt = fillTemplate(promptTemplate, templateVars)
 
-  const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY })
   const encoder = new TextEncoder()
   let capturedFullText = ""
 
