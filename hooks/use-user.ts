@@ -51,26 +51,17 @@ export function useUser(): UseUserReturn {
   }
 
   async function updateProfile(data: ProfileUpdate) {
-    if (!user) throw new Error("Non connecté")
-    const res = await fetch(`/api/users/${user.id}`, {
+    const res = await fetch("/api/user/me", {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify(data),
     })
     if (!res.ok) {
       const err = await res.json().catch(() => ({}))
-      throw new Error(err.errors?.[0]?.message ?? err.message ?? "Erreur lors de la sauvegarde")
+      throw new Error(err.error ?? "Erreur lors de la sauvegarde")
     }
     const result = await res.json()
-    const doc = result.doc ?? {}
-    setUser((prev) => prev ? {
-      ...prev,
-      firstName: doc.firstName ?? prev.firstName,
-      lastName: doc.lastName ?? prev.lastName,
-      phone: doc.phone ?? prev.phone,
-      mlmCompany: doc.mlmCompany ?? prev.mlmCompany,
-      mlmLevel: doc.mlmLevel ?? prev.mlmLevel,
-    } : prev)
+    setUser((prev) => (prev ? { ...prev, ...result.user } : result.user))
   }
 
   async function logout() {
