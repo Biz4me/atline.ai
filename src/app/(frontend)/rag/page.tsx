@@ -202,6 +202,7 @@ export default function AdminPage() {
   const [filterDocType, setFilterDocType] = useState("")
   const [filterTheme, setFilterTheme] = useState("")
   const [deletingId, setDeletingId] = useState<string | null>(null)
+  const [deleteError, setDeleteError] = useState<string | null>(null)
 
 
   const fetchTags = useCallback(async () => {
@@ -237,12 +238,20 @@ export default function AdminPage() {
   const handleDelete = async (id: string | number) => {
     if (!user?.id) return
     setDeletingId(String(id))
+    setDeleteError(null)
     try {
       const res = await fetch(`/api/rag-documents?id=${id}`, {
         method: "DELETE",
         headers: { "x-user-id": user.id },
       })
-      if (res.ok) setDocs((prev) => prev.filter((d) => String(d.id) !== String(id)))
+      const json = await res.json().catch(() => ({}))
+      if (res.ok) {
+        setDocs((prev) => prev.filter((d) => String(d.id) !== String(id)))
+      } else {
+        setDeleteError(json.error ?? `Erreur ${res.status}`)
+      }
+    } catch (err) {
+      setDeleteError(err instanceof Error ? err.message : "Erreur réseau")
     } finally {
       setDeletingId(null)
     }
@@ -469,6 +478,13 @@ export default function AdminPage() {
               </select>
             </div>
           </div>
+
+          {deleteError && (
+            <div className="flex items-center gap-2 rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-xs text-red-400">
+              <XCircle className="h-3.5 w-3.5 flex-shrink-0" />
+              {deleteError}
+            </div>
+          )}
 
           {/* Liste scrollable */}
           <div className="flex-1 overflow-y-auto flex flex-col gap-2 pr-0.5">
