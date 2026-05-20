@@ -46,7 +46,7 @@ export async function POST(req: NextRequest) {
   if (res.ok) {
     try {
       await payload.create({
-        collection: "rag-documents",
+        collection: "rag-documents" as any,
         data: {
           title: title || file?.name || "Document",
           fileName: file?.name ?? null,
