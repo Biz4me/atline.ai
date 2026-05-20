@@ -18,7 +18,10 @@ function getAuthHeaders(req: NextRequest): Headers {
 export async function POST(req: NextRequest) {
   try {
     const payload = await getPayload({ config: configPromise })
-    const { user } = await payload.auth({ headers: getAuthHeaders(req) })
+    let user = (await payload.auth({ headers: req.headers })).user
+    if (!user) {
+      user = (await payload.auth({ headers: getAuthHeaders(req) })).user
+    }
 
     if (!user) {
       return NextResponse.json({ error: "Non authentifié" }, { status: 401 })

@@ -6,7 +6,7 @@ export const runtime = "nodejs"
 
 const ALLOWED_FIELDS = ["firstName", "lastName", "phone", "mlmCompany", "mlmLevel"] as const
 
-function getAuthHeaders(req: NextRequest): Headers {
+function buildAuthHeaders(req: NextRequest): Headers {
   const headers = new Headers(req.headers)
   const cookie = req.headers.get("cookie") ?? ""
   const match = cookie.match(/payload-token=([^;]+)/)
@@ -19,7 +19,12 @@ function getAuthHeaders(req: NextRequest): Headers {
 export async function PATCH(req: NextRequest) {
   try {
     const payload = await getPayload({ config: configPromise })
-    const { user } = await payload.auth({ headers: getAuthHeaders(req) })
+
+    // Try cookie-based auth first, then fall back to manual header extraction
+    let user = (await payload.auth({ headers: req.headers })).user
+    if (!user) {
+      user = (await payload.auth({ headers: buildAuthHeaders(req) })).user
+    }
 
     if (!user) {
       return NextResponse.json({ error: "Non authentifié" }, { status: 401 })
