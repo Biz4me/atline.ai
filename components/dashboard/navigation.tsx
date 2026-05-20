@@ -346,7 +346,7 @@ export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarPr
       </div>
 
       {/* Navigation */}
-      <nav className={cn("flex-1 px-2 py-1", collapsed ? "overflow-visible" : "overflow-y-auto")}>
+      <nav className={cn("flex flex-1 flex-col justify-end px-2 py-1", collapsed ? "overflow-visible" : "overflow-y-auto")}>
         <div className="space-y-0.5">
           {navItems.map((item) => {
             const Icon = item.icon
