@@ -61,6 +61,30 @@ export const Users: CollectionConfig = {
       },
     },
     {
+      name: 'xp',
+      type: 'number',
+      defaultValue: 0,
+      admin: { description: 'XP total accumulé (mis à jour par Atlas)' },
+    },
+    {
+      name: 'streak',
+      type: 'number',
+      defaultValue: 0,
+      admin: { description: 'Jours consécutifs d\'activité' },
+    },
+    {
+      name: 'modulesCompleted',
+      type: 'number',
+      defaultValue: 0,
+      admin: { description: 'Modules formation complétés (sur 8)' },
+    },
+    {
+      name: 'lastSimScore',
+      type: 'number',
+      defaultValue: 0,
+      admin: { description: 'Score dernière simulation (/10)' },
+    },
+    {
       name: 'userMemory',
       type: 'json',
       admin: {

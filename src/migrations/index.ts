@@ -5,6 +5,7 @@ import * as migration_20260519_133320 from './20260519_133320';
 import * as migration_20260519_164020_add_phone_avatar from './20260519_164020_add_phone_avatar';
 import * as migration_20260520_rag_globals from './20260520_rag_globals';
 import * as migration_20260520_163000_rag_tables from './20260520_163000_rag_tables';
+import * as migration_20260520_180000_gamification from './20260520_180000_gamification';
 
 export const migrations = [
   {
@@ -41,5 +42,10 @@ export const migrations = [
     up: migration_20260520_163000_rag_tables.up,
     down: migration_20260520_163000_rag_tables.down,
     name: '20260520_163000_rag_tables',
+  },
+  {
+    up: migration_20260520_180000_gamification.up,
+    down: migration_20260520_180000_gamification.down,
+    name: '20260520_180000_gamification',
   },
 ];
