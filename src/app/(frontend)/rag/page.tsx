@@ -410,7 +410,7 @@ export default function AdminPage() {
                 <div className="space-y-1.5">
                   <label className="text-xs font-medium text-muted-foreground">Thème</label>
                   <ThemeAutocomplete
-                    userId={user.id}
+                    userId={user!.id}
                     allTags={allTags}
                     value={theme}
                     onChange={setTheme}
@@ -462,7 +462,12 @@ export default function AdminPage() {
           <div className="flex flex-col gap-3 rounded-xl border border-white/[0.08] bg-card p-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm font-semibold text-foreground">Bibliothèque RAG</p>
+                <p className="text-sm font-semibold text-foreground">
+                  Bibliothèque RAG
+                  <span className="ml-2 text-xs font-normal text-muted-foreground">
+                    {docs.reduce((sum, d) => sum + (d.chunksCount ?? 0), 0).toLocaleString()} chunks
+                  </span>
+                </p>
                 <p className="text-xs text-muted-foreground">{docs.length} document{docs.length !== 1 ? "s" : ""}</p>
               </div>
               <button
