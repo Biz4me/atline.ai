@@ -7,8 +7,8 @@ export const AtlasConfig: GlobalConfig = {
     group: 'Configuration agents',
   },
   access: {
-    read: ({ req }) => !!(req.user as any)?.isAdmin,
-    update: ({ req }) => !!(req.user as any)?.isAdmin,
+    read: ({ req }) => !!req.user,
+    update: ({ req }) => !!req.user,
   },
   fields: [
     {

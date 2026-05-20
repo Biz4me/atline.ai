@@ -8,10 +8,10 @@ export const RagDocuments: CollectionConfig = {
     group: 'RAG',
   },
   access: {
-    read: ({ req }) => !!(req.user as any)?.isAdmin,
-    create: ({ req }) => !!(req.user as any)?.isAdmin,
-    update: ({ req }) => !!(req.user as any)?.isAdmin,
-    delete: ({ req }) => !!(req.user as any)?.isAdmin,
+    read: ({ req }) => !!req.user,
+    create: ({ req }) => !!req.user,
+    update: ({ req }) => !!req.user,
+    delete: ({ req }) => !!req.user,
   },
   fields: [
     { name: 'title', type: 'text', required: true },
