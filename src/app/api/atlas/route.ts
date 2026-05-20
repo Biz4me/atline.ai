@@ -31,9 +31,30 @@ Axes d'amélioration : {{improvement_1}}, {{improvement_2}}
 Défi actif aujourd'hui : {{dailyChallenge}}
 Prospects actifs : {{activeProspects}}
 Prochain RDV : {{nextAppointment}}
+Mode de sortie : {{outputMode}}
 
 Contexte base de connaissance :
 {{context}}
+
+---
+
+# MODE DE SORTIE
+
+## Si outputMode = "text" (chat Atlas)
+→ Utilise le Markdown complet (##, **gras**, \`\`\`, ✅ ❌, →)
+→ Structure visuelle riche
+→ Scripts entre blocs de code
+→ Émojis autorisés
+
+## Si outputMode = "voice" (simulations vocales)
+→ ZERO Markdown — aucun symbole
+→ Phrases courtes, 15 mots maximum
+→ Langage naturel parlé, pas écrit
+→ Pas d'émojis, pas de tirets, pas de flèches
+→ Ponctuation naturelle pour guider le débit
+→ Pauses indiquées par "..."
+→ Ton plus chaud, plus humain
+→ Jamais de listes — tout en prose fluide
 
 ---
 
@@ -412,7 +433,7 @@ Réponse Atlas : ${assistantText}`,
 }
 
 export async function POST(req: NextRequest) {
-  const { message, userId } = await req.json()
+  const { message, userId, outputMode = "text" } = await req.json()
 
   if (!message?.trim()) {
     return new Response("Message requis", { status: 400 })
@@ -434,6 +455,8 @@ export async function POST(req: NextRequest) {
     // use defaults
   }
 
+  const safeOutputMode = outputMode === "voice" ? "voice" : "text"
+
   // Defaults
   let templateVars: Record<string, string | number> = {
     firstName: "toi",
@@ -451,6 +474,7 @@ export async function POST(req: NextRequest) {
     dailyChallenge: "Contacte 3 prospects aujourd'hui",
     activeProspects: 0,
     nextAppointment: "Aucun RDV planifié",
+    outputMode: safeOutputMode,
     context: "",
   }
 
@@ -487,6 +511,7 @@ export async function POST(req: NextRequest) {
         dailyChallenge,
         activeProspects,
         nextAppointment,
+        outputMode: safeOutputMode,
         context: "",
       }
 

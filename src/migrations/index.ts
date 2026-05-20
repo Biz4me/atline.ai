@@ -8,6 +8,7 @@ import * as migration_20260520_163000_rag_tables from './20260520_163000_rag_tab
 import * as migration_20260520_180000_gamification from './20260520_180000_gamification';
 import * as migration_20260520_190000_seed_atlas_prompt from './20260520_190000_seed_atlas_prompt';
 import * as migration_20260520_200000_update_atlas_prompt_v2 from './20260520_200000_update_atlas_prompt_v2';
+import * as migration_20260520_210000_atlas_voice_mode from './20260520_210000_atlas_voice_mode';
 
 export const migrations = [
   {
@@ -59,5 +60,10 @@ export const migrations = [
     up: migration_20260520_200000_update_atlas_prompt_v2.up,
     down: migration_20260520_200000_update_atlas_prompt_v2.down,
     name: '20260520_200000_update_atlas_prompt_v2',
+  },
+  {
+    up: migration_20260520_210000_atlas_voice_mode.up,
+    down: migration_20260520_210000_atlas_voice_mode.down,
+    name: '20260520_210000_atlas_voice_mode',
   },
 ];
