@@ -21,16 +21,19 @@ export async function GET(req: NextRequest) {
   const { searchParams } = new URL(req.url)
   const agent = searchParams.get("agent")
   const docType = searchParams.get("docType")
+  const themeId = searchParams.get("themeId")
 
   const where: Record<string, any> = {}
   if (agent) where.agent = { equals: agent }
   if (docType) where.docType = { equals: docType }
+  if (themeId) where["theme.id"] = { equals: Number(themeId) }
 
   const result = await payload.find({
     collection: "rag-documents" as any,
     where,
     sort: "-createdAt",
     limit: 200,
+    depth: 1,
     overrideAccess: true,
   })
 

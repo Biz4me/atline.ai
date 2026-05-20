@@ -33,6 +33,7 @@ export async function POST(req: NextRequest) {
   const docType = formData.get("doc_type") as string ?? "autre"
   const title = formData.get("title") as string ?? ""
   const language = formData.get("language") as string ?? "fr"
+  const themeId = formData.get("theme_id") as string | null
   const file = formData.get("file") as File | null
 
   const res = await fetch(`${vpsUrl}/ingest`, {
@@ -56,6 +57,7 @@ export async function POST(req: NextRequest) {
           status: "indexed",
           chunksCount: json.points_inserted ?? json.chunks ?? 0,
           uploadedBy: user.id,
+          ...(themeId ? { theme: themeId } : {}),
         } as any,
         overrideAccess: true,
       })

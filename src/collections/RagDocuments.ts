@@ -64,6 +64,12 @@ export const RagDocuments: CollectionConfig = {
       admin: { readOnly: true },
     },
     {
+      name: 'theme',
+      type: 'relationship',
+      relationTo: 'rag-tags',
+      label: 'Thème',
+    },
+    {
       name: 'uploadedBy',
       type: 'relationship',
       relationTo: 'users',

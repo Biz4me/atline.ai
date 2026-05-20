@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect, useCallback } from "react"
 import { DashboardShell } from "@/components/dashboard/shell"
 import { useUser } from "@/hooks/use-user"
-import { Upload, FileText, CheckCircle, XCircle, Loader2, Trash2, RefreshCw } from "lucide-react"
+import { Upload, FileText, CheckCircle, XCircle, Loader2, Trash2, RefreshCw, Tag, X } from "lucide-react"
 import { cn } from "@/lib/utils"
 
 const AGENTS = [
@@ -53,6 +53,11 @@ interface IngestResult {
   agent: string
 }
 
+interface RagTag {
+  id: string | number
+  name: string
+}
+
 interface RagDoc {
   id: string
   title: string
@@ -62,11 +67,114 @@ interface RagDoc {
   language: string
   status: string
   chunksCount: number
+  theme?: RagTag | null
   createdAt: string
 }
 
 function getExt(fileName: string): string {
   return (fileName?.split(".").pop() ?? "").toLowerCase()
+}
+
+// ── Autocomplete thème ──
+function ThemeAutocomplete({
+  userId,
+  allTags,
+  value,
+  onChange,
+  onTagsChange,
+}: {
+  userId: string
+  allTags: RagTag[]
+  value: RagTag | null
+  onChange: (tag: RagTag | null) => void
+  onTagsChange: (tags: RagTag[]) => void
+}) {
+  const [input, setInput] = useState("")
+  const [open, setOpen] = useState(false)
+  const ref = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    function handle(e: MouseEvent) {
+      if (ref.current && !ref.current.contains(e.target as Node)) setOpen(false)
+    }
+    document.addEventListener("mousedown", handle)
+    return () => document.removeEventListener("mousedown", handle)
+  }, [])
+
+  const filtered = input.trim()
+    ? allTags.filter((t) => t.name.toLowerCase().includes(input.toLowerCase()))
+    : allTags
+
+  const canCreate = input.trim() && !allTags.some((t) => t.name.toLowerCase() === input.toLowerCase())
+
+  const selectTag = (tag: RagTag) => {
+    onChange(tag)
+    setInput("")
+    setOpen(false)
+  }
+
+  const createTag = async () => {
+    const name = input.trim()
+    if (!name) return
+    const res = await fetch("/api/rag-tags", {
+      method: "POST",
+      headers: { "Content-Type": "application/json", "x-user-id": userId },
+      body: JSON.stringify({ name }),
+    })
+    const data = await res.json()
+    if (data.tag) {
+      onTagsChange([...allTags, data.tag].sort((a, b) => a.name.localeCompare(b.name)))
+      selectTag(data.tag)
+    }
+  }
+
+  if (value) {
+    return (
+      <div className="flex items-center gap-2 rounded-lg border border-border bg-background px-3 py-2">
+        <Tag className="h-3.5 w-3.5 text-primary flex-shrink-0" />
+        <span className="flex-1 text-sm text-foreground">{value.name}</span>
+        <button onClick={() => onChange(null)} className="text-muted-foreground hover:text-foreground">
+          <X className="h-3.5 w-3.5" />
+        </button>
+      </div>
+    )
+  }
+
+  return (
+    <div className="relative" ref={ref}>
+      <input
+        type="text"
+        value={input}
+        onChange={(e) => { setInput(e.target.value); setOpen(true) }}
+        onFocus={() => setOpen(true)}
+        placeholder="Rechercher ou créer un thème…"
+        className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+      />
+      {open && (filtered.length > 0 || canCreate) && (
+        <div className="absolute left-0 right-0 top-full z-50 mt-1 max-h-48 overflow-y-auto rounded-lg border border-border bg-card shadow-lg">
+          {filtered.map((tag) => (
+            <button
+              key={tag.id}
+              onMouseDown={() => selectTag(tag)}
+              className="flex w-full items-center gap-2 px-3 py-2 text-sm text-foreground hover:bg-muted transition"
+            >
+              <Tag className="h-3.5 w-3.5 text-muted-foreground" />
+              {tag.name}
+            </button>
+          ))}
+          {canCreate && (
+            <button
+              onMouseDown={createTag}
+              className="flex w-full items-center gap-2 border-t border-border px-3 py-2 text-sm text-primary hover:bg-muted transition"
+            >
+              <Tag className="h-3.5 w-3.5" />
+              Créer &ldquo;{input.trim()}&rdquo;
+            </button>
+          )}
+        </div>
+      )}
+    </div>
+  )
 }
 
 export default function AdminPage() {
@@ -78,17 +186,30 @@ export default function AdminPage() {
   const [docType, setDocType] = useState("livre")
   const [title, setTitle] = useState("")
   const [language, setLanguage] = useState("fr")
+  const [theme, setTheme] = useState<RagTag | null>(null)
   const [isUploading, setIsUploading] = useState(false)
   const [result, setResult] = useState<IngestResult | null>(null)
   const [error, setError] = useState<string | null>(null)
   const fileInputRef = useRef<HTMLInputElement>(null)
+
+  // ── Tags ──
+  const [allTags, setAllTags] = useState<RagTag[]>([])
 
   // ── Documents list state ──
   const [docs, setDocs] = useState<RagDoc[]>([])
   const [docsLoading, setDocsLoading] = useState(false)
   const [filterAgent, setFilterAgent] = useState("")
   const [filterDocType, setFilterDocType] = useState("")
+  const [filterTheme, setFilterTheme] = useState("")
   const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  const fetchTags = useCallback(async () => {
+    if (!user?.id) return
+    const res = await fetch("/api/rag-tags", { headers: { "x-user-id": user.id } })
+    if (!res.ok) return
+    const data = await res.json()
+    setAllTags(data.tags ?? [])
+  }, [user?.id])
 
   const fetchDocs = useCallback(async () => {
     if (!user?.id) return
@@ -97,6 +218,7 @@ export default function AdminPage() {
       const params = new URLSearchParams()
       if (filterAgent)   params.set("agent", filterAgent)
       if (filterDocType) params.set("docType", filterDocType)
+      if (filterTheme)   params.set("themeId", filterTheme)
       const res = await fetch(`/api/rag-documents?${params}`, {
         headers: { "x-user-id": user.id },
       })
@@ -106,8 +228,9 @@ export default function AdminPage() {
     } finally {
       setDocsLoading(false)
     }
-  }, [user?.id, filterAgent, filterDocType])
+  }, [user?.id, filterAgent, filterDocType, filterTheme])
 
+  useEffect(() => { fetchTags() }, [fetchTags])
   useEffect(() => { fetchDocs() }, [fetchDocs])
 
   const handleDelete = async (id: string) => {
@@ -169,6 +292,7 @@ export default function AdminPage() {
     form.append("title", title || file.name)
     form.append("language", language)
     form.append("uploaded_by", user.id)
+    if (theme) form.append("theme_id", String(theme.id))
 
     try {
       const res = await fetch("/api/ingest", {
@@ -181,6 +305,7 @@ export default function AdminPage() {
       setResult(json)
       setFile(null)
       setTitle("")
+      setTheme(null)
       if (fileInputRef.current) fileInputRef.current.value = ""
       fetchDocs()
     } catch (err: unknown) {
@@ -281,6 +406,17 @@ export default function AdminPage() {
                     {LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
                   </select>
                 </div>
+
+                <div className="space-y-1.5">
+                  <label className="text-xs font-medium text-muted-foreground">Thème</label>
+                  <ThemeAutocomplete
+                    userId={user.id}
+                    allTags={allTags}
+                    value={theme}
+                    onChange={setTheme}
+                    onTagsChange={setAllTags}
+                  />
+                </div>
               </div>
             </div>
 
@@ -358,11 +494,20 @@ export default function AdminPage() {
                 <option value="">Tous les types</option>
                 {DOC_TYPES.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
               </select>
+
+              <select
+                value={filterTheme}
+                onChange={(e) => setFilterTheme(e.target.value)}
+                className="col-span-2 rounded-lg border border-border bg-background px-2.5 py-1.5 text-xs text-foreground focus:border-primary focus:outline-none"
+              >
+                <option value="">Tous les thèmes</option>
+                {allTags.map((t) => <option key={t.id} value={String(t.id)}>{t.name}</option>)}
+              </select>
             </div>
           </div>
 
           {/* Liste */}
-          <div className="flex flex-col gap-2 overflow-y-auto" style={{ maxHeight: "calc(100vh - 320px)" }}>
+          <div className="flex flex-col gap-2 overflow-y-auto" style={{ maxHeight: "calc(100vh - 340px)" }}>
             {docsLoading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
@@ -384,14 +529,12 @@ export default function AdminPage() {
                       <p className="truncate text-sm font-medium text-foreground">{doc.title}</p>
                       <p className="mt-0.5 truncate text-xs text-muted-foreground">{doc.fileName}</p>
                       <div className="mt-2 flex flex-wrap items-center gap-1.5">
-                        {/* Agent badge */}
                         <span className={cn(
                           "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
                           AGENT_COLORS[doc.agent] ?? "bg-white/10 text-white"
                         )}>
                           {doc.agent}
                         </span>
-                        {/* Format badge */}
                         {ext && (
                           <span className={cn(
                             "rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide",
@@ -400,11 +543,15 @@ export default function AdminPage() {
                             {ext}
                           </span>
                         )}
-                        {/* Type badge */}
                         <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] text-muted-foreground">
                           {DOC_TYPES.find((d) => d.value === doc.docType)?.label ?? doc.docType}
                         </span>
-                        {/* Chunks */}
+                        {doc.theme && (
+                          <span className="flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] text-primary">
+                            <Tag className="h-2.5 w-2.5" />
+                            {doc.theme.name}
+                          </span>
+                        )}
                         <span className="text-[10px] text-muted-foreground/60">
                           {doc.chunksCount} chunks
                         </span>
