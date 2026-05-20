@@ -28,16 +28,20 @@ export async function GET(req: NextRequest) {
   if (docType) where.docType = { equals: docType }
   if (themeId) where["theme.id"] = { equals: Number(themeId) }
 
-  const result = await payload.find({
-    collection: "rag-documents" as any,
-    where,
-    sort: "-createdAt",
-    limit: 200,
-    depth: 1,
-    overrideAccess: true,
-  })
-
-  return NextResponse.json({ docs: result.docs, total: result.totalDocs })
+  try {
+    const result = await payload.find({
+      collection: "rag-documents" as any,
+      where,
+      sort: "-createdAt",
+      limit: 200,
+      depth: 1,
+      overrideAccess: true,
+    })
+    return NextResponse.json({ docs: result.docs, total: result.totalDocs })
+  } catch (e) {
+    console.error("rag-documents GET error:", e)
+    return NextResponse.json({ error: String(e) }, { status: 500 })
+  }
 }
 
 export async function DELETE(req: NextRequest) {

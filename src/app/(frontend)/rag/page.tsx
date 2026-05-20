@@ -222,8 +222,8 @@ export default function AdminPage() {
       const res = await fetch(`/api/rag-documents?${params}`, {
         headers: { "x-user-id": user.id },
       })
-      if (!res.ok) return
       const data = await res.json()
+      if (!res.ok) { console.error("rag-documents error:", data); return }
       setDocs(data.docs ?? [])
     } finally {
       setDocsLoading(false)
