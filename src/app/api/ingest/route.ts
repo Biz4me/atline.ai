@@ -59,7 +59,7 @@ export async function POST(req: NextRequest) {
           status: "indexed",
           chunksCount: json.points_inserted ?? json.chunks ?? 0,
           uploadedBy: user.id,
-          ...(themeId ? { theme: themeId } : {}),
+          ...(themeId ? { theme: parseInt(themeId) } : {}),
         } as any,
         overrideAccess: true,
       })
