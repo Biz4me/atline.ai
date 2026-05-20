@@ -68,6 +68,26 @@
   --radius-sm: 6px;
 }
 
+/* ── Atlas animations ── */
+@keyframes atlas-pulse {
+  0%, 100% { opacity: 1;    transform: scale(1); }
+  30%       { opacity: 0.6;  transform: scale(0.88); }
+  60%       { opacity: 0.85; transform: scale(0.96); }
+}
+
+@keyframes atlas-token-in {
+  from { opacity: 0; transform: translateY(2px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.atlas-icon-thinking {
+  animation: atlas-pulse 1.6s ease-in-out infinite;
+}
+
+.atlas-token-in {
+  animation: atlas-token-in 0.12s ease-out both;
+}
+
 * {
   box-sizing: border-box;
   border-color: var(--border);
