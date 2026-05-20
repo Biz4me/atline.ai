@@ -66,7 +66,7 @@ export const RagDocuments: CollectionConfig = {
     {
       name: 'theme',
       type: 'relationship',
-      relationTo: 'rag-tags',
+      relationTo: 'rag-tags' as any,
       label: 'Thème',
     },
     {
