@@ -196,7 +196,7 @@ export function AtlasSidebar({
           className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition"
         >
           <IconLayoutDashboard className="h-4 w-4 flex-shrink-0" />
-          <span className="text-xs">Accueil</span>
+          <span className="text-xs">Go Pro</span>
         </Link>
       </div>
 

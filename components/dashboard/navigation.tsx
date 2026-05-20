@@ -321,55 +321,93 @@ export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarPr
       </div>
 
       {/* + Nouvelle conversation */}
-      <div className={cn("px-3 pt-3 pb-2", collapsed && "px-2")}>
-        <Link
-          href="/atlas"
-          className={cn(
-            "flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground hover:bg-muted transition",
-            collapsed && "justify-center px-0 border-none"
-          )}
-          title="Nouvelle conversation"
-        >
-          <IconSparkles className="h-4 w-4 text-primary flex-shrink-0" />
-          {!collapsed && <span>Nouvelle conversation</span>}
-        </Link>
+      <div className={cn("px-3 pt-3 pb-2", collapsed && "px-2 flex justify-center")}>
+        {collapsed ? (
+          <div className="group relative">
+            <Link
+              href="/atlas"
+              className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-muted transition"
+            >
+              <IconSparkles className="h-5 w-5 text-primary" />
+            </Link>
+            <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
+              Nouvelle conversation
+            </span>
+          </div>
+        ) : (
+          <Link
+            href="/atlas"
+            className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground hover:bg-muted transition"
+          >
+            <IconSparkles className="h-4 w-4 text-primary flex-shrink-0" />
+            <span>Nouvelle conversation</span>
+          </Link>
+        )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 overflow-y-auto px-2 py-1">
+      <nav className={cn("flex-1 px-2 py-1", collapsed ? "overflow-visible" : "overflow-y-auto")}>
         <div className="space-y-0.5">
           {navItems.map((item) => {
             const Icon = item.icon
             const active = isActive(item.href)
-            return (
+            return collapsed ? (
+              <div key={item.href} className="group relative flex justify-center">
+                <Link
+                  href={item.href}
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-md transition-colors",
+                    active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  <Icon className="h-5 w-5 shrink-0" />
+                </Link>
+                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
+                  {item.label}
+                </span>
+              </div>
+            ) : (
               <Link
                 key={item.href}
                 href={item.href}
                 className={cn(
                   "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-                  active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                  collapsed && "justify-center px-0"
+                  active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                 )}
-                title={collapsed ? item.label : undefined}
               >
                 <Icon className="h-5 w-5 shrink-0" />
-                {!collapsed && <span>{item.label}</span>}
+                <span>{item.label}</span>
               </Link>
             )
           })}
           {(user as any)?.isAdmin && (
-            <Link
-              href="/rag"
-              className={cn(
-                "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-                isActive("/rag") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground",
-                collapsed && "justify-center px-0"
-              )}
-              title={collapsed ? "Admin RAG" : undefined}
-            >
-              <IconUpload className="h-5 w-5 shrink-0" />
-              {!collapsed && <span>Admin RAG</span>}
-            </Link>
+            collapsed ? (
+              <div className="group relative flex justify-center">
+                <Link
+                  href="/rag"
+                  className={cn(
+                    "flex h-9 w-9 items-center justify-center rounded-md transition-colors",
+                    isActive("/rag") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  <IconUpload className="h-5 w-5 shrink-0" />
+                </Link>
+                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
+                  Admin RAG
+                </span>
+              </div>
+            ) : (
+              <Link
+                href="/rag"
+                className={cn(
+                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                  isActive("/rag") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                <IconUpload className="h-5 w-5 shrink-0" />
+                <span>Admin RAG</span>
+              </Link>
+            )
           )}
         </div>
       </nav>
