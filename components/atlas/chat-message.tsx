@@ -8,6 +8,27 @@ interface ChatMessageProps {
   isStreaming?: boolean
 }
 
+function renderContent(content: string, isStreaming?: boolean) {
+  const paragraphs = content.split(/\n\n+/)
+  return paragraphs.map((para, i) => {
+    const isLast = i === paragraphs.length - 1
+    const lines = para.split("\n")
+    return (
+      <p key={i} className={cn("text-base leading-snug", !isLast && "mb-2")}>
+        {lines.map((line, j) => (
+          <span key={j}>
+            {line}
+            {j < lines.length - 1 && <br />}
+          </span>
+        ))}
+        {isLast && isStreaming && (
+          <span className="ml-0.5 inline-block h-[15px] w-[2px] translate-y-[2px] animate-pulse rounded-sm bg-current opacity-70" />
+        )}
+      </p>
+    )
+  })
+}
+
 export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
   const isUser = role === "user"
 
@@ -21,12 +42,13 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
             : "w-full border border-border bg-card text-foreground"
         )}
       >
-        <p className="whitespace-pre-wrap text-base leading-relaxed">
-          {content}
-          {isStreaming && (
-            <span className="ml-0.5 inline-block h-[16px] w-[2px] translate-y-[2px] animate-pulse rounded-sm bg-current opacity-70" />
-          )}
-        </p>
+        {isUser ? (
+          <p className="text-base leading-snug whitespace-pre-wrap">
+            {content}
+          </p>
+        ) : (
+          renderContent(content, isStreaming)
+        )}
       </div>
     </div>
   )
