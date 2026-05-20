@@ -316,14 +316,7 @@ export default function AdminPage() {
   }
 
   return (
-    <DashboardShell>
-      <div className="mb-6">
-        <h1 className="font-heading text-xl font-semibold text-white">Administration — Documents RAG</h1>
-        <p className="mt-1 text-sm text-muted-foreground">
-          Indexe des documents dans la base de connaissances et consulte la bibliothèque.
-        </p>
-      </div>
-
+    <DashboardShell breadcrumbs={[{ label: "Administration — Documents RAG" }]}>
       <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
 
         {/* ── Colonne gauche : Upload ── */}
@@ -532,7 +525,7 @@ export default function AdminPage() {
           </div>
 
           {/* Liste */}
-          <div className="flex flex-col gap-2 overflow-y-auto" style={{ maxHeight: "calc(100vh - 340px)" }}>
+          <div className="flex flex-col gap-2 overflow-y-auto" style={{ maxHeight: "calc(100dvh - 280px)" }}>
             {docsLoading ? (
               <div className="flex items-center justify-center py-12">
                 <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />

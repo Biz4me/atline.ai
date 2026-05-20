@@ -62,6 +62,6 @@ export async function DELETE(req: NextRequest) {
   const id = searchParams.get("id")
   if (!id) return NextResponse.json({ error: "ID manquant" }, { status: 400 })
 
-  await payload.delete({ collection: "rag-documents" as any, id, overrideAccess: true })
+  await payload.delete({ collection: "rag-documents" as any, id: parseInt(id), overrideAccess: true })
   return NextResponse.json({ ok: true })
 }
