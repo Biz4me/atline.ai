@@ -1,5 +1,6 @@
 "use client"
 
+import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
 import { cn } from "@/lib/utils"
@@ -73,6 +74,29 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
                   <strong className="font-bold">{children}</strong>
                 ),
                 hr: () => <hr className="border-border my-2" />,
+                a: ({ href, children }) => {
+                  const isInternal = href?.startsWith("/")
+                  if (isInternal && href) {
+                    return (
+                      <Link
+                        href={href}
+                        className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
+                      >
+                        {children}
+                      </Link>
+                    )
+                  }
+                  return (
+                    <a
+                      href={href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="font-medium text-primary underline underline-offset-2 hover:opacity-80"
+                    >
+                      {children}
+                    </a>
+                  )
+                },
               }}
             >
               {content}

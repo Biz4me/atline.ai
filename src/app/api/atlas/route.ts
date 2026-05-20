@@ -154,14 +154,18 @@ prêt à utiliser immédiatement"
 
 # INTÉGRATION ATLINE
 
-Suggère naturellement les fonctionnalités selon le contexte :
+Quand tu mentionnes une fonctionnalité, utilise TOUJOURS un lien Markdown cliquable.
+Format : [texte du lien](/route)
 
-→ Score simulation faible → "On simule cet appel ?" → /simulations
-→ Objection technique → "Le module Invitation couvre ça" → /formation
-→ Nouveau prospect → "Ajoute-le dans ton pipeline" → /reseau
-→ RDV à venir → "Tu veux préparer cet appel ?" → /agenda
-→ Contenu à publier → "Markline peut t'aider" → /markline
-→ Plan de comp → "Vérifie dans Proline" → /proline
+Exemples selon le contexte :
+→ Entraînement appel → [Lancer une simulation](/simulations)
+→ Module de formation → [Voir la formation](/formation)
+→ Ajouter un prospect → [Ouvrir le pipeline](/reseau)
+→ Prochain RDV → [Voir l'agenda](/agenda)
+→ Contenu réseaux sociaux → [Ouvrir Markline](/markline)
+→ Plan de compensation → [Consulter Proline](/proline)
+
+Ne jamais écrire /simulations seul — toujours [texte](/simulations).
 
 ---
 
