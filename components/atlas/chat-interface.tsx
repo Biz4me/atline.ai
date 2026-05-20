@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from "react"
-import { ChevronDown } from "lucide-react"
+import { ChevronDown, Menu } from "lucide-react"
 import { QuoteCard } from "./quote-card"
 import { ChatMessage, TypingIndicator } from "./chat-message"
 import { QuickPrompts } from "./quick-prompts"
@@ -14,31 +14,71 @@ interface Message {
   role: "user" | "assistant"
   content: string
   isStreaming?: boolean
+  createdAt?: string
 }
 
-// Word-by-word interval (ms) — fast enough to feel live, slow enough to read
+interface ChatInterfaceProps {
+  conversationId?: string
+  moduleWelcome?: string
+  onConversationCreated?: (id: string) => void
+  onExchangeComplete?: () => void
+  onOpenSidebar?: () => void
+}
+
 const WORD_INTERVAL_MS = 22
 
-export function ChatInterface() {
+export function ChatInterface({
+  conversationId,
+  moduleWelcome,
+  onConversationCreated,
+  onExchangeComplete,
+  onOpenSidebar,
+}: ChatInterfaceProps) {
   const { user } = useUser()
   const [messages, setMessages] = useState<Message[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
   const [showScrollBtn, setShowScrollBtn] = useState(false)
+  const [activeConvId, setActiveConvId] = useState<string | undefined>(conversationId)
 
   const scrollRef = useRef<HTMLDivElement>(null)
   const abortRef = useRef<AbortController | null>(null)
-
-  // Word-queue streaming
   const wordQueueRef = useRef<string[]>([])
   const displayedTextRef = useRef("")
   const wordTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const currentIdRef = useRef<string>("")
-
-  // Smart scroll
   const isAtBottomRef = useRef(true)
 
-  const sessionId = user?.id ? `atlas-${user.id}` : "atlas-guest"
+  // Load conversation from DB on mount / conversationId change
+  useEffect(() => {
+    setActiveConvId(conversationId)
+    if (!conversationId) {
+      // New chat — show module welcome if present
+      if (moduleWelcome) {
+        setMessages([{
+          id: "welcome",
+          role: "assistant",
+          content: moduleWelcome,
+        }])
+      } else {
+        setMessages([])
+      }
+      return
+    }
+    fetch(`/api/conversations/${conversationId}`)
+      .then((r) => r.json())
+      .then((data) => {
+        if (data.messages && Array.isArray(data.messages)) {
+          setMessages(data.messages.map((m: any) => ({
+            id: m.id ?? String(Math.random()),
+            role: m.role,
+            content: m.content,
+            createdAt: m.createdAt,
+          })))
+        }
+      })
+      .catch(() => {})
+  }, [conversationId, moduleWelcome])
 
   const scrollToBottom = useCallback((force = false) => {
     if (!scrollRef.current) return
@@ -50,12 +90,11 @@ export function ChatInterface() {
   const handleScroll = useCallback(() => {
     const el = scrollRef.current
     if (!el) return
-    const distFromBottom = el.scrollHeight - el.scrollTop - el.clientHeight
-    isAtBottomRef.current = distFromBottom < 80
-    setShowScrollBtn(distFromBottom > 120)
+    const dist = el.scrollHeight - el.scrollTop - el.clientHeight
+    isAtBottomRef.current = dist < 80
+    setShowScrollBtn(dist > 120)
   }, [])
 
-  // Flush remaining queue immediately (called on stream end)
   const flushQueue = useCallback((assistantId: string) => {
     if (wordTimerRef.current) {
       clearInterval(wordTimerRef.current)
@@ -75,7 +114,6 @@ export function ChatInterface() {
     scrollToBottom()
   }, [scrollToBottom])
 
-  // Start word-by-word interval
   const startWordTimer = useCallback((assistantId: string) => {
     if (wordTimerRef.current) return
     wordTimerRef.current = setInterval(() => {
@@ -94,8 +132,33 @@ export function ChatInterface() {
   const handleSend = async (content: string) => {
     if (isStreaming) return
 
-    const userMsg: Message = { id: Date.now().toString(), role: "user", content }
-    setMessages((prev) => [...prev, userMsg])
+    // Ensure conversation exists in DB
+    let convId = activeConvId
+    if (!convId && user?.id) {
+      try {
+        const res = await fetch("/api/conversations", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ moduleId: null }),
+        })
+        const data = await res.json()
+        convId = data.id
+        setActiveConvId(convId)
+        onConversationCreated?.(data.id)
+      } catch {}
+    }
+
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content,
+      createdAt: new Date().toISOString(),
+    }
+    setMessages((prev) => {
+      // Remove welcome message if present
+      const filtered = prev.filter((m) => m.id !== "welcome")
+      return [...filtered, userMsg]
+    })
     setIsTyping(true)
     isAtBottomRef.current = true
     scrollToBottom(true)
@@ -111,7 +174,11 @@ export function ChatInterface() {
       const res = await fetch("/api/atlas", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: content, sessionId, userId: user?.id }),
+        body: JSON.stringify({
+          message: content,
+          userId: user?.id,
+          conversationId: convId,
+        }),
         signal: abortRef.current.signal,
       })
 
@@ -124,8 +191,6 @@ export function ChatInterface() {
         { id: assistantId, role: "assistant", content: "", isStreaming: true },
       ])
       scrollToBottom(true)
-
-      // Start word-by-word display
       startWordTimer(assistantId)
 
       const reader = res.body.getReader()
@@ -163,9 +228,7 @@ export function ChatInterface() {
             token = raw
           }
 
-          if (token) {
-            wordQueueRef.current.push(token)
-          }
+          if (token) wordQueueRef.current.push(token)
         }
       }
     } catch (err: unknown) {
@@ -186,22 +249,34 @@ export function ChatInterface() {
         clearInterval(wordTimerRef.current)
         wordTimerRef.current = null
       }
+      return
     } finally {
-      // Wait briefly for the queue to drain, then flush the rest
       setTimeout(() => {
         flushQueue(assistantId)
         setIsTyping(false)
         setIsStreaming(false)
         scrollToBottom()
-      }, wordQueueRef.current.length * WORD_INTERVAL_MS + 100)
+        // Trigger sidebar refresh so new title appears
+        onExchangeComplete?.()
+      }, wordQueueRef.current.length * WORD_INTERVAL_MS + 150)
     }
   }
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
+      {/* Mobile header with sidebar toggle */}
+      <div className="flex items-center gap-2 border-b border-border px-3 py-2 lg:hidden">
+        <button
+          onClick={onOpenSidebar}
+          className="p-1.5 text-muted-foreground hover:text-foreground transition"
+        >
+          <Menu className="h-5 w-5" />
+        </button>
+        <span className="text-sm font-medium text-foreground">Atlas</span>
+      </div>
+
       <QuoteCard />
 
-      {/* Scrollable messages area — relative so the scroll btn can be positioned inside */}
       <div className="relative flex-1 overflow-hidden">
         <div
           ref={scrollRef}
@@ -242,13 +317,9 @@ export function ChatInterface() {
           )}
         </div>
 
-        {/* Scroll-to-bottom button */}
         {showScrollBtn && (
           <button
-            onClick={() => {
-              scrollToBottom(true)
-              setShowScrollBtn(false)
-            }}
+            onClick={() => { scrollToBottom(true); setShowScrollBtn(false) }}
             className="absolute bottom-10 right-4 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-md transition hover:bg-muted hover:text-foreground"
             aria-label="Aller en bas"
           >

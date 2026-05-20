@@ -51,6 +51,16 @@ export const Conversations: CollectionConfig = {
       ],
     },
     {
+      name: 'moduleId',
+      type: 'text',
+      admin: { description: 'ID du module formation lié (ex: invitation, closing...)' },
+    },
+    {
+      name: 'messagesJson',
+      type: 'json',
+      admin: { description: 'Messages de la conversation [{id,role,content,createdAt}]' },
+    },
+    {
       name: 'flowiseSessionId',
       type: 'text',
       admin: { description: 'ID de session Flowise pour la continuité mémoire' },

@@ -10,6 +10,7 @@ import * as migration_20260520_190000_seed_atlas_prompt from './20260520_190000_
 import * as migration_20260520_200000_update_atlas_prompt_v2 from './20260520_200000_update_atlas_prompt_v2';
 import * as migration_20260520_210000_atlas_voice_mode from './20260520_210000_atlas_voice_mode';
 import * as migration_20260520_220000_atlas_clickable_links from './20260520_220000_atlas_clickable_links';
+import * as migration_20260520_230000_conversations_v2 from './20260520_230000_conversations_v2';
 
 export const migrations = [
   {
@@ -71,5 +72,10 @@ export const migrations = [
     up: migration_20260520_220000_atlas_clickable_links.up,
     down: migration_20260520_220000_atlas_clickable_links.down,
     name: '20260520_220000_atlas_clickable_links',
+  },
+  {
+    up: migration_20260520_230000_conversations_v2.up,
+    down: migration_20260520_230000_conversations_v2.down,
+    name: '20260520_230000_conversations_v2',
   },
 ];

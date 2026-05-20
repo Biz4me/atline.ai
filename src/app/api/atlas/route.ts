@@ -352,6 +352,67 @@ async function getProspectsData(
   }
 }
 
+async function saveToConversation(
+  conversationId: string,
+  userMessage: string,
+  assistantText: string,
+  client: Anthropic
+): Promise<void> {
+  try {
+    const payload = await getPayload({ config: configPromise })
+    const db = (payload.db as any).drizzle
+    const { sql } = await import("@payloadcms/db-postgres")
+
+    // Load current messages
+    const result = await db.execute(sql`
+      SELECT messages_json, title FROM conversations WHERE id = ${Number(conversationId)} LIMIT 1
+    `)
+    const row = result.rows?.[0] ?? result?.[0]
+    if (!row) return
+
+    const existing: any[] = row.messages_json ?? []
+    const isFirst = existing.length === 0
+
+    const now = new Date().toISOString()
+    const newMessages = [
+      ...existing,
+      { id: `u-${Date.now()}`, role: "user", content: userMessage, createdAt: now },
+      { id: `a-${Date.now() + 1}`, role: "assistant", content: assistantText, createdAt: now },
+    ]
+
+    // Generate title on first exchange
+    let title = row.title ?? null
+    if (isFirst) {
+      try {
+        const titleRes = await client.messages.create({
+          model: "claude-haiku-4-5-20251001",
+          max_tokens: 20,
+          messages: [{
+            role: "user",
+            content: `Génère un titre de 3 à 5 mots pour cette conversation MLM.
+Message: "${userMessage}"
+Réponds UNIQUEMENT avec le titre, sans guillemets ni ponctuation.`,
+          }],
+        })
+        const raw = titleRes.content[0].type === "text" ? titleRes.content[0].text.trim() : ""
+        if (raw) title = raw
+      } catch {
+        title = userMessage.slice(0, 40)
+      }
+    }
+
+    await db.execute(sql`
+      UPDATE conversations
+      SET messages_json = ${JSON.stringify(newMessages)}::jsonb,
+          title = ${title},
+          updated_at = now()
+      WHERE id = ${Number(conversationId)}
+    `)
+  } catch {
+    // non-blocking
+  }
+}
+
 async function updateUserMemory(
   userId: string,
   userMessage: string,
@@ -437,7 +498,7 @@ Réponse Atlas : ${assistantText}`,
 }
 
 export async function POST(req: NextRequest) {
-  const { message, userId, outputMode = "text" } = await req.json()
+  const { message, userId, outputMode = "text", conversationId } = await req.json()
 
   if (!message?.trim()) {
     return new Response("Message requis", { status: 400 })
@@ -578,9 +639,13 @@ export async function POST(req: NextRequest) {
 
   if (userId) {
     after(async () => {
-      if (capturedFullText) {
-        await updateUserMemory(userId, message, capturedFullText)
-      }
+      if (!capturedFullText) return
+      await Promise.all([
+        updateUserMemory(userId, message, capturedFullText),
+        conversationId
+          ? saveToConversation(conversationId, message, capturedFullText, client)
+          : Promise.resolve(),
+      ])
     })
   }
 
