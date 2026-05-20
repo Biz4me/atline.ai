@@ -110,18 +110,9 @@ export function AtlasSidebar({
           <div className="h-7 w-7 rounded-full bg-primary flex items-center justify-center text-xs font-bold text-white">A</div>
           <span className="font-semibold text-sm text-foreground">Atlas</span>
         </div>
-        <div className="flex items-center gap-1">
-          <Link
-            href="/dashboard"
-            className="p-1 text-muted-foreground hover:text-foreground transition"
-            title="Retour au dashboard"
-          >
-            <IconLayoutDashboard className="h-4 w-4" />
-          </Link>
-          <button onClick={onMobileClose} className="lg:hidden p-1 text-muted-foreground hover:text-foreground">
-            <X className="h-4 w-4" />
-          </button>
-        </div>
+        <button onClick={onMobileClose} className="lg:hidden p-1 text-muted-foreground hover:text-foreground">
+          <X className="h-4 w-4" />
+        </button>
       </div>
 
       {/* ── Nouveau chat ── */}
@@ -175,7 +166,18 @@ export function AtlasSidebar({
         )}
       </div>
 
-{/* ── User section ── */}
+      {/* ── Retour accueil ── */}
+      <div className="border-t border-border px-3 py-1">
+        <Link
+          href="/"
+          className="flex items-center gap-2.5 rounded-md px-2 py-1.5 text-sm text-muted-foreground hover:bg-muted hover:text-foreground transition"
+        >
+          <IconLayoutDashboard className="h-4 w-4 flex-shrink-0" />
+          <span className="text-xs">Accueil</span>
+        </Link>
+      </div>
+
+      {/* ── User section ── */}
       <div className="border-t border-border px-3 py-2">
         <Link
           href="/profil"

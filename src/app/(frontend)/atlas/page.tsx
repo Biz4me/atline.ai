@@ -40,7 +40,7 @@ function AtlasContent() {
   }, [])
 
   return (
-    <ChatShell breadcrumbs={[{ label: "Atlas" }]} hideSidebar>
+    <ChatShell hideSidebar>
       <div className="flex h-full overflow-hidden">
         <AtlasSidebar
           activeConversationId={conversationId}
