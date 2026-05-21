@@ -358,26 +358,18 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
         )}
       </div>
 
-      {/* Mini conversations — collapsed mode */}
-      {collapsed && (
-        <div className="flex min-h-0 flex-1 flex-col">
-          <Suspense>
-            <CollapsedConversations />
-          </Suspense>
-        </div>
-      )}
+      {/* Middle section — always flex-1 so nav never jumps */}
+      <div className="flex min-h-0 flex-1 flex-col">
+        {collapsed ? (
+          <Suspense><CollapsedConversations /></Suspense>
+        ) : isAtlas ? (
+          <Suspense><AtlasConversations /></Suspense>
+        ) : null}
+      </div>
 
-      {/* Atlas conversation history — expanded mode */}
-      {isAtlas && !collapsed && (
-        <Suspense>
-          <AtlasConversations />
-        </Suspense>
-      )}
-
-      {/* Navigation */}
+      {/* Navigation — always at bottom, never flex-1 */}
       <nav className={cn(
         "flex flex-col px-2 py-1",
-        !isAtlas && !collapsed && "flex-1 justify-end",
         collapsed ? "overflow-visible" : "overflow-y-auto"
       )}>
         <div className="space-y-0.5">
@@ -454,7 +446,7 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
       </button>
 
       {/* User section */}
-      <div className={cn("border-t border-border", collapsed ? "flex justify-center py-2" : "p-3")}>
+      <div className={cn("border-t border-border", collapsed ? "px-1 py-2" : "p-3")}>
         <UserSection collapsed={collapsed} />
       </div>
     </aside>
@@ -521,10 +513,10 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
       <button
         onClick={() => setMenuOpen((v) => !v)}
         className={cn(
-          "flex items-center gap-3 rounded-md transition-colors hover:bg-muted",
+          "flex items-center rounded-md transition-colors hover:bg-muted",
           collapsed
-            ? "h-9 w-9 justify-center p-0"
-            : "w-full px-2 py-2"
+            ? "flex-col gap-0.5 px-1 py-1 w-full justify-center"
+            : "gap-3 w-full px-2 py-2"
         )}
       >
         <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-primary">
@@ -537,7 +529,11 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
             </div>
           )}
         </div>
-        {!collapsed && !loading && (
+        {collapsed ? (
+          <span className="text-[9px] font-medium text-muted-foreground leading-none">
+            {user?.plan === "pro" ? "Pro" : "Free"}
+          </span>
+        ) : !loading && (
           <div className="min-w-0 flex-1 text-left">
             <p className="truncate text-sm font-medium text-foreground">{displayName}</p>
             <p className="text-[11px] text-muted-foreground">{planLabel}</p>
