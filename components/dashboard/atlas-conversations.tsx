@@ -22,6 +22,7 @@ export function CollapsedConversations() {
   const searchParams = useSearchParams()
   const activeId = searchParams.get("c")
   const [conversations, setConversations] = useState<Conversation[]>([])
+  const [tooltip, setTooltip] = useState<{ text: string; y: number } | null>(null)
 
   const fetchConversations = useCallback(async () => {
     try {
@@ -42,31 +43,47 @@ export function CollapsedConversations() {
   if (conversations.length === 0) return null
 
   return (
-    <div className="flex min-h-0 flex-1 flex-col items-center gap-1 overflow-y-auto px-2 pb-2">
-      <div className="w-6 border-t border-border mb-1 shrink-0" />
-      {conversations.map((conv) => {
-        const isActive = conv.id === activeId
-        return (
-          <div key={conv.id} className="group relative w-full flex justify-center">
-            <Link
-              href={`/atlas?c=${conv.id}`}
-              className={cn(
-                "flex h-9 w-9 items-center justify-center rounded-lg text-[11px] font-semibold transition",
-                isActive
-                  ? "bg-primary/15 text-primary ring-1 ring-primary/40"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
-              )}
+    <>
+      <div className="flex min-h-0 flex-1 flex-col items-center gap-1 overflow-y-auto overflow-x-hidden px-2 pb-2">
+        <div className="w-6 border-t border-border mb-1 shrink-0" />
+        {conversations.map((conv) => {
+          const isActive = conv.id === activeId
+          return (
+            <div
+              key={conv.id}
+              className="w-full flex justify-center"
+              onMouseEnter={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                setTooltip({ text: conv.title, y: rect.top + rect.height / 2 })
+              }}
+              onMouseLeave={() => setTooltip(null)}
             >
-              {getInitials(conv.title)}
-            </Link>
-            {/* Tooltip */}
-            <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 max-w-[180px] truncate whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
-              {conv.title}
-            </span>
-          </div>
-        )
-      })}
-    </div>
+              <Link
+                href={`/atlas?c=${conv.id}`}
+                className={cn(
+                  "flex h-9 w-9 items-center justify-center rounded-lg text-[11px] font-semibold transition",
+                  isActive
+                    ? "bg-primary/15 text-primary ring-1 ring-primary/40"
+                    : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                )}
+              >
+                {getInitials(conv.title)}
+              </Link>
+            </div>
+          )
+        })}
+      </div>
+
+      {/* Tooltip fixed — échappe à tout conteneur overflow */}
+      {tooltip && (
+        <div
+          className="pointer-events-none fixed left-16 z-[200] max-w-[180px] truncate whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md"
+          style={{ top: tooltip.y, transform: "translateY(-50%)" }}
+        >
+          {tooltip.text}
+        </div>
+      )}
+    </>
   )
 }
 
