@@ -1,10 +1,9 @@
 "use client"
 
-import { useState, useLayoutEffect } from "react"
+import { useState } from "react"
 import { MobileStatsBar, MobileBottomNav, PlusDrawer, DesktopSidebar, DesktopTopBar } from "./navigation"
+import { useSidebar } from "./sidebar-context"
 import { cn } from "@/lib/utils"
-
-const SIDEBAR_KEY = "atline:sidebar-collapsed"
 
 type LayoutVariant = "standard" | "with-sidebar"
 
@@ -15,24 +14,8 @@ interface DashboardShellProps {
 }
 
 export function DashboardShell({ children, breadcrumbs, layout = "standard" }: DashboardShellProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
-  const [sidebarReady, setSidebarReady] = useState(false)
+  const { collapsed: sidebarCollapsed, ready: sidebarReady, toggle: toggleSidebar } = useSidebar()
   const [drawerOpen, setDrawerOpen] = useState(false)
-
-  useLayoutEffect(() => {
-    try {
-      setSidebarCollapsed(localStorage.getItem(SIDEBAR_KEY) === "1")
-    } catch {}
-    setSidebarReady(true)
-  }, [])
-
-  function toggleSidebar() {
-    setSidebarCollapsed((prev) => {
-      const next = !prev
-      try { localStorage.setItem(SIDEBAR_KEY, next ? "1" : "0") } catch {}
-      return next
-    })
-  }
 
   return (
     <div className="min-h-screen bg-background">
