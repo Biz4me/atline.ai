@@ -76,7 +76,7 @@ export function ChatInterface({
 
     if (!conversationId) {
       setIsLoadingHistory(false)
-      setMessages(moduleWelcome ? [{ id: "welcome", role: "assistant", content: moduleWelcome }] : [])
+      setMessages([])
       return
     }
 
@@ -168,7 +168,7 @@ export function ChatInterface({
       content,
       createdAt: new Date().toISOString(),
     }
-    setMessages((prev) => [...prev.filter((m) => m.id !== "welcome"), userMsg])
+    setMessages((prev) => [...prev, userMsg])
     setIsTyping(true)
     isAtBottomRef.current = true
     setTimeout(() => scrollToBottom(true), 50)
@@ -328,25 +328,30 @@ export function ChatInterface({
       ) : !hasMessages ? (
         /* ── Welcome screen ── */
         <div className="flex flex-1 flex-col items-center justify-center px-4 py-8">
-          <div className="flex w-full max-w-[700px] flex-col items-center gap-8">
-            <AtlineLogo size="xl" showText={false} />
-            <div className="text-center">
-              {activeModule ? (
-                <>
-                  <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: activeModule.color }}>
-                    {activeModule.label}
+          <div className="flex w-full max-w-[700px] flex-col items-center gap-6">
+            {activeModule ? (
+              <div className="text-center">
+                <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: activeModule.color }}>
+                  {activeModule.label}
+                </p>
+                <h1 className="mt-1 text-2xl font-bold text-foreground">{activeModule.subtitle}</h1>
+                {moduleWelcome && (
+                  <p className="mt-4 text-base text-muted-foreground leading-relaxed max-w-md mx-auto">
+                    {moduleWelcome}
                   </p>
-                  <h1 className="mt-1 text-3xl font-bold text-foreground">{activeModule.subtitle}</h1>
-                </>
-              ) : (
-                <>
+                )}
+              </div>
+            ) : (
+              <>
+                <AtlineLogo size="xl" showText={false} />
+                <div className="text-center">
                   <h1 className="text-3xl font-bold text-foreground">
                     Bonjour {user?.firstName ?? ""}
                   </h1>
                   <p className="mt-2 text-base text-muted-foreground">{subtitle}</p>
-                </>
-              )}
-            </div>
+                </div>
+              </>
+            )}
             <div className="w-full space-y-4">
               <ChatInput onSend={handleSend} disabled={isStreaming} />
               {!activeModule && <QuickPrompts onSelect={handleSend} />}
