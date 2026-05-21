@@ -257,7 +257,17 @@ export default function AdminPage() {
     }
   }
 
-  if (loading) return null
+  if (loading) {
+    return (
+      <DashboardShell>
+        <div className="flex items-center gap-2 py-12 text-muted-foreground">
+          <Loader2 className="h-5 w-5 animate-spin" />
+          <span className="text-sm">Chargement…</span>
+        </div>
+      </DashboardShell>
+    )
+  }
+
   if (!(user as any)?.isAdmin) {
     return (
       <DashboardShell>

@@ -516,8 +516,13 @@ Réponse Atlas : ${assistantText}`,
 }
 
 export async function POST(req: NextRequest) {
-  const body = await req.json()
-  const { message, outputMode = "text", conversationId } = body
+  let body: Record<string, unknown>
+  try {
+    body = await req.json()
+  } catch {
+    return new Response("Body JSON invalide", { status: 400 })
+  }
+  const { message, outputMode = "text", conversationId } = body as { message?: string; outputMode?: string; conversationId?: string }
   const userId = typeof body.userId === "string" && body.userId.length > 0 ? body.userId : undefined
 
   if (!message?.trim()) {

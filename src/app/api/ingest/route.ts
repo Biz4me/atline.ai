@@ -1,12 +1,13 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getPayload } from "payload"
 import configPromise from "@payload-config"
+import { getUserIdFromCookie } from "@/lib/auth"
 
 export const runtime = "nodejs"
 
 export async function POST(req: NextRequest) {
-  const authHeader = req.headers.get("x-user-id")
-  if (!authHeader) {
+  const userId = getUserIdFromCookie(req)
+  if (!userId) {
     return NextResponse.json({ error: "Non authentifié" }, { status: 401 })
   }
 
@@ -14,7 +15,7 @@ export async function POST(req: NextRequest) {
 
   let user: any
   try {
-    user = await payload.findByID({ collection: "users", id: authHeader, depth: 0 })
+    user = await payload.findByID({ collection: "users", id: userId, depth: 0 })
     if (!user?.isAdmin) {
       return NextResponse.json({ error: "Accès refusé" }, { status: 403 })
     }

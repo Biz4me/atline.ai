@@ -1,18 +1,19 @@
 import { NextRequest, NextResponse } from "next/server"
 import { getPayload } from "payload"
 import configPromise from "@payload-config"
+import { getUserIdFromCookie } from "@/lib/auth"
 
 export const runtime = "nodejs"
 
 export async function GET(req: NextRequest) {
-  const authHeader = req.headers.get("x-user-id")
-  if (!authHeader) return NextResponse.json({ error: "Non authentifié" }, { status: 401 })
+  const userId = getUserIdFromCookie(req)
+  if (!userId) return NextResponse.json({ error: "Non authentifié" }, { status: 401 })
 
   const payload = await getPayload({ config: configPromise })
 
   let user: any
   try {
-    user = await payload.findByID({ collection: "users", id: authHeader, depth: 0 })
+    user = await payload.findByID({ collection: "users", id: userId, depth: 0 })
     if (!user?.isAdmin) return NextResponse.json({ error: "Accès refusé" }, { status: 403 })
   } catch {
     return NextResponse.json({ error: "Erreur auth" }, { status: 401 })
@@ -45,14 +46,14 @@ export async function GET(req: NextRequest) {
 }
 
 export async function DELETE(req: NextRequest) {
-  const authHeader = req.headers.get("x-user-id")
-  if (!authHeader) return NextResponse.json({ error: "Non authentifié" }, { status: 401 })
+  const userId = getUserIdFromCookie(req)
+  if (!userId) return NextResponse.json({ error: "Non authentifié" }, { status: 401 })
 
   const payload = await getPayload({ config: configPromise })
 
   let user: any
   try {
-    user = await payload.findByID({ collection: "users", id: authHeader, depth: 0 })
+    user = await payload.findByID({ collection: "users", id: userId, depth: 0 })
     if (!user?.isAdmin) return NextResponse.json({ error: "Accès refusé" }, { status: 403 })
   } catch {
     return NextResponse.json({ error: "Erreur auth" }, { status: 401 })
