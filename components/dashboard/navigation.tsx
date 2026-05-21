@@ -40,10 +40,9 @@ import { ToggleSwitch } from "@/components/ui/toggle-switch"
 // ═══════════════════════════════════════════════════════════════
 
 const statsBarItems = [
-  { href: "/croissance", icon: IconFlame,    value: "12", color: "#F59E0B", bg: "rgba(245,158,11,0.15)" },
-  { href: "/proline",    icon: IconChartBar, value: "4",  color: "#10B981", bg: "rgba(16,185,129,0.15)" },
-  { href: "/markline",   icon: IconBroadcast,value: "5",  color: "#06B6D4", bg: "rgba(6,182,212,0.15)"  },
-  { href: "/reseau",     icon: IconUsers,    value: "24", color: "#7C6FE8", bg: "rgba(124,111,232,0.15)"},
+  { href: "/croissance", icon: IconFlame,   value: "12",  color: "#F59E0B", bg: "rgba(245,158,11,0.15)",  label: "Streak"    },
+  { href: "/croissance", icon: IconTrophy,  value: "225", color: "#8B5CF6", bg: "rgba(139,92,246,0.15)",  label: "XP"        },
+  { href: "/reseau",     icon: IconUsers,   value: "24",  color: "#10B981", bg: "rgba(16,185,129,0.15)",  label: "Prospects" },
 ]
 
 export function MobileStatsBar() {
@@ -101,10 +100,10 @@ function AtlasTriangleLogo({ className }: { className?: string }) {
 }
 
 const bottomNavItems = [
-  { href: "/formation",  icon: IconSchool,   label: "Formation",   color: "#7C6FE8", bg: "rgba(124,111,232,0.15)" },
-  { href: "/simulations",icon: IconBarbell,  label: "Simulations", color: "#06B6D4", bg: "rgba(6,182,212,0.15)"   },
-  { href: "/atlas",      icon: null,         label: "Atlas",       color: "",        bg: "",  isCenter: true       },
-  { href: "/agenda",     icon: IconCalendar, label: "Agenda",      color: "#10B981", bg: "rgba(16,185,129,0.15)"  },
+  { href: "/parcours",   icon: IconSchool,    label: "Parcours",   color: "#7C6FE8", bg: "rgba(124,111,232,0.15)" },
+  { href: "/business",   icon: IconBriefcase, label: "Business",   color: "#10B981", bg: "rgba(16,185,129,0.15)"  },
+  { href: "/atlas",      icon: null,          label: "Atlas",      color: "",        bg: "", isCenter: true        },
+  { href: "/communaute", icon: IconMessages,  label: "Communauté", color: "#8B5CF6", bg: "rgba(139,92,246,0.15)" },
 ]
 
 interface MobileBottomNavProps {
@@ -219,6 +218,30 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
           <IconX className="h-5 w-5" />
         </button>
         <div className="max-h-[calc(75vh-68px)] overflow-y-auto pb-6">
+
+          {/* ── Destinations secondaires ── */}
+          <DrawerItem>
+            <Link href="/croissance" onClick={onClose} className="flex w-full items-center gap-3">
+              <DrawerIcon bg="rgba(245,158,11,0.12)" color="#F59E0B" icon={IconTrophy} />
+              <div className="flex flex-1 flex-col">
+                <span className="text-sm font-medium text-foreground">Ma Croissance</span>
+                <span className="text-[11px] text-muted-foreground">XP · Badges · Défis · Classement</span>
+              </div>
+            </Link>
+          </DrawerItem>
+          <DrawerItem>
+            <Link href="/outils" onClick={onClose} className="flex w-full items-center gap-3">
+              <DrawerIcon bg="rgba(16,185,129,0.12)" color="#10B981" icon={IconTool} />
+              <div className="flex flex-1 flex-col">
+                <span className="text-sm font-medium text-foreground">Mes Outils</span>
+                <span className="text-[11px] text-muted-foreground">Proline · Enrichir Atlas</span>
+              </div>
+            </Link>
+          </DrawerItem>
+
+          <DrawerSeparator />
+
+          {/* ── Compte ── */}
           <DrawerItem>
             <Link href="/profil" onClick={onClose} className="flex w-full items-center gap-3">
               <DrawerIcon bg="rgba(113,113,122,0.12)" color="#71717A" icon={IconUser} />
@@ -234,15 +257,10 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
               </div>
             </Link>
           </DrawerItem>
+
           <DrawerSeparator />
-          <DrawerItem>
-            <Link href="/enrichir-atlas" onClick={onClose} className="flex w-full items-center gap-3">
-              <DrawerIcon bg="rgba(124,111,232,0.12)" color="#7C6FE8" icon={IconUpload} />
-              <span className="flex-1 text-sm font-medium text-foreground">Enrichir Atlas</span>
-              <span className="rounded bg-primary/20 px-1.5 py-0.5 text-[10px] font-medium text-primary">Pro</span>
-            </Link>
-          </DrawerItem>
-          <DrawerSeparator />
+
+          {/* ── Préférences ── */}
           <DrawerItem>
             <button onClick={() => setLangOpen((v) => !v)} className="flex w-full items-center gap-3">
               <DrawerIcon bg="rgba(6,182,212,0.12)" color="#06B6D4" icon={IconLanguage} />
@@ -274,13 +292,16 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
               <ToggleSwitch enabled={isDark} onChange={(v) => setTheme(v ? "dark" : "light")} />
             </div>
           </DrawerItem>
+
           <DrawerSeparator />
+
           <DrawerItem>
             <button onClick={() => { logout(); onClose() }} className="flex w-full items-center gap-3">
               <DrawerIcon bg="rgba(239,68,68,0.12)" color="#EF4444" icon={IconLogout} />
               <span className="text-sm font-medium text-red-400">Déconnexion</span>
             </button>
           </DrawerItem>
+
         </div>
       </div>
     </>
