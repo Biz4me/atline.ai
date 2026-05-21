@@ -7,21 +7,31 @@ import { getUserIdFromCookie } from "@/lib/auth"
 export const runtime = "nodejs"
 
 // GET /api/conversations — list user conversations
+// ?perModule=true → one latest conversation per module
 export async function GET(req: NextRequest) {
   const userId = getUserIdFromCookie(req)
   if (!userId) return NextResponse.json({ error: "Non authentifié" }, { status: 401 })
+
+  const perModule = req.nextUrl.searchParams.get("perModule") === "true"
 
   try {
     const payload = await getPayload({ config: configPromise })
     const db = (payload.db as any).drizzle
 
-    const result = await db.execute(sql`
-      SELECT id, title, module_id, updated_at
-      FROM conversations
-      WHERE "user_id" = ${userId}
-      ORDER BY updated_at DESC
-      LIMIT 50
-    `)
+    const result = perModule
+      ? await db.execute(sql`
+          SELECT DISTINCT ON (module_id) id, title, module_id, updated_at
+          FROM conversations
+          WHERE "user_id" = ${userId} AND module_id IS NOT NULL
+          ORDER BY module_id, updated_at DESC
+        `)
+      : await db.execute(sql`
+          SELECT id, title, module_id, updated_at
+          FROM conversations
+          WHERE "user_id" = ${userId}
+          ORDER BY updated_at DESC
+          LIMIT 50
+        `)
 
     const rows = result.rows ?? result ?? []
     return NextResponse.json({

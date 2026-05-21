@@ -383,7 +383,7 @@ async function saveToConversation(
 
     // Load current messages
     const result = await db.execute(sql`
-      SELECT messages_json, title FROM conversations WHERE id = ${Number(conversationId)} LIMIT 1
+      SELECT messages_json, title, module_id FROM conversations WHERE id = ${Number(conversationId)} LIMIT 1
     `)
     const row = result.rows?.[0] ?? result?.[0]
     if (!row) return
@@ -398,24 +398,30 @@ async function saveToConversation(
       { id: `a-${Date.now() + 1}`, role: "assistant", content: assistantText, createdAt: now },
     ]
 
-    // Generate title on first exchange
+    // Use module subtitle as title for module conversations; generate AI title for free conversations
     let title = row.title ?? null
-    if (isFirst) {
-      try {
-        const titleRes = await client.messages.create({
-          model: "claude-haiku-4-5-20251001",
-          max_tokens: 20,
-          messages: [{
-            role: "user",
-            content: `Génère un titre de 3 à 5 mots pour cette conversation MLM.
+    if (isFirst && !title) {
+      if (row.module_id) {
+        const { getModule } = await import("@/lib/modules")
+        const mod = getModule(row.module_id)
+        title = mod?.subtitle ?? row.module_id
+      } else {
+        try {
+          const titleRes = await client.messages.create({
+            model: "claude-haiku-4-5-20251001",
+            max_tokens: 20,
+            messages: [{
+              role: "user",
+              content: `Génère un titre de 3 à 5 mots pour cette conversation MLM.
 Message: "${userMessage}"
 Réponds UNIQUEMENT avec le titre, sans guillemets ni ponctuation.`,
-          }],
-        })
-        const raw = titleRes.content[0].type === "text" ? titleRes.content[0].text.trim() : ""
-        if (raw) title = raw
-      } catch {
-        title = userMessage.slice(0, 40)
+            }],
+          })
+          const raw = titleRes.content[0].type === "text" ? titleRes.content[0].text.trim() : ""
+          if (raw) title = raw
+        } catch {
+          title = userMessage.slice(0, 40)
+        }
       }
     }
 
@@ -525,6 +531,7 @@ export async function POST(req: NextRequest) {
   const { message, outputMode = "text", conversationId } = body as { message?: string; outputMode?: string; conversationId?: string }
   const userId = typeof body.userId === "string" && body.userId.length > 0 ? body.userId : undefined
 
+
   if (!message?.trim()) {
     return new Response("Message requis", { status: 400 })
   }
@@ -628,6 +635,29 @@ export async function POST(req: NextRequest) {
 
   const systemPrompt = fillTemplate(promptTemplate, templateVars)
 
+  // Load conversation history (last 60 messages = 30 exchanges)
+  let conversationHistory: { role: "user" | "assistant"; content: string }[] = []
+  if (conversationId) {
+    try {
+      const { sql: sqlQ } = await import("@payloadcms/db-postgres")
+      const db = (payload.db as any).drizzle
+      const histResult = await db.execute(sqlQ`
+        SELECT messages_json FROM conversations WHERE id = ${Number(conversationId)} LIMIT 1
+      `)
+      const histRow = histResult.rows?.[0] ?? histResult?.[0]
+      if (histRow?.messages_json && Array.isArray(histRow.messages_json)) {
+        const allMessages: any[] = histRow.messages_json
+        const toSend = allMessages.slice(-60)
+        conversationHistory = toSend.map((m: any) => ({
+          role: m.role as "user" | "assistant",
+          content: String(m.content),
+        }))
+      }
+    } catch {
+      // history load failed — proceed without it
+    }
+  }
+
   const encoder = new TextEncoder()
   let capturedFullText = ""
 
@@ -639,7 +669,10 @@ export async function POST(req: NextRequest) {
           max_tokens: maxTokens,
           temperature,
           system: systemPrompt,
-          messages: [{ role: "user", content: message }],
+          messages: [
+            ...conversationHistory,
+            { role: "user", content: message },
+          ],
         })
 
         for await (const chunk of anthropicStream) {

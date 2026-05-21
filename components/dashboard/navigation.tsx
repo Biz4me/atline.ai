@@ -287,8 +287,8 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
 // ═══════════════════════════════════════════════════════════════
 // DESKTOP SIDEBAR — flat nav, style Claude
 // ═══════════════════════════════════════════════════════════════
-import { Suspense } from "react"
-import { AtlasConversations, CollapsedConversations } from "./atlas-conversations"
+import { ATLAS_MODULES } from "@/lib/modules"
+import { useModules } from "./modules-context"
 
 const navItems = [
   { href: "/formation",     icon: IconSchool,    label: "Formation"      },
@@ -307,13 +307,119 @@ interface DesktopSidebarProps {
   enableTransition?: boolean
 }
 
+function ModuleNavList({ collapsed, activeConvId }: { collapsed: boolean; activeConvId?: string }) {
+  const { moduleConversations } = useModules()
+  const pathname = usePathname()
+  const isAtlasPage = pathname === "/atlas" || pathname.startsWith("/atlas/")
+
+  const [tooltip, setTooltip] = useState<{ text: string; y: number } | null>(null)
+
+  const handleClick = (moduleId: string) => {
+    const convId = moduleConversations[moduleId]
+    if (isAtlasPage) {
+      window.dispatchEvent(new CustomEvent("atlas:select-module", { detail: { moduleId, convId } }))
+    } else {
+      const url = convId ? `/atlas?c=${convId}&m=${moduleId}` : `/atlas?m=${moduleId}`
+      window.location.href = url
+    }
+  }
+
+  if (collapsed) {
+    return (
+      <div
+        className="flex flex-col items-center gap-0.5 overflow-y-auto overflow-x-hidden py-2 px-1"
+        onMouseLeave={() => setTooltip(null)}
+      >
+        {ATLAS_MODULES.map((mod) => {
+          const convId = moduleConversations[mod.id]
+          const isActive = isAtlasPage && activeConvId && convId === activeConvId
+          return (
+            <button
+              key={mod.id}
+              onClick={() => handleClick(mod.id)}
+              onMouseEnter={(e) => {
+                const rect = e.currentTarget.getBoundingClientRect()
+                setTooltip({ text: mod.subtitle, y: rect.top + rect.height / 2 })
+              }}
+              className={cn(
+                "relative flex h-8 w-8 items-center justify-center rounded-md transition-colors",
+                isActive ? "ring-2 ring-current" : "hover:bg-muted"
+              )}
+              style={isActive ? { color: mod.color } : undefined}
+              title={mod.subtitle}
+            >
+              <span
+                className="h-2.5 w-2.5 rounded-full"
+                style={{ backgroundColor: mod.color, opacity: isActive ? 1 : 0.6 }}
+              />
+            </button>
+          )
+        })}
+        {tooltip && (
+          <div
+            className="pointer-events-none fixed left-16 z-[200] max-w-[160px] rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md"
+            style={{ top: tooltip.y, transform: "translateY(-50%)" }}
+          >
+            {tooltip.text}
+          </div>
+        )}
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col overflow-y-auto py-2 px-2 gap-0.5">
+      <p className="mb-1 px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+        Modules
+      </p>
+      {ATLAS_MODULES.map((mod) => {
+        const convId = moduleConversations[mod.id]
+        const isActive = isAtlasPage && activeConvId != null && convId === activeConvId
+        return (
+          <button
+            key={mod.id}
+            onClick={() => handleClick(mod.id)}
+            className={cn(
+              "flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-sm transition-colors",
+              isActive
+                ? "bg-primary/10 text-primary"
+                : "text-muted-foreground hover:bg-muted hover:text-foreground"
+            )}
+          >
+            <span
+              className="h-2 w-2 shrink-0 rounded-full"
+              style={{ backgroundColor: mod.color }}
+            />
+            <span className="truncate">{mod.subtitle}</span>
+          </button>
+        )
+      })}
+    </div>
+  )
+}
+
 export function DesktopSidebar({ collapsed = false, onToggle, enableTransition = true }: DesktopSidebarProps) {
   const pathname = usePathname()
   const { user } = useUser()
+  const [activeConvId, setActiveConvId] = useState<string | undefined>(undefined)
   const isAtlas = pathname === "/atlas" || pathname.startsWith("/atlas/")
+
+  useEffect(() => {
+    const handler = (e: Event) => {
+      const detail = (e as CustomEvent).detail
+      setActiveConvId(detail?.convId ?? undefined)
+    }
+    window.addEventListener("atlas:select-module", handler)
+    window.addEventListener("atlas:conversation-active", handler)
+    return () => {
+      window.removeEventListener("atlas:select-module", handler)
+      window.removeEventListener("atlas:conversation-active", handler)
+    }
+  }, [])
 
   const handleNewConversation = () => {
     if (isAtlas) {
+      setActiveConvId(undefined)
       window.dispatchEvent(new CustomEvent("atlas:new-chat"))
     } else {
       window.location.href = "/atlas"
@@ -360,11 +466,7 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
 
       {/* Middle section — always flex-1 so nav never jumps */}
       <div className="flex min-h-0 flex-1 flex-col">
-        {collapsed ? (
-          <Suspense><CollapsedConversations /></Suspense>
-        ) : (
-          <Suspense><AtlasConversations /></Suspense>
-        )}
+        <ModuleNavList collapsed={collapsed} activeConvId={activeConvId} />
       </div>
 
       {/* Navigation — always at bottom, never flex-1 */}

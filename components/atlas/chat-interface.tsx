@@ -1,12 +1,13 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback, useMemo } from "react"
-import { ChevronDown, Menu } from "lucide-react"
+import { ChevronDown, Menu, ChevronLeft } from "lucide-react"
 import { ChatMessage, TypingIndicator } from "./chat-message"
 import { QuickPrompts } from "./quick-prompts"
 import { ChatInput } from "./chat-input"
 import { useUser } from "@/hooks/use-user"
 import { AtlineLogo } from "@/components/dashboard/logo"
+import { getModule } from "@/lib/modules"
 
 const SUBTITLES = [
   "Prêt à faire avancer ton business aujourd'hui ?",
@@ -28,20 +29,24 @@ interface Message {
 
 interface ChatInterfaceProps {
   conversationId?: string
+  moduleId?: string
   moduleWelcome?: string
   onConversationCreated?: (id: string) => void
   onExchangeComplete?: () => void
   onOpenSidebar?: () => void
+  onBackToModules?: () => void
 }
 
 const WORD_INTERVAL_MS = 22
 
 export function ChatInterface({
   conversationId,
+  moduleId,
   moduleWelcome,
   onConversationCreated,
   onExchangeComplete,
   onOpenSidebar,
+  onBackToModules,
 }: ChatInterfaceProps) {
   const { user } = useUser()
   const subtitle = useMemo(() => SUBTITLES[Math.floor(Math.random() * SUBTITLES.length)], [])
@@ -169,7 +174,7 @@ export function ChatInterface({
         const res = await fetch("/api/conversations", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ moduleId: null }),
+          body: JSON.stringify({ moduleId: moduleId ?? null }),
         })
         const data = await res.json()
         convId = data.id
@@ -289,15 +294,24 @@ export function ChatInterface({
   const lastAssistantId = [...messages].reverse().find((m) => m.role === "assistant" && !m.isStreaming)?.id
 
   const hasMessages = messages.length > 0
+  const activeModule = moduleId ? getModule(moduleId) : undefined
 
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
       {/* Mobile header */}
       <div className="flex items-center gap-2 border-b border-border px-3 py-2 lg:hidden">
-        <button onClick={onOpenSidebar} className="p-1.5 text-muted-foreground hover:text-foreground transition">
-          <Menu className="h-5 w-5" />
-        </button>
-        <span className="text-sm font-medium text-foreground">Atlas</span>
+        {onBackToModules ? (
+          <button onClick={onBackToModules} className="p-1.5 text-muted-foreground hover:text-foreground transition">
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+        ) : (
+          <button onClick={onOpenSidebar} className="p-1.5 text-muted-foreground hover:text-foreground transition">
+            <Menu className="h-5 w-5" />
+          </button>
+        )}
+        <span className="text-sm font-medium text-foreground">
+          {activeModule ? activeModule.subtitle : "Atlas"}
+        </span>
       </div>
 
       {!hasMessages ? (
@@ -306,14 +320,25 @@ export function ChatInterface({
           <div className="flex w-full max-w-[700px] flex-col items-center gap-8">
             <AtlineLogo size="xl" showText={false} />
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-foreground">
-                Bonjour {user?.firstName ?? ""}
-              </h1>
-              <p className="mt-2 text-base text-muted-foreground">{subtitle}</p>
+              {activeModule ? (
+                <>
+                  <p className="text-sm font-semibold uppercase tracking-wider" style={{ color: activeModule.color }}>
+                    {activeModule.label}
+                  </p>
+                  <h1 className="mt-1 text-3xl font-bold text-foreground">{activeModule.subtitle}</h1>
+                </>
+              ) : (
+                <>
+                  <h1 className="text-3xl font-bold text-foreground">
+                    Bonjour {user?.firstName ?? ""}
+                  </h1>
+                  <p className="mt-2 text-base text-muted-foreground">{subtitle}</p>
+                </>
+              )}
             </div>
             <div className="w-full space-y-4">
               <ChatInput onSend={handleSend} disabled={isStreaming} />
-              <QuickPrompts onSelect={handleSend} />
+              {!activeModule && <QuickPrompts onSelect={handleSend} />}
             </div>
           </div>
         </div>
