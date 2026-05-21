@@ -1,8 +1,10 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { MobileStatsBar, MobileBottomNav, PlusDrawer, DesktopSidebar, DesktopTopBar } from "./navigation"
 import { cn } from "@/lib/utils"
+
+const SIDEBAR_KEY = "atline:sidebar-collapsed"
 
 type LayoutVariant = "standard" | "with-sidebar"
 
@@ -16,6 +18,20 @@ export function DashboardShell({ children, breadcrumbs, layout = "standard" }: D
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
+  useEffect(() => {
+    try {
+      setSidebarCollapsed(localStorage.getItem(SIDEBAR_KEY) === "1")
+    } catch {}
+  }, [])
+
+  function toggleSidebar() {
+    setSidebarCollapsed((prev) => {
+      const next = !prev
+      try { localStorage.setItem(SIDEBAR_KEY, next ? "1" : "0") } catch {}
+      return next
+    })
+  }
+
   return (
     <div className="min-h-screen bg-background">
       {/* Mobile stats bar (replaces old header) */}
@@ -24,7 +40,7 @@ export function DashboardShell({ children, breadcrumbs, layout = "standard" }: D
       {/* Desktop sidebar */}
       <DesktopSidebar
         collapsed={sidebarCollapsed}
-        onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
+        onToggle={toggleSidebar}
       />
 
       {/* Main content area */}
