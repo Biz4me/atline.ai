@@ -360,9 +360,11 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
 
       {/* Mini conversations — collapsed mode */}
       {collapsed && (
-        <Suspense>
-          <CollapsedConversations />
-        </Suspense>
+        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <Suspense>
+            <CollapsedConversations />
+          </Suspense>
+        </div>
       )}
 
       {/* Atlas conversation history — expanded mode */}
@@ -375,7 +377,7 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
       {/* Navigation */}
       <nav className={cn(
         "flex flex-col px-2 py-1",
-        (!isAtlas || collapsed) && "flex-1 justify-end",
+        !isAtlas && !collapsed && "flex-1 justify-end",
         collapsed ? "overflow-visible" : "overflow-y-auto"
       )}>
         <div className="space-y-0.5">

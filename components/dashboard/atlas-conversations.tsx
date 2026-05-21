@@ -39,13 +39,12 @@ export function CollapsedConversations() {
     return () => window.removeEventListener("atlas:refresh", fetchConversations)
   }, [fetchConversations])
 
-  const recent = conversations.slice(0, 6)
-  if (recent.length === 0) return null
+  if (conversations.length === 0) return null
 
   return (
-    <div className="flex flex-col items-center gap-1 px-2 pb-2">
-      <div className="w-6 border-t border-border mb-1" />
-      {recent.map((conv) => {
+    <div className="flex min-h-0 flex-1 flex-col items-center gap-1 overflow-y-auto px-2 pb-2">
+      <div className="w-6 border-t border-border mb-1 shrink-0" />
+      {conversations.map((conv) => {
         const isActive = conv.id === activeId
         return (
           <div key={conv.id} className="group relative w-full flex justify-center">
