@@ -30,9 +30,9 @@ function AtlasContent() {
   }, [router])
 
   const handleConversationCreated = useCallback((id: string) => {
-    router.replace(`/atlas?c=${id}`)
+    window.history.replaceState(null, "", `/atlas?c=${id}`)
     window.dispatchEvent(new Event("atlas:refresh"))
-  }, [router])
+  }, [])
 
   const handleExchangeComplete = useCallback(() => {
     window.dispatchEvent(new Event("atlas:refresh"))

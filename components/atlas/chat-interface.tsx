@@ -132,7 +132,19 @@ export function ChatInterface({
   const handleSend = async (content: string) => {
     if (isStreaming) return
 
-    // Ensure conversation exists in DB
+    // Show user message immediately — before any network call
+    const userMsg: Message = {
+      id: Date.now().toString(),
+      role: "user",
+      content,
+      createdAt: new Date().toISOString(),
+    }
+    setMessages((prev) => [...prev.filter((m) => m.id !== "welcome"), userMsg])
+    setIsTyping(true)
+    isAtBottomRef.current = true
+    scrollToBottom(true)
+
+    // Ensure conversation exists in DB (after showing message)
     let convId = activeConvId
     if (!convId && user?.id) {
       try {
@@ -147,21 +159,6 @@ export function ChatInterface({
         onConversationCreated?.(data.id)
       } catch {}
     }
-
-    const userMsg: Message = {
-      id: Date.now().toString(),
-      role: "user",
-      content,
-      createdAt: new Date().toISOString(),
-    }
-    setMessages((prev) => {
-      // Remove welcome message if present
-      const filtered = prev.filter((m) => m.id !== "welcome")
-      return [...filtered, userMsg]
-    })
-    setIsTyping(true)
-    isAtBottomRef.current = true
-    scrollToBottom(true)
 
     const assistantId = `assistant-${Date.now()}`
     currentIdRef.current = assistantId
