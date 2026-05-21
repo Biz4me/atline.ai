@@ -1,10 +1,11 @@
 "use client"
 
-import { useState, useEffect, useCallback } from "react"
+import { useState } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { Trash2 } from "lucide-react"
 import Link from "next/link"
 import { cn } from "@/lib/utils"
+import { useConversations } from "./conversations-context"
 
 interface Conversation {
   id: string
@@ -21,24 +22,8 @@ function getInitials(title: string): string {
 export function CollapsedConversations() {
   const searchParams = useSearchParams()
   const activeId = searchParams.get("c")
-  const [conversations, setConversations] = useState<Conversation[]>([])
+  const { conversations } = useConversations()
   const [tooltip, setTooltip] = useState<{ text: string; y: number } | null>(null)
-
-  const fetchConversations = useCallback(async () => {
-    try {
-      const res = await fetch("/api/conversations")
-      if (!res.ok) return
-      const data = await res.json()
-      setConversations(data.conversations ?? [])
-    } catch {}
-  }, [])
-
-  useEffect(() => { fetchConversations() }, [fetchConversations])
-
-  useEffect(() => {
-    window.addEventListener("atlas:refresh", fetchConversations)
-    return () => window.removeEventListener("atlas:refresh", fetchConversations)
-  }, [fetchConversations])
 
   if (conversations.length === 0) return null
 
@@ -108,33 +93,17 @@ export function AtlasConversations() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const activeId = searchParams.get("c")
+  const { conversations, refresh } = useConversations()
 
-  const [conversations, setConversations] = useState<Conversation[]>([])
   const [hoveredId, setHoveredId] = useState<string | null>(null)
   const [deletingId, setDeletingId] = useState<string | null>(null)
-
-  const fetchConversations = useCallback(async () => {
-    try {
-      const res = await fetch("/api/conversations")
-      if (!res.ok) return
-      const data = await res.json()
-      setConversations(data.conversations ?? [])
-    } catch {}
-  }, [])
-
-  useEffect(() => { fetchConversations() }, [fetchConversations])
-
-  useEffect(() => {
-    window.addEventListener("atlas:refresh", fetchConversations)
-    return () => window.removeEventListener("atlas:refresh", fetchConversations)
-  }, [fetchConversations])
 
   const handleDelete = async (e: React.MouseEvent, id: string) => {
     e.stopPropagation()
     setDeletingId(id)
     try {
       await fetch(`/api/conversations/${id}`, { method: "DELETE" })
-      setConversations((prev) => prev.filter((c) => c.id !== id))
+      refresh()
       if (id === activeId) router.push("/atlas")
     } finally {
       setDeletingId(null)
