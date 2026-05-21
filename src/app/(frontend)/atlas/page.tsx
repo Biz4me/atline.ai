@@ -7,7 +7,6 @@ import { ChatInterface } from "@/components/atlas/chat-interface"
 import { AtlasSidebar } from "@/components/atlas/atlas-sidebar"
 import { ErrorBoundary } from "@/components/error-boundary"
 import { ATLAS_MODULES, CORE_MODULES, SPECIALIZED_MODULES, getModule } from "@/lib/modules"
-import { AtlineLogo } from "@/components/dashboard/logo"
 import { useModules } from "@/components/dashboard/modules-context"
 import { cn } from "@/lib/utils"
 
@@ -23,15 +22,20 @@ function ModuleCard({
   return (
     <button
       onClick={() => onSelect(mod.id, convId)}
-      className="group flex h-28 flex-col items-start justify-between rounded-xl border border-border p-4 text-left transition-all hover:border-transparent hover:shadow-md"
+      className="group relative flex flex-col items-start gap-1.5 rounded-xl border border-border p-3 text-left transition-all hover:border-transparent hover:shadow-md"
       style={{ background: `linear-gradient(135deg, ${mod.bg} 0%, transparent 100%)` }}
     >
-      <span className="h-2.5 w-2.5 rounded-full shrink-0" style={{ backgroundColor: mod.color }} />
+      {convId && (
+        <span
+          className="absolute right-2.5 top-2.5 h-2 w-2 rounded-full"
+          style={{ backgroundColor: mod.color }}
+        />
+      )}
+      <span className="h-2 w-2 rounded-full shrink-0" style={{ backgroundColor: mod.color }} />
       <div>
-        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground whitespace-nowrap">{mod.label}</p>
-        <p className="mt-0.5 text-sm font-medium text-foreground whitespace-nowrap">{mod.subtitle}</p>
+        <p className="text-[10px] font-semibold uppercase tracking-wide text-muted-foreground">{mod.label}</p>
+        <p className="mt-0.5 text-xs font-medium text-foreground leading-snug">{mod.subtitle}</p>
       </div>
-      {convId && <span className="text-[10px] text-muted-foreground/70">Continuer →</span>}
     </button>
   )
 }
@@ -40,14 +44,10 @@ function ModuleGrid({ onSelect }: { onSelect: (moduleId: string, convId: string 
   const { moduleConversations } = useModules()
 
   return (
-    <div className="flex flex-1 flex-col items-center justify-center px-4 py-8">
-      <div className="w-full max-w-4xl space-y-6">
-        <div className="flex justify-center">
-          <AtlineLogo size="lg" />
-        </div>
-
+    <div className="flex flex-1 flex-col items-center justify-center px-3 py-4">
+      <div className="w-full max-w-3xl space-y-3">
         {/* 8 modules core */}
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        <div className="grid grid-cols-2 gap-2 sm:grid-cols-4">
           {CORE_MODULES.map((mod) => (
             <ModuleCard
               key={mod.id}
@@ -60,10 +60,10 @@ function ModuleGrid({ onSelect }: { onSelect: (moduleId: string, convId: string 
 
         {/* 3 modules spécialisés */}
         <div>
-          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+          <p className="mb-1.5 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/50">
             Spécialisé
           </p>
-          <div className="grid grid-cols-3 gap-3">
+          <div className="grid grid-cols-3 gap-2">
             {SPECIALIZED_MODULES.map((mod) => (
               <ModuleCard
                 key={mod.id}
@@ -200,10 +200,6 @@ function AtlasContent() {
           />
         ) : (
           <div className="flex flex-1 flex-col overflow-hidden">
-            {/* Mobile header */}
-            <div className="flex items-center gap-2 border-b border-border px-3 py-2 lg:hidden">
-              <AtlineLogo size="sm" />
-            </div>
             <ModuleGrid onSelect={handleModuleGridSelect} />
           </div>
         )}
