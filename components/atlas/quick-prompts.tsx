@@ -27,15 +27,15 @@ function pickRandom(arr: string[], n: number): string[] {
 }
 
 export function QuickPrompts({ onSelect }: QuickPromptsProps) {
-  const prompts = useMemo(() => pickRandom(ALL_PROMPTS, 4), [])
+  const prompts = useMemo(() => pickRandom(ALL_PROMPTS, 3), [])
 
   return (
-    <div className="flex flex-wrap justify-center gap-2">
+    <div className="flex gap-2">
       {prompts.map((prompt) => (
         <button
           key={prompt}
           onClick={() => onSelect(prompt)}
-          className="rounded-full border border-border bg-transparent px-4 py-2 text-[13px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
+          className="flex-1 truncate rounded-full border border-border bg-transparent px-4 py-2 text-[13px] text-muted-foreground transition-colors hover:border-primary/40 hover:text-foreground"
         >
           {prompt}
         </button>
