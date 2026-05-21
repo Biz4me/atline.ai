@@ -1,9 +1,12 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
+import { Copy, ThumbsUp, ThumbsDown, RotateCcw, Check } from "lucide-react"
 import { cn } from "@/lib/utils"
+import { AtlineLogo } from "@/components/dashboard/logo"
 
 interface ChatMessageProps {
   role: "user" | "assistant"
@@ -17,6 +20,14 @@ function toHardBreaks(content: string): string {
 
 export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
   const isUser = role === "user"
+  const [copied, setCopied] = useState(false)
+  const [vote, setVote] = useState<"up" | "down" | null>(null)
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText(content)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
 
   return (
     <div className={cn("flex w-full", isUser ? "justify-end" : "justify-start")}>
@@ -25,6 +36,7 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
           <p className="text-base leading-snug whitespace-pre-wrap">{content}</p>
         </div>
       ) : (
+        <div className="w-full">
         <div className={cn("w-full text-zinc-300 text-base", isStreaming && "atlas-token-in")}>
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
@@ -95,6 +107,25 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
             <span className="ml-0.5 inline-block h-[15px] w-[2px] translate-y-[2px] animate-pulse rounded-sm bg-current opacity-70" />
           )}
         </div>
+
+        {/* Action buttons — after streaming completes */}
+        {!isStreaming && (
+          <div className="mt-3 flex items-center gap-1">
+            <button onClick={handleCopy} className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 transition hover:text-muted-foreground">
+              {copied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
+            </button>
+            <button onClick={() => setVote(v => v === "up" ? null : "up")} className={cn("flex h-7 w-7 items-center justify-center rounded-md transition", vote === "up" ? "text-primary" : "text-muted-foreground/50 hover:text-muted-foreground")}>
+              <ThumbsUp className="h-3.5 w-3.5" />
+            </button>
+            <button onClick={() => setVote(v => v === "down" ? null : "down")} className={cn("flex h-7 w-7 items-center justify-center rounded-md transition", vote === "down" ? "text-red-400" : "text-muted-foreground/50 hover:text-muted-foreground")}>
+              <ThumbsDown className="h-3.5 w-3.5" />
+            </button>
+            <button className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 transition hover:text-muted-foreground">
+              <RotateCcw className="h-3.5 w-3.5" />
+            </button>
+          </div>
+        )}
+        </div>
       )}
     </div>
   )
@@ -102,10 +133,8 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
 
 export function TypingIndicator() {
   return (
-    <div className="flex items-center gap-1 py-1">
-      <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.3s]" />
-      <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground [animation-delay:-0.15s]" />
-      <span className="h-2 w-2 animate-bounce rounded-full bg-muted-foreground" />
+    <div className="flex items-center py-2">
+      <AtlineLogo size="md" showText={false} className="atlas-heartbeat" />
     </div>
   )
 }

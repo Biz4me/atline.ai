@@ -75,6 +75,14 @@
   60%       { opacity: 0.85; transform: scale(0.96); }
 }
 
+@keyframes atlas-heartbeat {
+  0%, 100% { transform: scale(1); }
+  14%      { transform: scale(1.18); }
+  28%      { transform: scale(1); }
+  42%      { transform: scale(1.12); }
+  70%      { transform: scale(1); }
+}
+
 @keyframes atlas-token-in {
   from { opacity: 0; transform: translateY(2px); }
   to   { opacity: 1; transform: translateY(0); }
@@ -82,6 +90,10 @@
 
 .atlas-icon-thinking {
   animation: atlas-pulse 1.6s ease-in-out infinite;
+}
+
+.atlas-heartbeat {
+  animation: atlas-heartbeat 1.2s ease-in-out infinite;
 }
 
 .atlas-token-in {
