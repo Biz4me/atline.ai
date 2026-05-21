@@ -472,11 +472,8 @@ function ConfigurationTab() {
 export default function EnrichirAtlasPage() {
   const { user, loading } = useUser()
   const isAdmin = !!(user as any)?.isAdmin
-
   const allTabs = ["Enrichir", ...(isAdmin ? ["Bibliothèque RAG", "Configuration"] : [])]
   const [activeTab, setActiveTab] = useState("Enrichir")
-
-  if (loading) return null
 
   return (
     <DashboardShell>
@@ -488,9 +485,18 @@ export default function EnrichirAtlasPage() {
       <TabsNav tabs={allTabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="mt-6">
-        {activeTab === "Enrichir" && <EnrichirTab userId={user?.id ?? ""} />}
-        {activeTab === "Bibliothèque RAG" && isAdmin && <BibliothèqueTab />}
-        {activeTab === "Configuration" && isAdmin && <ConfigurationTab />}
+        {loading ? (
+          <div className="flex items-center gap-2 py-12 text-muted-foreground">
+            <IconLoader2 className="h-5 w-5 animate-spin" />
+            <span className="text-sm">Chargement…</span>
+          </div>
+        ) : (
+          <>
+            {activeTab === "Enrichir" && <EnrichirTab userId={user?.id ?? ""} />}
+            {activeTab === "Bibliothèque RAG" && isAdmin && <BibliothèqueTab />}
+            {activeTab === "Configuration" && isAdmin && <ConfigurationTab />}
+          </>
+        )}
       </div>
     </DashboardShell>
   )
