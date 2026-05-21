@@ -4,8 +4,9 @@ import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { AtlineLogo } from "@/components/dashboard/logo"
+import { ErrorBoundary } from "@/components/error-boundary"
 
-export default function LoginPage() {
+function LoginContent() {
   const router = useRouter()
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
@@ -96,4 +97,8 @@ export default function LoginPage() {
       </div>
     </div>
   )
+}
+
+export default function LoginPage() {
+  return <ErrorBoundary><LoginContent /></ErrorBoundary>
 }

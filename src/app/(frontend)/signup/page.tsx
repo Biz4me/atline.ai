@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation"
 import Link from "next/link"
 import { AtlineLogo } from "@/components/dashboard/logo"
 import { IconChevronLeft } from "@tabler/icons-react"
+import { ErrorBoundary } from "@/components/error-boundary"
 
 type Step = "account" | "profile"
 
@@ -19,7 +20,7 @@ const MLM_COMPANIES = [
   "Autre",
 ]
 
-export default function SignupPage() {
+function SignupContent() {
   const router = useRouter()
   const [step, setStep] = useState<Step>("account")
   const [email, setEmail] = useState("")
@@ -232,4 +233,8 @@ export default function SignupPage() {
       </div>
     </div>
   )
+}
+
+export default function SignupPage() {
+  return <ErrorBoundary><SignupContent /></ErrorBoundary>
 }

@@ -52,6 +52,7 @@ export function ChatInterface({
   const [activeConvId, setActiveConvId] = useState<string | undefined>(conversationId)
 
   const scrollRef = useRef<HTMLDivElement>(null)
+  const lastScrollTime = useRef(0)
   const abortRef = useRef<AbortController | null>(null)
   const wordQueueRef = useRef<string[]>([])
   const displayedTextRef = useRef("")
@@ -101,6 +102,9 @@ export function ChatInterface({
   }, [])
 
   const handleScroll = useCallback(() => {
+    const now = Date.now()
+    if (now - lastScrollTime.current < 50) return
+    lastScrollTime.current = now
     const el = scrollRef.current
     if (!el) return
     const dist = el.scrollHeight - el.scrollTop - el.clientHeight
