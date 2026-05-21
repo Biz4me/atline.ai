@@ -334,7 +334,7 @@ export function ChatInterface({
           </div>
 
           <div className="bg-background py-3">
-            <div className="mx-auto max-w-[700px] px-4">
+            <div className="mx-auto max-w-[780px] px-4">
               <ChatInput onSend={handleSend} disabled={isStreaming} />
             </div>
           </div>
