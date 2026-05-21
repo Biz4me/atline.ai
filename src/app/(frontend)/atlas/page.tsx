@@ -6,46 +6,73 @@ import { ChatShell } from "@/components/atlas/chat-shell"
 import { ChatInterface } from "@/components/atlas/chat-interface"
 import { AtlasSidebar } from "@/components/atlas/atlas-sidebar"
 import { ErrorBoundary } from "@/components/error-boundary"
-import { ATLAS_MODULES, getModule } from "@/lib/modules"
+import { ATLAS_MODULES, CORE_MODULES, SPECIALIZED_MODULES, getModule } from "@/lib/modules"
 import { useModules } from "@/components/dashboard/modules-context"
 import { cn } from "@/lib/utils"
+
+function ModuleCard({
+  mod,
+  convId,
+  onSelect,
+}: {
+  mod: (typeof ATLAS_MODULES)[number]
+  convId: string | null
+  onSelect: (moduleId: string, convId: string | null) => void
+}) {
+  return (
+    <button
+      onClick={() => onSelect(mod.id, convId)}
+      className="group flex flex-col items-start gap-2 rounded-xl border border-border p-4 text-left transition-all hover:border-transparent hover:shadow-md"
+      style={{ background: `linear-gradient(135deg, ${mod.bg} 0%, transparent 100%)` }}
+    >
+      <span className="h-2.5 w-2.5 rounded-full" style={{ backgroundColor: mod.color }} />
+      <div>
+        <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{mod.label}</p>
+        <p className="mt-0.5 text-sm font-medium text-foreground leading-snug">{mod.subtitle}</p>
+      </div>
+      {convId && <span className="text-[10px] text-muted-foreground/70">Continuer →</span>}
+    </button>
+  )
+}
 
 function ModuleGrid({ onSelect }: { onSelect: (moduleId: string, convId: string | null) => void }) {
   const { moduleConversations } = useModules()
 
   return (
     <div className="flex flex-1 flex-col items-center justify-center px-4 py-8">
-      <div className="w-full max-w-[700px]">
-        <div className="mb-8 text-center">
+      <div className="w-full max-w-[700px] space-y-6">
+        <div className="text-center">
           <h1 className="text-2xl font-bold text-foreground">Atlas</h1>
           <p className="mt-1 text-sm text-muted-foreground">Choisis un module pour continuer ta progression</p>
         </div>
+
+        {/* 8 modules core */}
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          {ATLAS_MODULES.map((mod) => {
-            const convId = moduleConversations[mod.id]
-            return (
-              <button
+          {CORE_MODULES.map((mod) => (
+            <ModuleCard
+              key={mod.id}
+              mod={mod}
+              convId={moduleConversations[mod.id] ?? null}
+              onSelect={onSelect}
+            />
+          ))}
+        </div>
+
+        {/* 3 modules spécialisés */}
+        <div>
+          <p className="mb-2 text-[11px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+            Spécialisé
+          </p>
+          <div className="grid grid-cols-3 gap-3">
+            {SPECIALIZED_MODULES.map((mod) => (
+              <ModuleCard
                 key={mod.id}
-                onClick={() => onSelect(mod.id, convId ?? null)}
-                className="group flex flex-col items-start gap-2 rounded-xl border border-border p-4 text-left transition-all hover:border-transparent hover:shadow-md"
-                style={{
-                  background: `linear-gradient(135deg, ${mod.bg} 0%, transparent 100%)`,
-                }}
-              >
-                <span
-                  className="h-2.5 w-2.5 rounded-full"
-                  style={{ backgroundColor: mod.color }}
-                />
-                <div>
-                  <p className="text-[11px] font-semibold uppercase tracking-wide text-muted-foreground">{mod.label}</p>
-                  <p className="mt-0.5 text-sm font-medium text-foreground leading-snug">{mod.subtitle}</p>
-                </div>
-                {convId && (
-                  <span className="text-[10px] text-muted-foreground/70">Continuer →</span>
-                )}
-              </button>
-            )
-          })}
+                mod={mod}
+                convId={moduleConversations[mod.id] ?? null}
+                onSelect={onSelect}
+              />
+            ))}
+          </div>
         </div>
       </div>
     </div>

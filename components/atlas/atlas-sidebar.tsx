@@ -11,7 +11,7 @@ import {
 } from "@tabler/icons-react"
 import { cn } from "@/lib/utils"
 import { useUser } from "@/hooks/use-user"
-import { ATLAS_MODULES } from "@/lib/modules"
+import { CORE_MODULES, SPECIALIZED_MODULES } from "@/lib/modules"
 import { useModules } from "@/components/dashboard/modules-context"
 
 interface Props {
@@ -94,27 +94,40 @@ export function AtlasSidebar({
         <p className="mb-1 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
           Modules
         </p>
-        {ATLAS_MODULES.map((mod) => {
+        {CORE_MODULES.map((mod) => {
           const convId = moduleConversations[mod.id]
           const isActive = activeConversationId != null && convId === activeConversationId
           return (
             <button
               key={mod.id}
-              onClick={() => {
-                onSelectModule(mod.id, mod.welcome)
-                onMobileClose()
-              }}
+              onClick={() => { onSelectModule(mod.id, mod.welcome); onMobileClose() }}
               className={cn(
                 "flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-sm transition",
-                isActive
-                  ? "bg-primary/10 text-foreground"
-                  : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                isActive ? "bg-primary/10 text-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
               )}
             >
-              <span
-                className="h-2 w-2 shrink-0 rounded-full"
-                style={{ backgroundColor: mod.color }}
-              />
+              <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: mod.color }} />
+              <span className="truncate">{mod.subtitle}</span>
+            </button>
+          )
+        })}
+        <div className="my-1 border-t border-border" />
+        <p className="mb-0.5 px-2 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+          Spécialisé
+        </p>
+        {SPECIALIZED_MODULES.map((mod) => {
+          const convId = moduleConversations[mod.id]
+          const isActive = activeConversationId != null && convId === activeConversationId
+          return (
+            <button
+              key={mod.id}
+              onClick={() => { onSelectModule(mod.id, mod.welcome); onMobileClose() }}
+              className={cn(
+                "flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-sm transition",
+                isActive ? "bg-primary/10 text-foreground" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+              )}
+            >
+              <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: mod.color }} />
               <span className="truncate">{mod.subtitle}</span>
             </button>
           )

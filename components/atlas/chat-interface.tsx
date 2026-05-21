@@ -198,6 +198,7 @@ export function ChatInterface({
           message: content,
           userId: user?.id,
           conversationId: convId,
+          moduleId: moduleId ?? null,
         }),
         signal: abortRef.current.signal,
       })

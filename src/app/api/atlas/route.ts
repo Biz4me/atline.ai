@@ -296,24 +296,48 @@ async function searchAgent(
   }
 }
 
-async function getRagContext(query: string, userId?: string): Promise<string> {
+async function getRagContext(
+  query: string,
+  userId?: string,
+  source: "atlas" | "proline" | "markline" = "atlas"
+): Promise<string> {
   const vpsUrl = process.env.VPS_INGEST_URL
   const vpsKey = process.env.VPS_INGEST_KEY
   if (!vpsUrl || !vpsKey) return ""
 
-  const [atlasChunks, prolineChunks, marklineChunks] = await Promise.all([
-    searchAgent(vpsUrl, vpsKey, query, "atlas", 4, userId),
-    searchAgent(vpsUrl, vpsKey, query, "proline", 3),
-    searchAgent(vpsUrl, vpsKey, query, "markline", 3),
-  ])
-
   const sections: string[] = []
-  if (atlasChunks.length)
-    sections.push(`[Base Atlas]\n${atlasChunks.join("\n\n---\n\n")}`)
-  if (prolineChunks.length)
-    sections.push(`[Proline — Plan de rémunération]\n${prolineChunks.join("\n\n---\n\n")}`)
-  if (marklineChunks.length)
-    sections.push(`[Markline — Compétences]\n${marklineChunks.join("\n\n---\n\n")}`)
+
+  if (source === "proline") {
+    const [atlasChunks, prolineChunks] = await Promise.all([
+      searchAgent(vpsUrl, vpsKey, query, "atlas", 2, userId),
+      searchAgent(vpsUrl, vpsKey, query, "proline", 6),
+    ])
+    if (atlasChunks.length)
+      sections.push(`[Base Atlas]\n${atlasChunks.join("\n\n---\n\n")}`)
+    if (prolineChunks.length)
+      sections.push(`[Proline — Documentation produit & compensation]\n${prolineChunks.join("\n\n---\n\n")}`)
+  } else if (source === "markline") {
+    const [atlasChunks, marklineChunks] = await Promise.all([
+      searchAgent(vpsUrl, vpsKey, query, "atlas", 2, userId),
+      searchAgent(vpsUrl, vpsKey, query, "markline", 6),
+    ])
+    if (atlasChunks.length)
+      sections.push(`[Base Atlas]\n${atlasChunks.join("\n\n---\n\n")}`)
+    if (marklineChunks.length)
+      sections.push(`[Markline — Vente & contenu]\n${marklineChunks.join("\n\n---\n\n")}`)
+  } else {
+    const [atlasChunks, prolineChunks, marklineChunks] = await Promise.all([
+      searchAgent(vpsUrl, vpsKey, query, "atlas", 4, userId),
+      searchAgent(vpsUrl, vpsKey, query, "proline", 3),
+      searchAgent(vpsUrl, vpsKey, query, "markline", 3),
+    ])
+    if (atlasChunks.length)
+      sections.push(`[Base Atlas]\n${atlasChunks.join("\n\n---\n\n")}`)
+    if (prolineChunks.length)
+      sections.push(`[Proline — Plan de rémunération]\n${prolineChunks.join("\n\n---\n\n")}`)
+    if (marklineChunks.length)
+      sections.push(`[Markline — Compétences]\n${marklineChunks.join("\n\n---\n\n")}`)
+  }
 
   return sections.join("\n\n")
 }
@@ -528,7 +552,12 @@ export async function POST(req: NextRequest) {
   } catch {
     return new Response("Body JSON invalide", { status: 400 })
   }
-  const { message, outputMode = "text", conversationId } = body as { message?: string; outputMode?: string; conversationId?: string }
+  const { message, outputMode = "text", conversationId, moduleId } = body as {
+    message?: string
+    outputMode?: string
+    conversationId?: string
+    moduleId?: string
+  }
   const userId = typeof body.userId === "string" && body.userId.length > 0 ? body.userId : undefined
 
 
@@ -558,6 +587,11 @@ export async function POST(req: NextRequest) {
   }
 
   const safeOutputMode = outputMode === "voice" ? "voice" : "text"
+
+  // Resolve module RAG source
+  const { getModule } = await import("@/lib/modules")
+  const activeModule = moduleId ? getModule(moduleId) : undefined
+  const activeModuleSource = activeModule?.source ?? "atlas"
 
   // Defaults
   let templateVars: Record<string, string | number> = {
@@ -618,22 +652,28 @@ export async function POST(req: NextRequest) {
       }
 
       const memoryContext = buildMemoryContext(memory)
-      const ragContext = await getRagContext(message, userId)
+      const ragContext = await getRagContext(message, userId, activeModuleSource)
       const contextParts: string[] = []
       if (memoryContext) contextParts.push(memoryContext)
       if (ragContext) contextParts.push(ragContext)
       templateVars.context = contextParts.join("\n\n") || "Aucun document disponible."
     } catch {
       // use defaults, still try RAG
-      const ragContext = await getRagContext(message)
+      const ragContext = await getRagContext(message, undefined, activeModuleSource)
       templateVars.context = ragContext || "Aucun document disponible."
     }
   } else {
-    const ragContext = await getRagContext(message)
+    const ragContext = await getRagContext(message, undefined, activeModuleSource)
     templateVars.context = ragContext || "Aucun document disponible."
   }
 
-  const systemPrompt = fillTemplate(promptTemplate, templateVars)
+  // Resolve module context block (prepended to system prompt)
+  let moduleContextBlock = ""
+  if (activeModule?.moduleContext) {
+    moduleContextBlock = `# FOCUS MODULE : ${activeModule.subtitle}\n\n${activeModule.moduleContext}\n\n---\n\n`
+  }
+
+  const systemPrompt = moduleContextBlock + fillTemplate(promptTemplate, templateVars)
 
   // Load conversation history (last 60 messages = 30 exchanges)
   let conversationHistory: { role: "user" | "assistant"; content: string }[] = []

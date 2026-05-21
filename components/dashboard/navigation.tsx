@@ -287,7 +287,7 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
 // ═══════════════════════════════════════════════════════════════
 // DESKTOP SIDEBAR — flat nav, style Claude
 // ═══════════════════════════════════════════════════════════════
-import { ATLAS_MODULES } from "@/lib/modules"
+import { ATLAS_MODULES, CORE_MODULES, SPECIALIZED_MODULES } from "@/lib/modules"
 import { useModules } from "./modules-context"
 
 const navItems = [
@@ -324,37 +324,41 @@ function ModuleNavList({ collapsed, activeConvId }: { collapsed: boolean; active
     }
   }
 
+  const renderDot = (mod: (typeof ATLAS_MODULES)[number]) => {
+    const convId = moduleConversations[mod.id]
+    const isActive = isAtlasPage && activeConvId != null && convId === activeConvId
+    return (
+      <button
+        key={mod.id}
+        onClick={() => handleClick(mod.id)}
+        onMouseEnter={(e) => {
+          const rect = e.currentTarget.getBoundingClientRect()
+          setTooltip({ text: mod.subtitle, y: rect.top + rect.height / 2 })
+        }}
+        className={cn(
+          "relative flex h-8 w-8 items-center justify-center rounded-md transition-colors",
+          isActive ? "ring-2 ring-current" : "hover:bg-muted"
+        )}
+        style={isActive ? { color: mod.color } : undefined}
+        title={mod.subtitle}
+      >
+        <span
+          className="h-2.5 w-2.5 rounded-full"
+          style={{ backgroundColor: mod.color, opacity: isActive ? 1 : 0.6 }}
+        />
+      </button>
+    )
+  }
+
   if (collapsed) {
     return (
       <div
         className="flex flex-col items-center gap-0.5 overflow-y-auto overflow-x-hidden py-2 px-1"
         onMouseLeave={() => setTooltip(null)}
       >
-        {ATLAS_MODULES.map((mod) => {
-          const convId = moduleConversations[mod.id]
-          const isActive = isAtlasPage && activeConvId && convId === activeConvId
-          return (
-            <button
-              key={mod.id}
-              onClick={() => handleClick(mod.id)}
-              onMouseEnter={(e) => {
-                const rect = e.currentTarget.getBoundingClientRect()
-                setTooltip({ text: mod.subtitle, y: rect.top + rect.height / 2 })
-              }}
-              className={cn(
-                "relative flex h-8 w-8 items-center justify-center rounded-md transition-colors",
-                isActive ? "ring-2 ring-current" : "hover:bg-muted"
-              )}
-              style={isActive ? { color: mod.color } : undefined}
-              title={mod.subtitle}
-            >
-              <span
-                className="h-2.5 w-2.5 rounded-full"
-                style={{ backgroundColor: mod.color, opacity: isActive ? 1 : 0.6 }}
-              />
-            </button>
-          )
-        })}
+        {CORE_MODULES.map(renderDot)}
+        <div className="my-1 w-5 border-t border-border" />
+        {SPECIALIZED_MODULES.map(renderDot)}
         {tooltip && (
           <div
             className="pointer-events-none fixed left-16 z-[200] max-w-[160px] rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md"
@@ -367,33 +371,37 @@ function ModuleNavList({ collapsed, activeConvId }: { collapsed: boolean; active
     )
   }
 
+  const renderRow = (mod: (typeof ATLAS_MODULES)[number]) => {
+    const convId = moduleConversations[mod.id]
+    const isActive = isAtlasPage && activeConvId != null && convId === activeConvId
+    return (
+      <button
+        key={mod.id}
+        onClick={() => handleClick(mod.id)}
+        className={cn(
+          "flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-sm transition-colors",
+          isActive
+            ? "bg-primary/10 text-primary"
+            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+        )}
+      >
+        <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: mod.color }} />
+        <span className="truncate">{mod.subtitle}</span>
+      </button>
+    )
+  }
+
   return (
     <div className="flex flex-col overflow-y-auto py-2 px-2 gap-0.5">
       <p className="mb-1 px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
         Modules
       </p>
-      {ATLAS_MODULES.map((mod) => {
-        const convId = moduleConversations[mod.id]
-        const isActive = isAtlasPage && activeConvId != null && convId === activeConvId
-        return (
-          <button
-            key={mod.id}
-            onClick={() => handleClick(mod.id)}
-            className={cn(
-              "flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-sm transition-colors",
-              isActive
-                ? "bg-primary/10 text-primary"
-                : "text-muted-foreground hover:bg-muted hover:text-foreground"
-            )}
-          >
-            <span
-              className="h-2 w-2 shrink-0 rounded-full"
-              style={{ backgroundColor: mod.color }}
-            />
-            <span className="truncate">{mod.subtitle}</span>
-          </button>
-        )
-      })}
+      {CORE_MODULES.map(renderRow)}
+      <div className="my-1 border-t border-border" />
+      <p className="mb-0.5 px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
+        Spécialisé
+      </p>
+      {SPECIALIZED_MODULES.map(renderRow)}
     </div>
   )
 }
