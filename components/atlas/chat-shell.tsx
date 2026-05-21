@@ -7,11 +7,10 @@ import { cn } from "@/lib/utils"
 
 interface ChatShellProps {
   children: React.ReactNode
-  breadcrumbs?: { label: string; href?: string }[]
   hideSidebar?: boolean
 }
 
-export function ChatShell({ children, breadcrumbs, hideSidebar = false }: ChatShellProps) {
+export function ChatShell({ children, hideSidebar = false }: ChatShellProps) {
   const { collapsed: sidebarCollapsed, ready: sidebarReady, toggle: toggleSidebar } = useSidebar()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -43,8 +42,8 @@ export function ChatShell({ children, breadcrumbs, hideSidebar = false }: ChatSh
             : sidebarCollapsed ? "lg:pl-16" : "lg:pl-60"
         )}
       >
-        {/* Desktop top bar — masqué si pas de breadcrumbs */}
-        {!hideSidebar && breadcrumbs && breadcrumbs.length > 0 && <DesktopTopBar breadcrumbs={breadcrumbs} />}
+        {/* Desktop top bar */}
+        {!hideSidebar && <DesktopTopBar />}
 
         {/* Chat content - full width like other pages */}
         <main className="flex flex-1 flex-col overflow-hidden">

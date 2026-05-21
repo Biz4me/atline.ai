@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { DashboardShell } from "@/components/dashboard/shell"
 import { AccordionBlock } from "@/components/ui/accordion-block"
 import { IconMessages, IconEdit, IconUsers } from "@tabler/icons-react"
 
@@ -22,8 +21,7 @@ export default function CommunautePage() {
   const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id))
 
   return (
-    <DashboardShell>
-      <div className="max-w-2xl space-y-6">
+    <div className="max-w-2xl space-y-6">
         <div>
           <h1 className="font-heading text-xl font-semibold text-foreground">Communauté</h1>
           <p className="mt-1 text-sm text-muted-foreground">Forum, posts et groupes par société</p>
@@ -66,7 +64,6 @@ export default function CommunautePage() {
             <ComingSoon description="Rejoins le groupe de ta société MLM pour des conseils spécifiques, des ressources et un réseau de pairs qui comprennent ton contexte." />
           </AccordionBlock>
         </div>
-      </div>
-    </DashboardShell>
+    </div>
   )
 }

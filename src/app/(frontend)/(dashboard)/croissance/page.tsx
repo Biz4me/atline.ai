@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
 import { XpNiveauTab } from "@/components/croissance/xp-niveau-tab"
 import { BadgesTab } from "@/components/croissance/badges-tab"
@@ -14,8 +13,7 @@ export default function CroissancePage() {
   const [activeTab, setActiveTab] = useState("XP & Niveau")
 
   return (
-    <DashboardShell>
-      <div>
+    <div>
         <div className="mb-6">
           <h1 className="font-heading text-xl font-semibold text-foreground">Ma Croissance</h1>
           <p className="mt-1 text-sm text-muted-foreground">XP, badges, défis et classement</p>
@@ -27,7 +25,6 @@ export default function CroissancePage() {
           {activeTab === "Défis" && <DefisTab />}
           {activeTab === "Leaderboard" && <LeaderboardTab />}
         </div>
-      </div>
-    </DashboardShell>
+    </div>
   )
 }

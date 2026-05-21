@@ -3,7 +3,6 @@
 import { useState } from "react"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
-import { DashboardShell } from "@/components/dashboard/shell"
 import { AccordionBlock } from "@/components/ui/accordion-block"
 import { IconSchool, IconBarbell } from "@tabler/icons-react"
 
@@ -33,8 +32,7 @@ export default function ParcoursPage() {
   const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id))
 
   return (
-    <DashboardShell>
-      <div className="max-w-2xl space-y-6">
+    <div className="max-w-2xl space-y-6">
         <div>
           <h1 className="font-heading text-xl font-semibold text-foreground">Mon Parcours</h1>
           <p className="mt-1 text-sm text-muted-foreground">Formation et entraînements pour progresser</p>
@@ -90,7 +88,6 @@ export default function ParcoursPage() {
             </div>
           </AccordionBlock>
         </div>
-      </div>
-    </DashboardShell>
+    </div>
   )
 }

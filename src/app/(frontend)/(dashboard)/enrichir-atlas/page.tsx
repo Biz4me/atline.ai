@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from "react"
-import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
 import { useUser } from "@/hooks/use-user"
 import { cn } from "@/lib/utils"
@@ -476,7 +475,7 @@ export default function EnrichirAtlasPage() {
   const [activeTab, setActiveTab] = useState("Enrichir")
 
   return (
-    <DashboardShell>
+    <div>
       <div className="mb-6">
         <h1 className="font-heading text-xl font-semibold text-foreground">Enrichir Atlas</h1>
         <p className="mt-1 text-sm text-muted-foreground">Donne plus de connaissances à tes agents IA</p>
@@ -498,6 +497,6 @@ export default function EnrichirAtlasPage() {
           </>
         )}
       </div>
-    </DashboardShell>
+    </div>
   )
 }

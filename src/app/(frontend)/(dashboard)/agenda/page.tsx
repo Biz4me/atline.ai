@@ -2,7 +2,6 @@
 
 import { useState } from "react"
 import { IconPhone, IconPresentation, IconRefresh, IconSchool, IconPlus, IconSparkles, IconX } from "@tabler/icons-react"
-import { DashboardShell } from "@/components/dashboard/shell"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { cn } from "@/lib/utils"
@@ -58,7 +57,7 @@ export default function AgendaPage() {
   const weekDays = generateWeekDays()
 
   return (
-    <DashboardShell>
+    <>
       <div className="mb-6 flex items-center justify-between">
         <div>
           <h1 className="font-heading text-xl font-semibold text-foreground">Agenda</h1>
@@ -243,6 +242,6 @@ export default function AgendaPage() {
           </div>
         </div>
       )}
-    </DashboardShell>
+    </>
   )
 }

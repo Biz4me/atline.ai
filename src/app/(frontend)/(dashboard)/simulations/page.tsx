@@ -2,7 +2,6 @@
 
 import { Suspense, useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
 import { ScenarioCard } from "@/components/simulations/scenario-card"
 import { EricWorréSteps } from "@/components/simulations/eric-worre-steps"
@@ -55,31 +54,27 @@ function SimulationsContent() {
 
   if (screen === "call" && selectedScenario) {
     return (
-      <DashboardShell>
-        <ActiveCallScreen scenarioName={selectedScenario.name} characterName={selectedScenario.character} onEndCall={handleEndCall} onBack={handleNewScenario} />
-      </DashboardShell>
+      <ActiveCallScreen scenarioName={selectedScenario.name} characterName={selectedScenario.character} onEndCall={handleEndCall} onBack={handleNewScenario} />
     )
   }
 
   if (screen === "debrief" && selectedScenario) {
     return (
-      <DashboardShell>
-        <div className="mx-auto max-w-[600px]">
-          <DebriefScreen
-            scenarioName={selectedScenario.name} characterName={selectedScenario.character}
-            score={8.2} xpEarned={50} badgeUnlocked="Persuasif"
-            strengths={["Accroche naturelle et confiante", "Compliment sincère bien placé", "Ton enthousiaste tout au long"]}
-            improvements={["Pas de confirmation du RDV", "Raccroché un peu trop tôt"]}
-            atlasAdvice="Pense toujours à confirmer l'heure et le lieu du RDV avant de raccrocher."
-            onReplay={handleReplay} onNewScenario={handleNewScenario}
-          />
-        </div>
-      </DashboardShell>
+      <div className="mx-auto max-w-[600px]">
+        <DebriefScreen
+          scenarioName={selectedScenario.name} characterName={selectedScenario.character}
+          score={8.2} xpEarned={50} badgeUnlocked="Persuasif"
+          strengths={["Accroche naturelle et confiante", "Compliment sincère bien placé", "Ton enthousiaste tout au long"]}
+          improvements={["Pas de confirmation du RDV", "Raccroché un peu trop tôt"]}
+          atlasAdvice="Pense toujours à confirmer l'heure et le lieu du RDV avant de raccrocher."
+          onReplay={handleReplay} onNewScenario={handleNewScenario}
+        />
+      </div>
     )
   }
 
   return (
-    <DashboardShell>
+    <div>
       <div className="mb-6">
         <h1 className="font-heading text-xl font-semibold text-foreground">Simulations</h1>
         <p className="mt-1 text-[12px] text-muted-foreground">Entraîne-toi avant chaque appel réel</p>
@@ -113,7 +108,7 @@ function SimulationsContent() {
           <p className="mt-1 text-sm text-muted-foreground">Enregistre ta présentation et Atlas l'analyse en détail.</p>
         </div>
       )}
-    </DashboardShell>
+    </div>
   )
 }
 

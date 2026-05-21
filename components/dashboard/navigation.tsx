@@ -30,10 +30,50 @@ import {
   IconBriefcase,
   IconTool,
   IconMessages,
+  IconAdjustments,
 } from "@tabler/icons-react"
 import { AtlineLogo } from "./logo"
 import { useUser } from "@/hooks/use-user"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
+
+// ═══════════════════════════════════════════════════════════════
+// AVATAR IMAGE — fades in once loaded, shows initials as fallback
+// ═══════════════════════════════════════════════════════════════
+
+function AvatarImg({
+  avatarUrl,
+  initials,
+  loading = false,
+  className,
+  textSize = "text-xs",
+}: {
+  avatarUrl: string | null
+  initials: string
+  loading?: boolean
+  className?: string
+  textSize?: string
+}) {
+  const [loaded, setLoaded] = useState(false)
+  return (
+    <div className={cn("relative overflow-hidden rounded-full bg-primary", className)}>
+      <div className={cn("flex h-full w-full items-center justify-center font-bold text-white", textSize)}>
+        {loading ? "…" : initials}
+      </div>
+      {avatarUrl && (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img
+          src={avatarUrl}
+          alt="Avatar"
+          onLoad={() => setLoaded(true)}
+          className={cn(
+            "absolute inset-0 h-full w-full object-cover transition-opacity duration-300",
+            loaded ? "opacity-100" : "opacity-0"
+          )}
+        />
+      )}
+    </div>
+  )
+}
 
 // ═══════════════════════════════════════════════════════════════
 // MOBILE STATS BAR (replaces header)
@@ -45,42 +85,56 @@ const statsBarItems = [
   { href: "/reseau",     icon: IconUsers,   value: "24",  color: "#10B981", bg: "rgba(16,185,129,0.15)",  label: "Prospects" },
 ]
 
+const PAGE_TITLES: Record<string, string> = {
+  "/parcours":       "Mon Parcours",
+  "/business":       "Mon Business",
+  "/outils":         "Mes Outils",
+  "/croissance":     "Ma Croissance",
+  "/communaute":     "Communauté",
+  "/reseau":         "Réseau",
+  "/agenda":         "Agenda",
+  "/proline":        "Proline",
+  "/markline":       "Markline",
+  "/formation":      "Formation",
+  "/simulations":    "Simulations",
+  "/profil":         "Mon Profil",
+  "/enrichir-atlas": "Enrichir Atlas",
+  "/rag":            "Admin RAG",
+}
+
 export function MobileStatsBar() {
-  const { user, initials } = useUser()
+  const { user, initials, loading } = useUser()
+  const pathname = usePathname()
   const avatarUrl = (user as any)?.avatarUrl ?? null
+  const title = PAGE_TITLES[pathname] ?? null
 
   return (
     <header className="mobile-nav-top fixed left-0 right-0 top-0 z-50 flex h-14 items-center border-b border-border px-3 lg:hidden">
       <Link href="/profil" className="mr-2 shrink-0">
-        <div className="relative h-10 w-10 overflow-hidden rounded-full bg-primary">
-          {avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={avatarUrl} alt="Avatar" className="absolute inset-0 h-full w-full object-cover" />
-          ) : (
-            <span className="flex h-full w-full items-center justify-center text-xs font-bold text-white">
-              {initials}
-            </span>
-          )}
-        </div>
+        <AvatarImg avatarUrl={avatarUrl} initials={initials} loading={loading} className="h-10 w-10" />
       </Link>
 
       <div className="flex flex-1 items-center justify-around">
-        {statsBarItems.map((item) => {
-          const Icon = item.icon
-          return (
-            <Link key={item.href} href={item.href} className="flex items-center gap-1">
-              <div
-                className="flex h-8 w-8 items-center justify-center rounded-lg"
-                style={{ backgroundColor: item.bg }}
-              >
-                <Icon className="h-[18px] w-[18px]" style={{ color: item.color }} />
-              </div>
-              <span className="font-mono text-[12px] font-bold" style={{ color: item.color }}>
-                {item.value}
-              </span>
-            </Link>
-          )
-        })}
+        {title ? (
+          <span className="text-sm font-semibold text-foreground">{title}</span>
+        ) : (
+          statsBarItems.map((item) => {
+            const Icon = item.icon
+            return (
+              <Link key={item.href} href={item.href} className="flex items-center gap-1">
+                <div
+                  className="flex h-8 w-8 items-center justify-center rounded-lg"
+                  style={{ backgroundColor: item.bg }}
+                >
+                  <Icon className="h-[18px] w-[18px]" style={{ color: item.color }} />
+                </div>
+                <span className="font-mono text-[12px] font-bold" style={{ color: item.color }}>
+                  {item.value}
+                </span>
+              </Link>
+            )
+          })
+        )}
       </div>
     </header>
   )
@@ -538,33 +592,62 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
             )
           })}
           {(user as any)?.isAdmin && (
-            collapsed ? (
-              <div className="group relative flex justify-center">
+            <>
+              {collapsed ? (
+                <div className="group relative flex justify-center">
+                  <Link
+                    href="/rag"
+                    className={cn(
+                      "flex h-9 w-9 items-center justify-center rounded-md transition-colors",
+                      isActive("/rag") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
+                  >
+                    <IconUpload className="h-5 w-5 shrink-0" />
+                  </Link>
+                  <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
+                    Admin RAG
+                  </span>
+                </div>
+              ) : (
                 <Link
                   href="/rag"
                   className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-md transition-colors",
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
                     isActive("/rag") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
                   )}
                 >
                   <IconUpload className="h-5 w-5 shrink-0" />
+                  <span>Admin RAG</span>
                 </Link>
-                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
-                  Admin RAG
-                </span>
-              </div>
-            ) : (
-              <Link
-                href="/rag"
-                className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-                  isActive("/rag") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                )}
-              >
-                <IconUpload className="h-5 w-5 shrink-0" />
-                <span>Admin RAG</span>
-              </Link>
-            )
+              )}
+              {collapsed ? (
+                <div className="group relative flex justify-center">
+                  <Link
+                    href="/enrichir-atlas"
+                    className={cn(
+                      "flex h-9 w-9 items-center justify-center rounded-md transition-colors",
+                      isActive("/enrichir-atlas") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                    )}
+                  >
+                    <IconAdjustments className="h-5 w-5 shrink-0" />
+                  </Link>
+                  <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
+                    Config. Agents
+                  </span>
+                </div>
+              ) : (
+                <Link
+                  href="/enrichir-atlas"
+                  className={cn(
+                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
+                    isActive("/enrichir-atlas") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  )}
+                >
+                  <IconAdjustments className="h-5 w-5 shrink-0" />
+                  <span>Config. Agents</span>
+                </Link>
+              )}
+            </>
           )}
         </div>
       </nav>
@@ -651,16 +734,7 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
             : "gap-3 w-full px-2 py-2"
         )}
       >
-        <div className="relative h-9 w-9 shrink-0 overflow-hidden rounded-full bg-primary">
-          {avatarUrl ? (
-            // eslint-disable-next-line @next/next/no-img-element
-            <img src={avatarUrl} alt="Avatar" className="absolute inset-0 h-full w-full object-cover" />
-          ) : (
-            <div className="flex h-full w-full items-center justify-center text-sm font-medium text-white">
-              {loading ? "…" : initials}
-            </div>
-          )}
-        </div>
+        <AvatarImg avatarUrl={avatarUrl} initials={initials} loading={loading} className="h-9 w-9 shrink-0" textSize="text-sm" />
         {collapsed ? (
           <span className="text-[9px] font-medium text-muted-foreground leading-none">
             {user?.plan === "pro" ? "Pro" : "Free"}
@@ -680,27 +754,22 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
 // DESKTOP TOP BAR
 // ═══════════════════════════════════════════════════════════════
 
-interface DesktopTopBarProps {
-  breadcrumbs?: { label: string; href?: string }[]
-}
+export function DesktopTopBar() {
+  const pathname = usePathname()
+  const title = PAGE_TITLES[pathname] ?? null
 
-export function DesktopTopBar({ breadcrumbs }: DesktopTopBarProps) {
   return (
-    <header className="sticky top-0 z-30 hidden h-14 items-center justify-between border-b border-border bg-background/80 px-6 backdrop-blur-sm lg:flex">
-      <nav className="flex items-center gap-2 text-sm">
-        {breadcrumbs?.map((crumb, index) => (
-          <span key={index} className="flex items-center gap-2">
-            {index > 0 && <span className="text-muted-foreground">/</span>}
-            {crumb.href ? (
-              <a href={crumb.href} className="text-muted-foreground transition-colors hover:text-foreground">{crumb.label}</a>
-            ) : (
-              <span className="text-foreground">{crumb.label}</span>
-            )}
-          </span>
-        ))}
-      </nav>
+    <header className="sticky top-0 z-30 hidden h-14 items-center border-b border-border bg-background/80 px-6 backdrop-blur-sm lg:grid lg:grid-cols-3">
+      {/* left — spacer */}
+      <div />
 
-      <div className="flex items-center gap-4">
+      {/* center — page title */}
+      <div className="flex items-center justify-center">
+        {title && <span className="text-sm font-semibold text-foreground">{title}</span>}
+      </div>
+
+      {/* right — stats + actions */}
+      <div className="flex items-center justify-end gap-4">
         <div className="flex items-center gap-3">
           {statsBarItems.map((item, index) => {
             const Icon = item.icon
@@ -726,12 +795,11 @@ export function DesktopTopBar({ breadcrumbs }: DesktopTopBarProps) {
 }
 
 function TopBarAvatar() {
-  const { initials, loading, logout } = useUser()
+  const { user, initials, loading, logout } = useUser()
+  const avatarUrl = (user as any)?.avatarUrl ?? null
   return (
-    <button onClick={logout} title="Déconnexion" className="h-8 w-8 overflow-hidden rounded-full bg-primary transition-opacity hover:opacity-80">
-      <div className="flex h-full w-full items-center justify-center text-xs font-medium text-white">
-        {loading ? "…" : initials}
-      </div>
+    <button onClick={logout} title="Déconnexion" className="shrink-0 transition-opacity hover:opacity-80">
+      <AvatarImg avatarUrl={avatarUrl} initials={initials} loading={loading} className="h-8 w-8" />
     </button>
   )
 }

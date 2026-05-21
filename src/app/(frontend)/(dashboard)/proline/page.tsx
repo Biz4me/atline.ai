@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
 import { MonPlanTab } from "@/components/proline/mon-plan-tab"
 import { ObjectionsTab } from "@/components/proline/objections-tab"
@@ -13,7 +12,7 @@ export default function ProlinePage() {
   const [activeTab, setActiveTab] = useState("Mon plan")
 
   return (
-    <DashboardShell>
+    <div>
       <div className="mb-6">
         <h1 className="font-heading text-xl font-semibold text-foreground">Proline</h1>
         <p className="mt-1 text-sm text-muted-foreground">Plans de compensation et objections produits</p>
@@ -24,6 +23,6 @@ export default function ProlinePage() {
         {activeTab === "Objections" && <ObjectionsTab />}
         {activeTab === "Comparaison" && <ComparaisonTab />}
       </div>
-    </DashboardShell>
+    </div>
   )
 }

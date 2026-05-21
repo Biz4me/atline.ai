@@ -5,15 +5,11 @@ import { MobileStatsBar, MobileBottomNav, PlusDrawer, DesktopSidebar, DesktopTop
 import { useSidebar } from "./sidebar-context"
 import { cn } from "@/lib/utils"
 
-type LayoutVariant = "standard" | "with-sidebar"
-
 interface DashboardShellProps {
   children: React.ReactNode
-  breadcrumbs?: { label: string; href?: string }[]
-  layout?: LayoutVariant
 }
 
-export function DashboardShell({ children, breadcrumbs, layout = "standard" }: DashboardShellProps) {
+export function DashboardShell({ children }: DashboardShellProps) {
   const { collapsed: sidebarCollapsed, ready: sidebarReady, toggle: toggleSidebar } = useSidebar()
   const [drawerOpen, setDrawerOpen] = useState(false)
 
@@ -40,17 +36,11 @@ export function DashboardShell({ children, breadcrumbs, layout = "standard" }: D
         )}
       >
         {/* Desktop top bar */}
-        <DesktopTopBar breadcrumbs={breadcrumbs} />
+        <DesktopTopBar />
 
         {/* Page content */}
         <main className="flex-1 px-4 pb-[84px] pt-[72px] lg:px-8 lg:pb-8 lg:pt-6">
-          <div
-            className={cn(
-              "mx-auto",
-              layout === "standard" && "max-w-6xl",
-              layout === "with-sidebar" && "max-w-7xl"
-            )}
-          >
+          <div className="mx-auto max-w-6xl">
             {children}
           </div>
         </main>

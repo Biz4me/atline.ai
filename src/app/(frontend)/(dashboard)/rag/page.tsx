@@ -1,7 +1,6 @@
 "use client"
 
 import { useState, useRef, useEffect, useCallback } from "react"
-import { DashboardShell } from "@/components/dashboard/shell"
 import { useUser } from "@/hooks/use-user"
 import { Upload, FileText, CheckCircle, XCircle, Loader2, Trash2, RefreshCw, Tag, X } from "lucide-react"
 import { cn } from "@/lib/utils"
@@ -259,24 +258,20 @@ export default function AdminPage() {
 
   if (loading) {
     return (
-      <DashboardShell>
-        <div className="flex items-center gap-2 py-12 text-muted-foreground">
-          <Loader2 className="h-5 w-5 animate-spin" />
-          <span className="text-sm">Chargement…</span>
-        </div>
-      </DashboardShell>
+      <div className="flex items-center gap-2 py-12 text-muted-foreground">
+        <Loader2 className="h-5 w-5 animate-spin" />
+        <span className="text-sm">Chargement…</span>
+      </div>
     )
   }
 
   if (!(user as any)?.isAdmin) {
     return (
-      <DashboardShell>
-        <div className="flex flex-col items-center justify-center py-32 text-center">
-          <XCircle className="h-10 w-10 text-red-400" />
+      <div className="flex flex-col items-center justify-center py-32 text-center">
+        <XCircle className="h-10 w-10 text-red-400" />
           <p className="mt-4 font-semibold text-foreground">Accès refusé</p>
           <p className="mt-1 text-sm text-muted-foreground">Cette page est réservée aux administrateurs.</p>
         </div>
-      </DashboardShell>
     )
   }
 
@@ -336,8 +331,7 @@ export default function AdminPage() {
   }
 
   return (
-    <DashboardShell breadcrumbs={[{ label: "Administration — Documents RAG" }]}>
-      <div className="grid grid-cols-1 gap-4 lg:grid-cols-2" style={{ height: "calc(100dvh - 120px)" }}>
+    <div className="grid grid-cols-1 gap-4 lg:grid-cols-2" style={{ height: "calc(100dvh - 120px)" }}>
 
         {/* ── Colonne gauche : Upload ── */}
         <div className="flex h-full flex-col gap-3">
@@ -551,7 +545,6 @@ export default function AdminPage() {
           </div>
         </div>
 
-      </div>
-    </DashboardShell>
+    </div>
   )
 }

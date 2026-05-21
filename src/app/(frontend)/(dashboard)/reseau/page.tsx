@@ -2,7 +2,6 @@
 
 import { Suspense, useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
 import { PipelineTab } from "@/components/reseau/pipeline-tab"
 import { ListeNomsTab } from "@/components/reseau/liste-noms-tab"
@@ -28,19 +27,17 @@ function ReseauContent() {
   }, [searchParams])
 
   return (
-    <DashboardShell>
-      <div>
-        <div className="mb-6">
-          <h1 className="font-heading text-xl font-semibold text-foreground">Réseau</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Prospects, équipe et carte digitale</p>
-        </div>
-        <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-        {activeTab === "Pipeline" && <PipelineTab />}
-        {activeTab === "Liste de noms" && <ListeNomsTab />}
-        {activeTab === "Équipe" && <EquipeTab />}
-        {activeTab === "Carte digitale" && <CarteDigitaleTab />}
+    <div>
+      <div className="mb-6">
+        <h1 className="font-heading text-xl font-semibold text-foreground">Réseau</h1>
+        <p className="mt-1 text-sm text-muted-foreground">Prospects, équipe et carte digitale</p>
       </div>
-    </DashboardShell>
+      <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+      {activeTab === "Pipeline" && <PipelineTab />}
+      {activeTab === "Liste de noms" && <ListeNomsTab />}
+      {activeTab === "Équipe" && <EquipeTab />}
+      {activeTab === "Carte digitale" && <CarteDigitaleTab />}
+    </div>
   )
 }
 

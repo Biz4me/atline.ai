@@ -2,7 +2,6 @@
 
 import { Suspense, useState, useEffect } from "react"
 import { useSearchParams } from "next/navigation"
-import { DashboardShell } from "@/components/dashboard/shell"
 import { CurrentLessonCard } from "@/components/formation/current-lesson-card"
 import { GlobalProgressBar } from "@/components/formation/progress-bar"
 import { ModuleList, type Module } from "@/components/formation/module-list"
@@ -37,8 +36,7 @@ function FormationContent() {
   }, [searchParams])
 
   return (
-    <DashboardShell layout="with-sidebar">
-      <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
+    <div className="flex flex-col gap-6 lg:flex-row lg:gap-8">
         <div className="min-w-0 flex-1 lg:max-w-[680px]">
           <div className="mb-6">
             <h1 className="font-heading text-xl font-semibold text-foreground">Formation</h1>
@@ -68,8 +66,7 @@ function FormationContent() {
           )}
         </div>
         <ProgressSidebar streak={12} totalXP={225} nextBadge="Studieux" badgeRequirement="5 modules" atlasRecommendation="Continue le module Prospection !" />
-      </div>
-    </DashboardShell>
+    </div>
   )
 }
 

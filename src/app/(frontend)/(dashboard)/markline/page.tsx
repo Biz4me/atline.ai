@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
 import { PublicationsTab } from "@/components/markline/publications-tab"
 import { LeadsTab } from "@/components/markline/leads-tab"
@@ -13,7 +12,7 @@ export default function MarklinePage() {
   const [activeTab, setActiveTab] = useState("Publications")
 
   return (
-    <DashboardShell>
+    <div>
       <div className="mb-6">
         <h1 className="font-heading text-xl font-semibold text-foreground">Markline</h1>
         <p className="mt-1 text-sm text-muted-foreground">Publie et génère des leads automatiquement</p>
@@ -24,6 +23,6 @@ export default function MarklinePage() {
         {activeTab === "Leads détectés" && <LeadsTab />}
         {activeTab === "Paramètres" && <ParametresTab />}
       </div>
-    </DashboardShell>
+    </div>
   )
 }

@@ -3,7 +3,6 @@
 import { useRef, useState, useEffect } from "react"
 import { useTheme } from "next-themes"
 import { Sun, Moon } from "lucide-react"
-import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
 import { IconFileText, IconCheck, IconX, IconCamera, IconPhoto } from "@tabler/icons-react"
 import { useUser } from "@/hooks/use-user"
@@ -174,8 +173,7 @@ export default function ProfilPage() {
   }
 
   return (
-    <DashboardShell>
-      <div>
+    <div>
         <div className="mb-6">
           <h1 className="font-heading text-xl font-semibold text-foreground">Profil</h1>
           <p className="mt-1 text-sm text-muted-foreground">Tes informations et paramètres</p>
@@ -474,7 +472,6 @@ export default function ProfilPage() {
             )}
           </div>
         )}
-      </div>
-    </DashboardShell>
+    </div>
   )
 }
