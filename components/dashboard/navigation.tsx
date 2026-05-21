@@ -288,7 +288,7 @@ export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
 // DESKTOP SIDEBAR — flat nav, style Claude
 // ═══════════════════════════════════════════════════════════════
 import { Suspense } from "react"
-import { AtlasConversations } from "./atlas-conversations"
+import { AtlasConversations, CollapsedConversations } from "./atlas-conversations"
 
 const navItems = [
   { href: "/formation",     icon: IconSchool,    label: "Formation"      },
@@ -352,7 +352,14 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
         )}
       </div>
 
-      {/* Atlas conversation history */}
+      {/* Mini conversations — collapsed mode */}
+      {collapsed && (
+        <Suspense>
+          <CollapsedConversations />
+        </Suspense>
+      )}
+
+      {/* Atlas conversation history — expanded mode */}
       {isAtlas && !collapsed && (
         <Suspense>
           <AtlasConversations />
