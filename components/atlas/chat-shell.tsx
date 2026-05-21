@@ -1,7 +1,8 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, Suspense } from "react"
 import { MobileStatsBar, MobileBottomNav, PlusDrawer, DesktopSidebar, DesktopTopBar } from "@/components/dashboard/navigation"
+import { useSidebar } from "@/components/dashboard/sidebar-context"
 import { cn } from "@/lib/utils"
 
 interface ChatShellProps {
@@ -11,15 +12,8 @@ interface ChatShellProps {
 }
 
 export function ChatShell({ children, breadcrumbs, hideSidebar = false }: ChatShellProps) {
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
-    if (typeof window === "undefined") return false
-    return localStorage.getItem("sidebar-collapsed") === "true"
-  })
+  const { collapsed: sidebarCollapsed, ready: sidebarReady, toggle: toggleSidebar } = useSidebar()
   const [drawerOpen, setDrawerOpen] = useState(false)
-
-  useEffect(() => {
-    localStorage.setItem("sidebar-collapsed", String(sidebarCollapsed))
-  }, [sidebarCollapsed])
 
   return (
     <div className="flex h-[100dvh] flex-col overflow-hidden bg-background">
@@ -28,16 +22,20 @@ export function ChatShell({ children, breadcrumbs, hideSidebar = false }: ChatSh
 
       {/* Desktop sidebar — hidden when Atlas sidebar takes over */}
       {!hideSidebar && (
-        <DesktopSidebar
-          collapsed={sidebarCollapsed}
-          onToggle={() => setSidebarCollapsed(!sidebarCollapsed)}
-        />
+        <Suspense>
+          <DesktopSidebar
+            collapsed={sidebarCollapsed}
+            onToggle={toggleSidebar}
+            enableTransition={sidebarReady}
+          />
+        </Suspense>
       )}
 
       {/* Main content area */}
       <div
         className={cn(
-          "flex flex-1 flex-col overflow-hidden transition-all duration-300",
+          "flex flex-1 flex-col overflow-hidden",
+          sidebarReady && "transition-all duration-300",
           "pt-14 pb-[68px]",
           "lg:pt-0 lg:pb-0",
           hideSidebar
