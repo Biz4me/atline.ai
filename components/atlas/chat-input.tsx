@@ -85,7 +85,7 @@ export function ChatInput({ onSend, disabled }: ChatInputProps) {
           value={message}
           onChange={(e) => setMessage(e.target.value)}
           onKeyDown={handleKeyDown}
-          placeholder="Pose une question…"
+          placeholder="Écris un message…"
           disabled={disabled}
           rows={1}
           style={{ height: MIN_HEIGHT }}

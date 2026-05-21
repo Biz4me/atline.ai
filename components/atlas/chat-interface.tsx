@@ -154,7 +154,7 @@ export function ChatInterface({
     setMessages((prev) => [...prev.filter((m) => m.id !== "welcome"), userMsg])
     setIsTyping(true)
     isAtBottomRef.current = true
-    scrollToBottom(true)
+    setTimeout(() => scrollToBottom(true), 50)
 
     // Ensure conversation exists in DB (after showing message)
     let convId = activeConvId
@@ -264,8 +264,7 @@ export function ChatInterface({
         flushQueue(assistantId)
         setIsTyping(false)
         setIsStreaming(false)
-        scrollToBottom()
-        // Trigger sidebar refresh so new title appears
+        scrollToBottom(true)
         onExchangeComplete?.()
       }, wordQueueRef.current.length * WORD_INTERVAL_MS + 150)
     }
@@ -309,7 +308,7 @@ export function ChatInterface({
               onScroll={handleScroll}
               className="h-full overflow-y-auto"
             >
-              <div className="mx-auto max-w-[700px] space-y-6 px-4 py-6">
+              <div className="mx-auto max-w-[700px] space-y-6 px-4 pt-6 pb-24">
                 {messages.map((msg) => (
                   <ChatMessage
                     key={msg.id}
