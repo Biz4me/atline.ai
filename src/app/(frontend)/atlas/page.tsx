@@ -60,6 +60,8 @@ function AtlasContent() {
 
   const handleExchangeComplete = useCallback(() => {
     window.dispatchEvent(new Event("atlas:refresh"))
+    // Second refresh after delay to pick up the AI-generated title from after()
+    setTimeout(() => window.dispatchEvent(new Event("atlas:refresh")), 3000)
   }, [])
 
   return (
