@@ -13,10 +13,6 @@ export default function MarklinePage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="font-heading text-xl font-semibold text-foreground">Markline</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Publie et génère des leads automatiquement</p>
-      </div>
       <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="mt-6">
         {activeTab === "Publications" && <PublicationsTab />}

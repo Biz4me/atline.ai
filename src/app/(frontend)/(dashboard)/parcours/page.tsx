@@ -32,13 +32,7 @@ export default function ParcoursPage() {
   const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id))
 
   return (
-    <div className="max-w-2xl space-y-6">
-        <div>
-          <h1 className="font-heading text-xl font-semibold text-foreground">Mon Parcours</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Formation et entraînements pour progresser</p>
-        </div>
-
-        <div className="space-y-3">
+    <div className="max-w-2xl space-y-3">
           <AccordionBlock
             icon={<IconSchool className="h-5 w-5" style={{ color: "#7C6FE8" }} />}
             iconBg="rgba(124,111,232,0.12)"
@@ -87,7 +81,6 @@ export default function ParcoursPage() {
               <OpenButton href="/simulations" label="Ouvrir Simulations" />
             </div>
           </AccordionBlock>
-        </div>
     </div>
   )
 }

@@ -58,11 +58,7 @@ export default function AgendaPage() {
 
   return (
     <>
-      <div className="mb-6 flex items-center justify-between">
-        <div>
-          <h1 className="font-heading text-xl font-semibold text-foreground">Agenda</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Tes événements et rappels MLM</p>
-        </div>
+      <div className="mb-6 flex justify-end">
         <Button size="sm" onClick={() => setShowModal(true)}>
           <IconPlus className="h-4 w-4" />
           Ajouter

@@ -476,11 +476,6 @@ export default function EnrichirAtlasPage() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="font-heading text-xl font-semibold text-foreground">Enrichir Atlas</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Donne plus de connaissances à tes agents IA</p>
-      </div>
-
       <TabsNav tabs={allTabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
       <div className="mt-6">

@@ -174,10 +174,6 @@ export default function ProfilPage() {
 
   return (
     <div>
-        <div className="mb-6">
-          <h1 className="font-heading text-xl font-semibold text-foreground">Profil</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Tes informations et paramètres</p>
-        </div>
         <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
 
         {activeTab === "Mon Profil" && (

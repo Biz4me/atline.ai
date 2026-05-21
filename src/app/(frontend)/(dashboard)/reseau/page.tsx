@@ -28,10 +28,6 @@ function ReseauContent() {
 
   return (
     <div>
-      <div className="mb-6">
-        <h1 className="font-heading text-xl font-semibold text-foreground">Réseau</h1>
-        <p className="mt-1 text-sm text-muted-foreground">Prospects, équipe et carte digitale</p>
-      </div>
       <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
       {activeTab === "Pipeline" && <PipelineTab />}
       {activeTab === "Liste de noms" && <ListeNomsTab />}

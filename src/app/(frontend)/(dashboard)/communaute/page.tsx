@@ -21,13 +21,7 @@ export default function CommunautePage() {
   const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id))
 
   return (
-    <div className="max-w-2xl space-y-6">
-        <div>
-          <h1 className="font-heading text-xl font-semibold text-foreground">Communauté</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Forum, posts et groupes par société</p>
-        </div>
-
-        <div className="space-y-3">
+    <div className="max-w-2xl space-y-3">
           <AccordionBlock
             icon={<IconMessages className="h-5 w-5" style={{ color: "#8B5CF6" }} />}
             iconBg="rgba(139,92,246,0.12)"
@@ -63,7 +57,6 @@ export default function CommunautePage() {
           >
             <ComingSoon description="Rejoins le groupe de ta société MLM pour des conseils spécifiques, des ressources et un réseau de pairs qui comprennent ton contexte." />
           </AccordionBlock>
-        </div>
     </div>
   )
 }

@@ -32,13 +32,7 @@ export default function BusinessPage() {
   const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id))
 
   return (
-    <div className="max-w-2xl space-y-6">
-        <div>
-          <h1 className="font-heading text-xl font-semibold text-foreground">Mon Business</h1>
-          <p className="mt-1 text-sm text-muted-foreground">Réseau, agenda et contenu</p>
-        </div>
-
-        <div className="space-y-3">
+    <div className="max-w-2xl space-y-3">
           <AccordionBlock
             icon={<IconUsers className="h-5 w-5" style={{ color: "#10B981" }} />}
             iconBg="rgba(16,185,129,0.12)"
@@ -106,7 +100,6 @@ export default function BusinessPage() {
               <OpenButton href="/markline" label="Ouvrir Markline" />
             </div>
           </AccordionBlock>
-        </div>
     </div>
   )
 }

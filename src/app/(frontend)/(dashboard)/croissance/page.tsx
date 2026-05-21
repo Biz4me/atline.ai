@@ -14,10 +14,6 @@ export default function CroissancePage() {
 
   return (
     <div>
-        <div className="mb-6">
-          <h1 className="font-heading text-xl font-semibold text-foreground">Ma Croissance</h1>
-          <p className="mt-1 text-sm text-muted-foreground">XP, badges, défis et classement</p>
-        </div>
         <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
         <div className="mt-6">
           {activeTab === "XP & Niveau" && <XpNiveauTab />}
