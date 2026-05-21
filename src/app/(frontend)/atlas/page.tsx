@@ -1,6 +1,6 @@
 "use client"
 
-import { Suspense, useState, useCallback } from "react"
+import { Suspense, useState, useCallback, useEffect } from "react"
 import { useRouter, useSearchParams } from "next/navigation"
 import { ChatShell } from "@/components/atlas/chat-shell"
 import { ChatInterface } from "@/components/atlas/chat-interface"
@@ -10,12 +10,33 @@ import { ErrorBoundary } from "@/components/error-boundary"
 function AtlasContent() {
   const router = useRouter()
   const searchParams = useSearchParams()
-  const conversationId = searchParams.get("c") ?? undefined
 
+  // Local state so we can update it without causing ChatInterface to remount mid-stream
+  const [conversationId, setConversationId] = useState<string | undefined>(
+    searchParams.get("c") ?? undefined
+  )
   const [sidebarOpen, setSidebarOpen] = useState(false)
   const [moduleWelcome, setModuleWelcome] = useState<string | undefined>(undefined)
 
+  // Sync when Next.js router navigates (sidebar clicks, back button)
+  useEffect(() => {
+    setConversationId(searchParams.get("c") ?? undefined)
+  }, [searchParams])
+
+  // Listen for the "new chat" event dispatched by the sparkle button in the desktop sidebar
+  useEffect(() => {
+    const handler = () => {
+      setConversationId(undefined)
+      setModuleWelcome(undefined)
+      // Also reset the URL cleanly via the router so Next.js tracks it
+      router.replace("/atlas", { scroll: false })
+    }
+    window.addEventListener("atlas:new-chat", handler)
+    return () => window.removeEventListener("atlas:new-chat", handler)
+  }, [router])
+
   const handleNewChat = useCallback(() => {
+    setConversationId(undefined)
     setModuleWelcome(undefined)
     router.push("/atlas")
   }, [router])
@@ -31,7 +52,9 @@ function AtlasContent() {
   }, [router])
 
   const handleConversationCreated = useCallback((id: string) => {
+    // Update URL without triggering a Next.js re-render (avoids remounting ChatInterface mid-stream)
     window.history.replaceState(null, "", `/atlas?c=${id}`)
+    setConversationId(id)
     window.dispatchEvent(new Event("atlas:refresh"))
   }, [])
 

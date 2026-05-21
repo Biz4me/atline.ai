@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { usePathname, useSearchParams } from "next/navigation"
+import { usePathname } from "next/navigation"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
 import {
@@ -309,10 +309,16 @@ interface DesktopSidebarProps {
 
 export function DesktopSidebar({ collapsed = false, onToggle, enableTransition = true }: DesktopSidebarProps) {
   const pathname = usePathname()
-  const searchParams = useSearchParams()
   const { user } = useUser()
   const isAtlas = pathname === "/atlas" || pathname.startsWith("/atlas/")
-  const atlasHref = isAtlas && searchParams.get("c") ? `/atlas?c=${searchParams.get("c")}` : "/atlas"
+
+  const handleNewConversation = () => {
+    if (isAtlas) {
+      window.dispatchEvent(new CustomEvent("atlas:new-chat"))
+    } else {
+      window.location.href = "/atlas"
+    }
+  }
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/")
 
@@ -331,24 +337,24 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
       <div className={cn("px-3 pt-3 pb-2", collapsed && "px-2 flex justify-center")}>
         {collapsed ? (
           <div className="group relative">
-            <Link
-              href={atlasHref}
+            <button
+              onClick={handleNewConversation}
               className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-muted transition"
             >
               <IconSparkles className="h-5 w-5 text-primary" />
-            </Link>
+            </button>
             <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
-              {isAtlas && searchParams.get("c") ? "Conversation en cours" : "Nouvelle conversation"}
+              Nouvelle conversation
             </span>
           </div>
         ) : (
-          <Link
-            href="/atlas"
-            className="flex items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground hover:bg-muted transition"
+          <button
+            onClick={handleNewConversation}
+            className="flex w-full items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground hover:bg-muted transition"
           >
             <IconSparkles className="h-4 w-4 text-primary flex-shrink-0" />
             <span>Nouvelle conversation</span>
-          </Link>
+          </button>
         )}
       </div>
 

@@ -322,7 +322,7 @@ export function ChatInterface({
               onScroll={handleScroll}
               className="h-full overflow-y-auto"
             >
-              <div className="mx-auto max-w-[700px] space-y-6 px-4 pt-6 pb-24">
+              <div className="mx-auto max-w-[700px] space-y-6 px-4 pt-6 pb-8">
                 {messages.map((msg) => (
                   <ChatMessage
                     key={msg.id}

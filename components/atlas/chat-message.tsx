@@ -133,17 +133,17 @@ export function ChatMessage({ role, content, isStreaming, messageId, onRegenerat
         {/* Action buttons — after streaming completes */}
         {!isStreaming && (
           <div className="mt-3 flex items-center gap-1">
-            <button onClick={handleCopy} className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 transition hover:text-muted-foreground">
+            <button onClick={handleCopy} className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground">
               {copied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
             </button>
-            <button onClick={() => handleVote("up")} className={cn("flex h-7 w-7 items-center justify-center rounded-md transition", vote === "up" ? "text-primary" : "text-muted-foreground/50 hover:text-muted-foreground")}>
+            <button onClick={() => handleVote("up")} className={cn("flex h-7 w-7 items-center justify-center rounded-md transition", vote === "up" ? "text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground")}>
               <ThumbsUp className="h-3.5 w-3.5" />
             </button>
-            <button onClick={() => handleVote("down")} className={cn("flex h-7 w-7 items-center justify-center rounded-md transition", vote === "down" ? "text-red-400" : "text-muted-foreground/50 hover:text-muted-foreground")}>
+            <button onClick={() => handleVote("down")} className={cn("flex h-7 w-7 items-center justify-center rounded-md transition", vote === "down" ? "text-red-400" : "text-muted-foreground hover:bg-muted hover:text-foreground")}>
               <ThumbsDown className="h-3.5 w-3.5" />
             </button>
             {onRegenerate && (
-              <button onClick={onRegenerate} className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 transition hover:text-muted-foreground">
+              <button onClick={onRegenerate} className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground">
                 <RotateCcw className="h-3.5 w-3.5" />
               </button>
             )}
