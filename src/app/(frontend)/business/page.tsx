@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { DashboardShell } from "@/components/dashboard/shell"
@@ -28,6 +29,9 @@ function StatChip({ label, value }: { label: string; value: string }) {
 }
 
 export default function BusinessPage() {
+  const [openId, setOpenId] = useState<string | null>("reseau")
+  const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id))
+
   return (
     <DashboardShell>
       <div className="max-w-2xl space-y-6">
@@ -42,7 +46,8 @@ export default function BusinessPage() {
             iconBg="rgba(16,185,129,0.12)"
             title="Réseau"
             subtitle="Pipeline prospects · Liste de noms · Équipe"
-            defaultOpen
+            isOpen={openId === "reseau"}
+            onToggle={() => toggle("reseau")}
           >
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
@@ -64,6 +69,8 @@ export default function BusinessPage() {
             iconBg="rgba(245,158,11,0.12)"
             title="Agenda"
             subtitle="RDV, suivi et planification"
+            isOpen={openId === "agenda"}
+            onToggle={() => toggle("agenda")}
           >
             <div className="space-y-4">
               <div className="grid grid-cols-2 gap-3">
@@ -84,6 +91,8 @@ export default function BusinessPage() {
             iconBg="rgba(6,182,212,0.12)"
             title="Markline"
             subtitle="Contenus · Réseaux sociaux · Posts"
+            isOpen={openId === "markline"}
+            onToggle={() => toggle("markline")}
           >
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-3">

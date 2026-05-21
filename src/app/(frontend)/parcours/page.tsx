@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { DashboardShell } from "@/components/dashboard/shell"
@@ -28,6 +29,9 @@ function StatChip({ label, value }: { label: string; value: string }) {
 }
 
 export default function ParcoursPage() {
+  const [openId, setOpenId] = useState<string | null>("formation")
+  const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id))
+
   return (
     <DashboardShell>
       <div className="max-w-2xl space-y-6">
@@ -42,7 +46,8 @@ export default function ParcoursPage() {
             iconBg="rgba(124,111,232,0.12)"
             title="Formation"
             subtitle="Méthode Go Pro · 8 modules · Éric Worre"
-            defaultOpen
+            isOpen={openId === "formation"}
+            onToggle={() => toggle("formation")}
           >
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-3">
@@ -67,6 +72,8 @@ export default function ParcoursPage() {
             iconBg="rgba(6,182,212,0.12)"
             title="Simulations"
             subtitle="Entraînements IA · Calls, objections, closing"
+            isOpen={openId === "simulations"}
+            onToggle={() => toggle("simulations")}
           >
             <div className="space-y-4">
               <div className="grid grid-cols-3 gap-3">

@@ -10,6 +10,9 @@ interface AccordionBlockProps {
   title: string
   subtitle: string
   defaultOpen?: boolean
+  // controlled mode — pass both or neither
+  isOpen?: boolean
+  onToggle?: () => void
   badge?: string
   children: React.ReactNode
 }
@@ -20,15 +23,19 @@ export function AccordionBlock({
   title,
   subtitle,
   defaultOpen = false,
+  isOpen,
+  onToggle,
   badge,
   children,
 }: AccordionBlockProps) {
-  const [open, setOpen] = useState(defaultOpen)
+  const [localOpen, setLocalOpen] = useState(defaultOpen)
+  const open = isOpen !== undefined ? isOpen : localOpen
+  const handleToggle = onToggle ?? (() => setLocalOpen((v) => !v))
 
   return (
     <div className="overflow-hidden rounded-xl border border-border bg-card">
       <button
-        onClick={() => setOpen((v) => !v)}
+        onClick={handleToggle}
         className="flex w-full items-center gap-3 px-4 py-4 text-left transition-colors hover:bg-muted/40"
       >
         <div

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import { DashboardShell } from "@/components/dashboard/shell"
 import { AccordionBlock } from "@/components/ui/accordion-block"
 import { IconMessages, IconEdit, IconUsers } from "@tabler/icons-react"
@@ -17,6 +18,9 @@ function ComingSoon({ description }: { description: string }) {
 }
 
 export default function CommunautePage() {
+  const [openId, setOpenId] = useState<string | null>("forum")
+  const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id))
+
   return (
     <DashboardShell>
       <div className="max-w-2xl space-y-6">
@@ -32,7 +36,8 @@ export default function CommunautePage() {
             title="Forum"
             subtitle="Questions · Conseils · Entraide"
             badge="Bientôt"
-            defaultOpen
+            isOpen={openId === "forum"}
+            onToggle={() => toggle("forum")}
           >
             <ComingSoon description="Un espace d'entraide entre distributeurs MLM. Pose tes questions, partage tes victoires et apprends des autres." />
           </AccordionBlock>
@@ -43,6 +48,8 @@ export default function CommunautePage() {
             title="Posts"
             subtitle="Fil d'actualité · Partages · Inspirations"
             badge="Bientôt"
+            isOpen={openId === "posts"}
+            onToggle={() => toggle("posts")}
           >
             <ComingSoon description="Le fil de la communauté Atline — partage tes progrès, tes scripts qui marchent et tes tips business." />
           </AccordionBlock>
@@ -53,6 +60,8 @@ export default function CommunautePage() {
             title="Groupes par société"
             subtitle="Herbalife · Amway · Forever Living · ..."
             badge="Bientôt"
+            isOpen={openId === "groupes"}
+            onToggle={() => toggle("groupes")}
           >
             <ComingSoon description="Rejoins le groupe de ta société MLM pour des conseils spécifiques, des ressources et un réseau de pairs qui comprennent ton contexte." />
           </AccordionBlock>

@@ -1,5 +1,6 @@
 "use client"
 
+import { useState } from "react"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
 import { DashboardShell } from "@/components/dashboard/shell"
@@ -19,6 +20,9 @@ function OpenButton({ href, label }: { href: string; label: string }) {
 }
 
 export default function OutilsPage() {
+  const [openId, setOpenId] = useState<string | null>("proline")
+  const toggle = (id: string) => setOpenId((prev) => (prev === id ? null : id))
+
   return (
     <DashboardShell>
       <div className="max-w-2xl space-y-6">
@@ -33,7 +37,8 @@ export default function OutilsPage() {
             iconBg="rgba(16,185,129,0.12)"
             title="Proline"
             subtitle="Plan de compensation · Calcul de revenus · Qualification"
-            defaultOpen
+            isOpen={openId === "proline"}
+            onToggle={() => toggle("proline")}
           >
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">
@@ -60,6 +65,8 @@ export default function OutilsPage() {
             iconBg="rgba(124,111,232,0.12)"
             title="Enrichir Atlas"
             subtitle="Ajouter des documents · Formation · Produits · Stratégie"
+            isOpen={openId === "enrichir"}
+            onToggle={() => toggle("enrichir")}
           >
             <div className="space-y-3">
               <p className="text-sm text-muted-foreground">
