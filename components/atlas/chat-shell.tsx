@@ -45,9 +45,9 @@ export function ChatShell({ children, hideSidebar = false }: ChatShellProps) {
         {/* Desktop top bar */}
         {!hideSidebar && <DesktopTopBar />}
 
-        {/* Chat content - full width like other pages */}
-        <main className="flex flex-1 flex-col overflow-hidden">
-          <div className="flex h-full w-full flex-col">
+        {/* Chat content */}
+        <main className="flex min-h-0 flex-1 flex-col overflow-hidden">
+          <div className="flex min-h-0 flex-1 flex-col">
             {children}
           </div>
         </main>
