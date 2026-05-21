@@ -3,7 +3,7 @@ import { cn } from "@/lib/utils"
 interface AtlineLogoProps {
   className?: string
   showText?: boolean
-  size?: "sm" | "md" | "lg"
+  size?: "sm" | "md" | "lg" | "xl"
 }
 
 export function AtlineLogo({ className, showText = true, size = "md" }: AtlineLogoProps) {
@@ -11,6 +11,7 @@ export function AtlineLogo({ className, showText = true, size = "md" }: AtlineLo
     sm: { icon: "h-6 w-6", text: "text-base" },
     md: { icon: "h-8 w-8", text: "text-lg" },
     lg: { icon: "h-10 w-10", text: "text-xl" },
+    xl: { icon: "h-16 w-16", text: "text-2xl" },
   }
 
   return (

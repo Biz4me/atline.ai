@@ -1,13 +1,22 @@
 "use client"
 
-import { useState, useRef, useEffect, useCallback } from "react"
+import { useState, useRef, useEffect, useCallback, useMemo } from "react"
 import { ChevronDown, Menu } from "lucide-react"
-import { QuoteCard } from "./quote-card"
 import { ChatMessage, TypingIndicator } from "./chat-message"
 import { QuickPrompts } from "./quick-prompts"
 import { ChatInput } from "./chat-input"
-import { MessageToast } from "./message-toast"
 import { useUser } from "@/hooks/use-user"
+import { AtlineLogo } from "@/components/dashboard/logo"
+
+const SUBTITLES = [
+  "Prêt à faire avancer ton business aujourd'hui ?",
+  "Qu'est-ce qu'on améliore ensemble aujourd'hui ?",
+  "Ton coach IA est là — quel est ton objectif du jour ?",
+  "Une question, un script, une stratégie — par où on commence ?",
+  "Comment puis-je t'aider à progresser aujourd'hui ?",
+  "Posons les bases de ta prochaine victoire.",
+  "Quel défi on attaque ensemble aujourd'hui ?",
+]
 
 interface Message {
   id: string
@@ -35,6 +44,7 @@ export function ChatInterface({
   onOpenSidebar,
 }: ChatInterfaceProps) {
   const { user } = useUser()
+  const subtitle = useMemo(() => SUBTITLES[Math.floor(Math.random() * SUBTITLES.length)], [])
   const [messages, setMessages] = useState<Message[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const [isStreaming, setIsStreaming] = useState(false)
@@ -259,44 +269,44 @@ export function ChatInterface({
     }
   }
 
+  const hasMessages = messages.length > 0
+
   return (
     <div className="flex flex-1 flex-col overflow-hidden">
-      {/* Mobile header with sidebar toggle */}
+      {/* Mobile header */}
       <div className="flex items-center gap-2 border-b border-border px-3 py-2 lg:hidden">
-        <button
-          onClick={onOpenSidebar}
-          className="p-1.5 text-muted-foreground hover:text-foreground transition"
-        >
+        <button onClick={onOpenSidebar} className="p-1.5 text-muted-foreground hover:text-foreground transition">
           <Menu className="h-5 w-5" />
         </button>
         <span className="text-sm font-medium text-foreground">Atlas</span>
       </div>
 
-      <QuoteCard />
-
-      <div className="relative flex-1 overflow-hidden">
-        <div
-          ref={scrollRef}
-          onScroll={handleScroll}
-          className="h-full overflow-y-auto px-3 py-4 lg:px-4"
-        >
-          {messages.length === 0 ? (
-            <div className="flex h-full flex-col items-center justify-center text-center">
-              <div
-                className={
-                  "mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-primary" +
-                  (isTyping ? " atlas-icon-thinking" : "")
-                }
-              >
-                <span className="text-2xl font-bold text-white">A</span>
-              </div>
-              <p className="font-medium text-white">Bonjour {user?.firstName ?? ""}</p>
-              <p className="mt-1 text-sm text-muted-foreground">
-                Comment puis-je t&apos;aider aujourd&apos;hui ?
-              </p>
+      {!hasMessages ? (
+        /* ── Welcome screen ── */
+        <div className="flex flex-1 flex-col items-center justify-center px-4 py-8">
+          <div className="flex w-full max-w-[700px] flex-col items-center gap-8">
+            <AtlineLogo size="xl" showText={false} />
+            <div className="text-center">
+              <h1 className="text-3xl font-bold text-white">
+                Bonjour {user?.firstName ?? ""}
+              </h1>
+              <p className="mt-2 text-base text-muted-foreground">{subtitle}</p>
             </div>
-          ) : (
-            <div className="space-y-4 pb-6">
+            <div className="w-full space-y-4">
+              <ChatInput onSend={handleSend} disabled={isStreaming} />
+              <QuickPrompts onSelect={handleSend} />
+            </div>
+          </div>
+        </div>
+      ) : (
+        /* ── Chat mode ── */
+        <>
+          <div
+            ref={scrollRef}
+            onScroll={handleScroll}
+            className="relative flex-1 overflow-y-auto"
+          >
+            <div className="mx-auto max-w-[700px] space-y-6 px-4 py-6">
               {messages.map((msg) => (
                 <ChatMessage
                   key={msg.id}
@@ -307,30 +317,26 @@ export function ChatInterface({
               ))}
               {isTyping && <TypingIndicator />}
             </div>
-          )}
-
-          {messages.length > 0 && (
             <div className="pointer-events-none sticky bottom-0 h-8 bg-gradient-to-t from-background to-transparent" />
+          </div>
+
+          {showScrollBtn && (
+            <button
+              onClick={() => { scrollToBottom(true); setShowScrollBtn(false) }}
+              className="absolute bottom-24 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-md transition hover:bg-muted hover:text-foreground"
+              aria-label="Aller en bas"
+            >
+              <ChevronDown className="h-4 w-4" />
+            </button>
           )}
-        </div>
 
-        {showScrollBtn && (
-          <button
-            onClick={() => { scrollToBottom(true); setShowScrollBtn(false) }}
-            className="absolute bottom-10 right-4 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-md transition hover:bg-muted hover:text-foreground"
-            aria-label="Aller en bas"
-          >
-            <ChevronDown className="h-4 w-4" />
-          </button>
-        )}
-      </div>
-
-      <div className="relative w-full">
-        <MessageToast messagesRemaining={8} />
-        <QuickPrompts onSelect={handleSend} />
-      </div>
-
-      <ChatInput onSend={handleSend} disabled={isStreaming} />
+          <div className="border-t border-border/30 bg-background py-3">
+            <div className="mx-auto max-w-[700px] px-4">
+              <ChatInput onSend={handleSend} disabled={isStreaming} />
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }
