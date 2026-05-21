@@ -671,9 +671,16 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
 function UserSection({ collapsed }: { collapsed: boolean }) {
   const { user, loading, logout, initials, displayName } = useUser()
   const [menuOpen, setMenuOpen] = useState(false)
+  const [clickable, setClickable] = useState(false)
   const menuRef = useRef<HTMLDivElement>(null)
   const planLabel = user?.plan === "pro" ? "Plan Pro" : "Plan Gratuit"
   const avatarUrl = (user as any)?.avatarUrl ?? null
+
+  // 200ms guard to absorb ghost-clicks on mount
+  useEffect(() => {
+    const t = setTimeout(() => setClickable(true), 200)
+    return () => clearTimeout(t)
+  }, [])
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -726,20 +733,17 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
       )}
 
       <button
-        onClick={() => setMenuOpen((v) => !v)}
+        onClick={() => clickable && setMenuOpen((v) => !v)}
         className={cn(
           "flex items-center rounded-md transition-colors hover:bg-muted",
+          !clickable && "pointer-events-none",
           collapsed
-            ? "flex-col gap-0.5 px-1 py-1 w-full justify-center"
+            ? "px-1 py-1 w-full justify-center"
             : "gap-3 w-full px-2 py-2"
         )}
       >
         <AvatarImg avatarUrl={avatarUrl} initials={initials} loading={loading} className="h-9 w-9 shrink-0" textSize="text-sm" />
-        {collapsed ? (
-          <span className="text-[9px] font-medium text-muted-foreground leading-none">
-            {user?.plan === "pro" ? "Pro" : "Free"}
-          </span>
-        ) : !loading && (
+        {!collapsed && !loading && (
           <div className="min-w-0 flex-1 text-left">
             <p className="truncate text-sm font-medium text-foreground">{displayName}</p>
             <p className="text-[11px] text-muted-foreground">{planLabel}</p>

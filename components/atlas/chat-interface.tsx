@@ -203,7 +203,7 @@ export function ChatInterface({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: content,
-          userId: user?.id,
+          userId: user?.id != null ? String(user.id) : undefined,
           conversationId: convId,
           moduleId: moduleId ?? null,
         }),

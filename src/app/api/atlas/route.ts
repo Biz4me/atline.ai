@@ -558,7 +558,7 @@ export async function POST(req: NextRequest) {
     conversationId?: string
     moduleId?: string
   }
-  const userId = typeof body.userId === "string" && body.userId.length > 0 ? body.userId : undefined
+  const userId = body.userId != null && String(body.userId).length > 0 ? String(body.userId) : undefined
 
 
   if (!message?.trim()) {
