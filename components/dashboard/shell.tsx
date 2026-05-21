@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { MobileStatsBar, MobileBottomNav, PlusDrawer, DesktopSidebar, DesktopTopBar } from "./navigation"
 import { useSidebar } from "./sidebar-context"
 import { cn } from "@/lib/utils"
@@ -23,11 +23,13 @@ export function DashboardShell({ children, breadcrumbs, layout = "standard" }: D
       <MobileStatsBar />
 
       {/* Desktop sidebar */}
-      <DesktopSidebar
-        collapsed={sidebarCollapsed}
-        onToggle={toggleSidebar}
-        enableTransition={sidebarReady}
-      />
+      <Suspense>
+        <DesktopSidebar
+          collapsed={sidebarCollapsed}
+          onToggle={toggleSidebar}
+          enableTransition={sidebarReady}
+        />
+      </Suspense>
 
       {/* Main content area */}
       <div

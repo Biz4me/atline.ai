@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import Link from "next/link"
-import { usePathname } from "next/navigation"
+import { usePathname, useSearchParams } from "next/navigation"
 import { useTheme } from "next-themes"
 import { cn } from "@/lib/utils"
 import {
@@ -309,8 +309,10 @@ interface DesktopSidebarProps {
 
 export function DesktopSidebar({ collapsed = false, onToggle, enableTransition = true }: DesktopSidebarProps) {
   const pathname = usePathname()
+  const searchParams = useSearchParams()
   const { user } = useUser()
   const isAtlas = pathname === "/atlas" || pathname.startsWith("/atlas/")
+  const atlasHref = isAtlas && searchParams.get("c") ? `/atlas?c=${searchParams.get("c")}` : "/atlas"
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/")
 
@@ -330,13 +332,13 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
         {collapsed ? (
           <div className="group relative">
             <Link
-              href="/atlas"
+              href={atlasHref}
               className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-muted transition"
             >
               <IconSparkles className="h-5 w-5 text-primary" />
             </Link>
             <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
-              Nouvelle conversation
+              {isAtlas && searchParams.get("c") ? "Conversation en cours" : "Nouvelle conversation"}
             </span>
           </div>
         ) : (
