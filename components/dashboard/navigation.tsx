@@ -370,6 +370,7 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
       {/* Navigation — always at bottom, never flex-1 */}
       <nav className={cn(
         "flex flex-col px-2 py-1",
+        collapsed && "border-t border-border",
         collapsed ? "overflow-visible" : "overflow-y-auto"
       )}>
         <div className="space-y-0.5">
