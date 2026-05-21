@@ -304,9 +304,10 @@ const navItems = [
 interface DesktopSidebarProps {
   collapsed?: boolean
   onToggle?: () => void
+  enableTransition?: boolean
 }
 
-export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarProps) {
+export function DesktopSidebar({ collapsed = false, onToggle, enableTransition = true }: DesktopSidebarProps) {
   const pathname = usePathname()
   const { user } = useUser()
   const isAtlas = pathname === "/atlas" || pathname.startsWith("/atlas/")
@@ -315,7 +316,8 @@ export function DesktopSidebar({ collapsed = false, onToggle }: DesktopSidebarPr
 
   return (
     <aside className={cn(
-      "fixed left-0 top-0 z-40 hidden h-screen flex-col border-r border-border bg-card transition-all duration-300 lg:flex",
+      "fixed left-0 top-0 z-40 hidden h-screen flex-col border-r border-border bg-card lg:flex",
+      enableTransition && "transition-all duration-300",
       collapsed ? "w-16" : "w-60"
     )}>
       {/* Logo */}

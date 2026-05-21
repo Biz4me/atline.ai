@@ -16,12 +16,14 @@ interface DashboardShellProps {
 
 export function DashboardShell({ children, breadcrumbs, layout = "standard" }: DashboardShellProps) {
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
+  const [sidebarReady, setSidebarReady] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
   useLayoutEffect(() => {
     try {
       setSidebarCollapsed(localStorage.getItem(SIDEBAR_KEY) === "1")
     } catch {}
+    setSidebarReady(true)
   }, [])
 
   function toggleSidebar() {
@@ -41,12 +43,14 @@ export function DashboardShell({ children, breadcrumbs, layout = "standard" }: D
       <DesktopSidebar
         collapsed={sidebarCollapsed}
         onToggle={toggleSidebar}
+        enableTransition={sidebarReady}
       />
 
       {/* Main content area */}
       <div
         className={cn(
-          "flex flex-col transition-all duration-300",
+          "flex flex-col",
+          sidebarReady && "transition-all duration-300",
           sidebarCollapsed ? "lg:pl-16" : "lg:pl-60"
         )}
       >
