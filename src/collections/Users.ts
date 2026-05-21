@@ -93,5 +93,43 @@ export const Users: CollectionConfig = {
         description: 'Mémoire persistante Atlas — JSON structuré mis à jour après chaque session',
       },
     },
+    {
+      name: 'experienceLevel',
+      type: 'select',
+      options: [
+        { label: 'Débutant — moins de 3 mois', value: 'beginner' },
+        { label: 'En développement — 3 à 12 mois', value: 'developing' },
+        { label: 'Expérimenté — plus d\'1 an', value: 'experienced' },
+      ],
+    },
+    {
+      name: 'financialGoal',
+      type: 'text',
+    },
+    {
+      name: 'weeklyHours',
+      type: 'select',
+      options: [
+        { label: 'Moins de 5h', value: 'lt5' },
+        { label: '5-10h', value: '5to10' },
+        { label: 'Plus de 10h', value: 'gt10' },
+        { label: 'Temps plein', value: 'fulltime' },
+      ],
+    },
+    {
+      name: 'socialPlatforms',
+      type: 'json',
+    },
+    {
+      name: 'hasProspectList',
+      type: 'checkbox',
+      defaultValue: false,
+    },
+    {
+      name: 'onboardingCompleted',
+      type: 'checkbox',
+      defaultValue: false,
+      saveToJWT: true,
+    },
   ],
 }
