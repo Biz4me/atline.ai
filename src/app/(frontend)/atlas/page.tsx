@@ -185,7 +185,7 @@ function AtlasContent() {
 
         {showChat ? (
           <ChatInterface
-            key={`${moduleId ?? "free"}-${conversationId ?? "new"}`}
+            key={moduleId ?? "free"}
             conversationId={conversationId}
             moduleId={moduleId}
             moduleWelcome={!conversationId && activeModule ? activeModule.welcome : undefined}

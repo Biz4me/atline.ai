@@ -65,23 +65,29 @@ export function ChatInterface({
   const currentIdRef = useRef<string>("")
   const isAtBottomRef = useRef(true)
   const lastUserMessageRef = useRef<string>("")
+  // Prevents re-fetching when the conversation was just self-created (first send)
+  const selfCreatedRef = useRef(false)
+
+  const [isLoadingHistory, setIsLoadingHistory] = useState(!!conversationId)
 
   // Load conversation from DB on mount / conversationId change
   useEffect(() => {
     setActiveConvId(conversationId)
+
     if (!conversationId) {
-      // New chat — show module welcome if present
-      if (moduleWelcome) {
-        setMessages([{
-          id: "welcome",
-          role: "assistant",
-          content: moduleWelcome,
-        }])
-      } else {
-        setMessages([])
-      }
+      setIsLoadingHistory(false)
+      setMessages(moduleWelcome ? [{ id: "welcome", role: "assistant", content: moduleWelcome }] : [])
       return
     }
+
+    // Conversation was just created by this component — messages already in state
+    if (selfCreatedRef.current) {
+      selfCreatedRef.current = false
+      setIsLoadingHistory(false)
+      return
+    }
+
+    setIsLoadingHistory(true)
     fetch(`/api/conversations/${conversationId}`)
       .then((r) => r.json())
       .then((data) => {
@@ -92,11 +98,11 @@ export function ChatInterface({
             content: m.content,
             createdAt: m.createdAt,
           })))
-          // Scroll to bottom after React re-renders the messages
           setTimeout(() => scrollToBottom(true), 100)
         }
       })
       .catch(() => {})
+      .finally(() => setIsLoadingHistory(false))
   }, [conversationId, moduleWelcome])
 
   const scrollToBottom = useCallback((force = false) => {
@@ -179,6 +185,7 @@ export function ChatInterface({
         const data = await res.json()
         convId = data.id
         setActiveConvId(convId)
+        selfCreatedRef.current = true
         onConversationCreated?.(data.id)
       } catch {}
     }
@@ -315,7 +322,10 @@ export function ChatInterface({
         </span>
       </div>
 
-      {!hasMessages ? (
+      {isLoadingHistory ? (
+        /* ── Loading history ── */
+        <div className="flex-1" />
+      ) : !hasMessages ? (
         /* ── Welcome screen ── */
         <div className="flex flex-1 flex-col items-center justify-center px-4 py-8">
           <div className="flex w-full max-w-[700px] flex-col items-center gap-8">
