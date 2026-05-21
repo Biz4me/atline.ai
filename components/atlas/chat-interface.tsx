@@ -85,6 +85,8 @@ export function ChatInterface({
             content: m.content,
             createdAt: m.createdAt,
           })))
+          // Scroll to bottom after React re-renders the messages
+          setTimeout(() => scrollToBottom(true), 100)
         }
       })
       .catch(() => {})
