@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useRef, useCallback } from "react"
 import { useRouter } from "next/navigation"
+import { useUser } from "@/hooks/use-user"
 import { cn } from "@/lib/utils"
 import { AtlineLogo } from "@/components/dashboard/logo"
 import { ArrowRight, Check } from "lucide-react"
@@ -506,6 +507,16 @@ function ActMission({
 // ─── Main page ────────────────────────────────────────────────────────────────
 
 export default function OnboardingPage() {
+  const router = useRouter()
+  const { user, loading } = useUser()
+
+  // Already onboarded → redirect away
+  useEffect(() => {
+    if (!loading && user?.onboardingCompleted === true) {
+      router.replace("/")
+    }
+  }, [user, loading, router])
+
   const [act, setAct] = useState<"identity" | "chat" | "mission">("identity")
   const [progressStep, setProgressStep] = useState(1)
   const [firstName, setFirstName] = useState("")
