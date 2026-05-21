@@ -26,13 +26,20 @@ const MLM_LEVEL_LABELS: Record<string, string> = Object.fromEntries(
 const inputClass =
   "w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground outline-none focus:border-primary/60 transition-colors placeholder:text-muted-foreground/50"
 
+const NOTIF_KEY = "atline:notifs"
+
 export default function ProfilPage() {
   const [activeTab, setActiveTab] = useState("Mon Profil")
   const [notifSuivi, setNotifSuivi] = useState(true)
   const [notifFilleuls, setNotifFilleuls] = useState(true)
   const [notifResume, setNotifResume] = useState(false)
   const { theme, setTheme } = useTheme()
-  const { user, loading, initials, displayName, updateProfile } = useUser()
+  const { user, loading, initials, displayName, updateProfile, logout } = useUser()
+
+  // Delete account state
+  const [showDeleteConfirm, setShowDeleteConfirm] = useState(false)
+  const [deleteInput, setDeleteInput] = useState("")
+  const [deleting, setDeleting] = useState(false)
 
   // Avatar upload
   const cameraInputRef = useRef<HTMLInputElement>(null)
@@ -41,6 +48,41 @@ export default function ProfilPage() {
   const [avatarPreview, setAvatarPreview] = useState<string | null>(null)
   const [uploadingAvatar, setUploadingAvatar] = useState(false)
   const [avatarMenuOpen, setAvatarMenuOpen] = useState(false)
+
+  // Load notification prefs from localStorage
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(NOTIF_KEY)
+      if (saved) {
+        const { suivi, filleuls, resume } = JSON.parse(saved)
+        if (typeof suivi === "boolean") setNotifSuivi(suivi)
+        if (typeof filleuls === "boolean") setNotifFilleuls(filleuls)
+        if (typeof resume === "boolean") setNotifResume(resume)
+      }
+    } catch {}
+  }, [])
+
+  function saveNotif(key: "suivi" | "filleuls" | "resume", value: boolean) {
+    const current = { suivi: notifSuivi, filleuls: notifFilleuls, resume: notifResume }
+    const updated = { ...current, [key]: value }
+    localStorage.setItem(NOTIF_KEY, JSON.stringify(updated))
+    if (key === "suivi") setNotifSuivi(value)
+    if (key === "filleuls") setNotifFilleuls(value)
+    if (key === "resume") setNotifResume(value)
+  }
+
+  async function handleDeleteAccount() {
+    setDeleting(true)
+    try {
+      const res = await fetch("/api/user/delete", { method: "DELETE" })
+      if (!res.ok) throw new Error()
+      await logout()
+    } catch {
+      setDeleting(false)
+      setDeleteInput("")
+      setShowDeleteConfirm(false)
+    }
+  }
 
   // Close avatar menu on outside click
   useEffect(() => {
@@ -366,13 +408,13 @@ export default function ProfilPage() {
             <div className="border-t border-border pt-4">
               <h2 className="text-sm font-medium text-foreground mb-3">Notifications</h2>
               {[
-                { label: "Rappels de suivi", value: notifSuivi, setter: setNotifSuivi },
-                { label: "Alertes filleuls", value: notifFilleuls, setter: setNotifFilleuls },
-                { label: "Résumé hebdomadaire", value: notifResume, setter: setNotifResume },
+                { label: "Rappels de suivi", value: notifSuivi, key: "suivi" as const },
+                { label: "Alertes filleuls", value: notifFilleuls, key: "filleuls" as const },
+                { label: "Résumé hebdomadaire", value: notifResume, key: "resume" as const },
               ].map((notif) => (
                 <div key={notif.label} className="flex items-center justify-between py-2">
                   <p className="text-sm text-muted-foreground">{notif.label}</p>
-                  <ToggleSwitch enabled={notif.value} onChange={notif.setter} />
+                  <ToggleSwitch enabled={notif.value} onChange={(v) => saveNotif(notif.key, v)} />
                 </div>
               ))}
             </div>
@@ -393,11 +435,43 @@ export default function ProfilPage() {
           <div className="rounded-xl border border-red-500/20 bg-red-500/5 p-6 space-y-4">
             <h2 className="text-sm font-medium text-red-400">Zone de danger</h2>
             <p className="text-sm text-muted-foreground">
-              La suppression de ton compte est irréversible. Toutes tes données seront effacées.
+              La suppression de ton compte est irréversible. Toutes tes données seront effacées définitivement.
             </p>
-            <button className="rounded-lg border border-red-500/30 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors">
-              Supprimer mon compte
-            </button>
+            {!showDeleteConfirm ? (
+              <button
+                onClick={() => setShowDeleteConfirm(true)}
+                className="rounded-lg border border-red-500/30 px-4 py-2 text-sm font-medium text-red-400 hover:bg-red-500/10 transition-colors"
+              >
+                Supprimer mon compte
+              </button>
+            ) : (
+              <div className="space-y-3 rounded-lg border border-red-500/30 bg-red-500/5 p-4">
+                <p className="text-sm font-medium text-red-400">
+                  Tape <span className="font-mono font-bold">SUPPRIMER</span> pour confirmer
+                </p>
+                <input
+                  value={deleteInput}
+                  onChange={(e) => setDeleteInput(e.target.value)}
+                  placeholder="SUPPRIMER"
+                  className="w-full rounded-lg border border-red-500/30 bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground/50 focus:outline-none focus:border-red-500/60"
+                />
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleDeleteAccount}
+                    disabled={deleteInput !== "SUPPRIMER" || deleting}
+                    className="rounded-lg bg-red-500 px-4 py-2 text-sm font-medium text-white hover:bg-red-600 disabled:opacity-40 transition-colors"
+                  >
+                    {deleting ? "Suppression…" : "Confirmer la suppression"}
+                  </button>
+                  <button
+                    onClick={() => { setShowDeleteConfirm(false); setDeleteInput("") }}
+                    className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    Annuler
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
         )}
       </div>

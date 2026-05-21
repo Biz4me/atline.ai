@@ -12,6 +12,11 @@ export interface AtlineUser {
   mlmCompany?: string
   mlmLevel?: string
   plan?: string
+  isAdmin?: boolean
+  xp?: number
+  streak?: number
+  modulesCompleted?: number
+  lastSimScore?: number
 }
 
 type ProfileUpdate = Partial<Pick<AtlineUser, "firstName" | "lastName" | "phone" | "mlmCompany" | "mlmLevel">>

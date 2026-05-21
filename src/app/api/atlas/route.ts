@@ -189,10 +189,28 @@ function getAtlasLevel(xp: number): string {
   return "Leader"
 }
 
+function sanitize(value: string): string {
+  return value.replace(/\{\{|\}\}/g, "").replace(/[\r\n]{3,}/g, "\n\n").slice(0, 500)
+}
+
 function fillTemplate(template: string, vars: Record<string, string | number>): string {
   return template.replace(/\{\{(\w+)\}\}/g, (_, key) =>
     key in vars ? String(vars[key]) : `{{${key}}}`
   )
+}
+
+// Simple in-memory rate limiter (per userId or IP, 30 req/min)
+const rateMap = new Map<string, { count: number; resetAt: number }>()
+function checkRateLimit(key: string, limit = 30, windowMs = 60_000): boolean {
+  const now = Date.now()
+  const entry = rateMap.get(key)
+  if (!entry || now > entry.resetAt) {
+    rateMap.set(key, { count: 1, resetAt: now + windowMs })
+    return true
+  }
+  if (entry.count >= limit) return false
+  entry.count++
+  return true
 }
 
 function buildMemoryContext(memory: UserMemory): string {
@@ -498,10 +516,17 @@ Réponse Atlas : ${assistantText}`,
 }
 
 export async function POST(req: NextRequest) {
-  const { message, userId, outputMode = "text", conversationId } = await req.json()
+  const body = await req.json()
+  const { message, outputMode = "text", conversationId } = body
+  const userId = typeof body.userId === "string" && body.userId.length > 0 ? body.userId : undefined
 
   if (!message?.trim()) {
     return new Response("Message requis", { status: 400 })
+  }
+
+  const rateLimitKey = userId ?? (req.headers.get("x-forwarded-for") ?? "anon")
+  if (!checkRateLimit(rateLimitKey)) {
+    return new Response("Trop de requêtes — réessaie dans une minute.", { status: 429 })
   }
 
   const payload = await getPayload({ config: configPromise })
@@ -561,8 +586,8 @@ export async function POST(req: NextRequest) {
       const improvements = memory.axes_travail ?? []
 
       templateVars = {
-        firstName: u?.firstName || "toi",
-        company,
+        firstName: sanitize(u?.firstName || "toi"),
+        company: sanitize(company),
         level,
         streak: Number(u?.streak ?? 0),
         xp,

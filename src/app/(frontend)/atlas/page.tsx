@@ -5,6 +5,7 @@ import { useRouter, useSearchParams } from "next/navigation"
 import { ChatShell } from "@/components/atlas/chat-shell"
 import { ChatInterface } from "@/components/atlas/chat-interface"
 import { AtlasSidebar } from "@/components/atlas/atlas-sidebar"
+import { ErrorBoundary } from "@/components/error-boundary"
 
 function AtlasContent() {
   const router = useRouter()
@@ -66,5 +67,9 @@ function AtlasContent() {
 }
 
 export default function AtlasPage() {
-  return <Suspense><AtlasContent /></Suspense>
+  return (
+    <ErrorBoundary>
+      <Suspense><AtlasContent /></Suspense>
+    </ErrorBoundary>
+  )
 }

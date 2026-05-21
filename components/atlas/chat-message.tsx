@@ -12,21 +12,43 @@ interface ChatMessageProps {
   role: "user" | "assistant"
   content: string
   isStreaming?: boolean
+  messageId?: string
+  onRegenerate?: () => void
 }
 
 function toHardBreaks(content: string): string {
   return content.replace(/(?<!\n)\n(?!\n)/g, "  \n")
 }
 
-export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
+export function ChatMessage({ role, content, isStreaming, messageId, onRegenerate }: ChatMessageProps) {
   const isUser = role === "user"
   const [copied, setCopied] = useState(false)
   const [vote, setVote] = useState<"up" | "down" | null>(null)
+
+  // Load vote from localStorage on mount
+  useState(() => {
+    if (!messageId) return
+    try {
+      const saved = localStorage.getItem(`atline:vote:${messageId}`)
+      if (saved === "up" || saved === "down") setVote(saved)
+    } catch {}
+  })
 
   const handleCopy = () => {
     navigator.clipboard.writeText(content)
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
+  }
+
+  const handleVote = (v: "up" | "down") => {
+    const next = vote === v ? null : v
+    setVote(next)
+    if (messageId) {
+      try {
+        if (next) localStorage.setItem(`atline:vote:${messageId}`, next)
+        else localStorage.removeItem(`atline:vote:${messageId}`)
+      } catch {}
+    }
   }
 
   return (
@@ -114,15 +136,17 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
             <button onClick={handleCopy} className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 transition hover:text-muted-foreground">
               {copied ? <Check className="h-3.5 w-3.5 text-green-400" /> : <Copy className="h-3.5 w-3.5" />}
             </button>
-            <button onClick={() => setVote(v => v === "up" ? null : "up")} className={cn("flex h-7 w-7 items-center justify-center rounded-md transition", vote === "up" ? "text-primary" : "text-muted-foreground/50 hover:text-muted-foreground")}>
+            <button onClick={() => handleVote("up")} className={cn("flex h-7 w-7 items-center justify-center rounded-md transition", vote === "up" ? "text-primary" : "text-muted-foreground/50 hover:text-muted-foreground")}>
               <ThumbsUp className="h-3.5 w-3.5" />
             </button>
-            <button onClick={() => setVote(v => v === "down" ? null : "down")} className={cn("flex h-7 w-7 items-center justify-center rounded-md transition", vote === "down" ? "text-red-400" : "text-muted-foreground/50 hover:text-muted-foreground")}>
+            <button onClick={() => handleVote("down")} className={cn("flex h-7 w-7 items-center justify-center rounded-md transition", vote === "down" ? "text-red-400" : "text-muted-foreground/50 hover:text-muted-foreground")}>
               <ThumbsDown className="h-3.5 w-3.5" />
             </button>
-            <button className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 transition hover:text-muted-foreground">
-              <RotateCcw className="h-3.5 w-3.5" />
-            </button>
+            {onRegenerate && (
+              <button onClick={onRegenerate} className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground/50 transition hover:text-muted-foreground">
+                <RotateCcw className="h-3.5 w-3.5" />
+              </button>
+            )}
           </div>
         )}
         </div>

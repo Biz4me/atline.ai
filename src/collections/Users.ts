@@ -7,7 +7,7 @@ export const Users: CollectionConfig = {
   },
   auth: true,
   access: {
-    create: () => true,
+    create: ({ req }) => !req.user, // only unauthenticated users can register
     read: ({ req }) => !!req.user,
     update: ({ req }) => !!req.user,
   },

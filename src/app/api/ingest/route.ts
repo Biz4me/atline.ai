@@ -36,6 +36,11 @@ export async function POST(req: NextRequest) {
   const themeId = formData.get("theme_id") as string | null
   const file = formData.get("file") as File | null
 
+  const MAX_SIZE = 50 * 1024 * 1024 // 50 MB
+  if (file && file.size > MAX_SIZE) {
+    return NextResponse.json({ error: "Fichier trop volumineux (max 50 MB)" }, { status: 413 })
+  }
+
   const res = await fetch(`${vpsUrl}/ingest`, {
     method: "POST",
     headers: { Authorization: `Bearer ${vpsKey}` },
@@ -69,5 +74,6 @@ export async function POST(req: NextRequest) {
     }
   }
 
-  return NextResponse.json({ ...json, payloadError }, { status: res.status })
+  if (payloadError) console.error("[ingest] Payload save error:", payloadError)
+  return NextResponse.json({ ...json }, { status: res.status })
 }

@@ -58,6 +58,7 @@ export function ChatInterface({
   const wordTimerRef = useRef<ReturnType<typeof setInterval> | null>(null)
   const currentIdRef = useRef<string>("")
   const isAtBottomRef = useRef(true)
+  const lastUserMessageRef = useRef<string>("")
 
   // Load conversation from DB on mount / conversationId change
   useEffect(() => {
@@ -145,6 +146,7 @@ export function ChatInterface({
     if (isStreaming) return
 
     // Show user message immediately — before any network call
+    lastUserMessageRef.current = content
     const userMsg: Message = {
       id: Date.now().toString(),
       role: "user",
@@ -270,6 +272,18 @@ export function ChatInterface({
     }
   }
 
+  const handleRegenerate = useCallback(() => {
+    if (isStreaming || !lastUserMessageRef.current) return
+    setMessages((prev) => {
+      const lastAssistant = [...prev].reverse().find((m) => m.role === "assistant")
+      if (!lastAssistant) return prev
+      return prev.filter((m) => m.id !== lastAssistant.id)
+    })
+    handleSend(lastUserMessageRef.current)
+  }, [isStreaming]) // eslint-disable-line react-hooks/exhaustive-deps
+
+  const lastAssistantId = [...messages].reverse().find((m) => m.role === "assistant" && !m.isStreaming)?.id
+
   const hasMessages = messages.length > 0
 
   return (
@@ -315,6 +329,8 @@ export function ChatInterface({
                     role={msg.role}
                     content={msg.content}
                     isStreaming={msg.isStreaming}
+                    messageId={msg.id}
+                    onRegenerate={msg.id === lastAssistantId ? handleRegenerate : undefined}
                   />
                 ))}
                 {isTyping && <TypingIndicator />}

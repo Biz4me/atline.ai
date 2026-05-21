@@ -39,8 +39,8 @@ export async function GET(req: NextRequest) {
     })
     return NextResponse.json({ docs: result.docs, total: result.totalDocs })
   } catch (e) {
-    console.error("rag-documents GET error:", e)
-    return NextResponse.json({ error: String(e) }, { status: 500 })
+    console.error("[rag-documents GET]", e)
+    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 })
   }
 }
 
@@ -63,13 +63,12 @@ export async function DELETE(req: NextRequest) {
   if (!id) return NextResponse.json({ error: "ID manquant" }, { status: 400 })
 
   const numId = parseInt(id)
-  console.log("rag-documents DELETE id:", numId)
+  if (isNaN(numId)) return NextResponse.json({ error: "ID invalide" }, { status: 400 })
   try {
-    const deleted = await payload.delete({ collection: "rag-documents" as any, id: numId, overrideAccess: true })
-    console.log("rag-documents DELETE result:", deleted)
+    await payload.delete({ collection: "rag-documents" as any, id: numId, overrideAccess: true })
     return NextResponse.json({ ok: true })
   } catch (e) {
-    console.error("rag-documents DELETE error:", e)
-    return NextResponse.json({ error: String(e) }, { status: 500 })
+    console.error("[rag-documents DELETE]", e)
+    return NextResponse.json({ error: "Erreur serveur" }, { status: 500 })
   }
 }
