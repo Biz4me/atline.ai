@@ -12,6 +12,7 @@ import * as migration_20260520_210000_atlas_voice_mode from './20260520_210000_a
 import * as migration_20260520_220000_atlas_clickable_links from './20260520_220000_atlas_clickable_links';
 import * as migration_20260520_230000_conversations_v2 from './20260520_230000_conversations_v2';
 import * as migration_20260520_240000_rag_tags from './20260520_240000_rag_tags';
+import * as migration_20260521_000000_rag_locked_docs from './20260521_000000_rag_locked_docs';
 
 export const migrations = [
   {
@@ -83,5 +84,10 @@ export const migrations = [
     up: migration_20260520_240000_rag_tags.up,
     down: migration_20260520_240000_rag_tags.down,
     name: '20260520_240000_rag_tags',
+  },
+  {
+    up: migration_20260521_000000_rag_locked_docs.up,
+    down: migration_20260521_000000_rag_locked_docs.down,
+    name: '20260521_000000_rag_locked_docs',
   },
 ];
