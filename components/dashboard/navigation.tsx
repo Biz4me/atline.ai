@@ -360,7 +360,7 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
 
       {/* Mini conversations — collapsed mode */}
       {collapsed && (
-        <div className="flex min-h-0 flex-1 flex-col overflow-hidden">
+        <div className="flex min-h-0 flex-1 flex-col">
           <Suspense>
             <CollapsedConversations />
           </Suspense>
