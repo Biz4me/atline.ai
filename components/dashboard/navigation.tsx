@@ -362,9 +362,9 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
       <div className="flex min-h-0 flex-1 flex-col">
         {collapsed ? (
           <Suspense><CollapsedConversations /></Suspense>
-        ) : isAtlas ? (
+        ) : (
           <Suspense><AtlasConversations /></Suspense>
-        ) : null}
+        )}
       </div>
 
       {/* Navigation — always at bottom, never flex-1 */}
