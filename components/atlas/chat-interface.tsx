@@ -301,36 +301,38 @@ export function ChatInterface({
       ) : (
         /* ── Chat mode ── */
         <>
-          <div
-            ref={scrollRef}
-            onScroll={handleScroll}
-            className="relative flex-1 overflow-y-auto"
-          >
-            <div className="mx-auto max-w-[700px] space-y-6 px-4 py-6">
-              {messages.map((msg) => (
-                <ChatMessage
-                  key={msg.id}
-                  role={msg.role}
-                  content={msg.content}
-                  isStreaming={msg.isStreaming}
-                />
-              ))}
-              {isTyping && <TypingIndicator />}
+          <div className="relative flex-1 overflow-hidden">
+            <div
+              ref={scrollRef}
+              onScroll={handleScroll}
+              className="h-full overflow-y-auto"
+            >
+              <div className="mx-auto max-w-[700px] space-y-6 px-4 py-6">
+                {messages.map((msg) => (
+                  <ChatMessage
+                    key={msg.id}
+                    role={msg.role}
+                    content={msg.content}
+                    isStreaming={msg.isStreaming}
+                  />
+                ))}
+                {isTyping && <TypingIndicator />}
+              </div>
+              <div className="pointer-events-none sticky bottom-0 h-8 bg-gradient-to-t from-background to-transparent" />
             </div>
-            <div className="pointer-events-none sticky bottom-0 h-8 bg-gradient-to-t from-background to-transparent" />
+
+            {showScrollBtn && (
+              <button
+                onClick={() => { scrollToBottom(true); setShowScrollBtn(false) }}
+                className="absolute bottom-4 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-md transition hover:bg-muted hover:text-foreground"
+                aria-label="Aller en bas"
+              >
+                <ChevronDown className="h-4 w-4" />
+              </button>
+            )}
           </div>
 
-          {showScrollBtn && (
-            <button
-              onClick={() => { scrollToBottom(true); setShowScrollBtn(false) }}
-              className="absolute bottom-24 right-4 z-10 flex h-8 w-8 items-center justify-center rounded-full border border-border bg-card text-muted-foreground shadow-md transition hover:bg-muted hover:text-foreground"
-              aria-label="Aller en bas"
-            >
-              <ChevronDown className="h-4 w-4" />
-            </button>
-          )}
-
-          <div className="border-t border-border/30 bg-background py-3">
+          <div className="bg-background py-3">
             <div className="mx-auto max-w-[700px] px-4">
               <ChatInput onSend={handleSend} disabled={isStreaming} />
             </div>
