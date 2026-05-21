@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useLayoutEffect } from "react"
 import { MobileStatsBar, MobileBottomNav, PlusDrawer, DesktopSidebar, DesktopTopBar } from "./navigation"
 import { cn } from "@/lib/utils"
 
@@ -18,7 +18,7 @@ export function DashboardShell({ children, breadcrumbs, layout = "standard" }: D
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false)
   const [drawerOpen, setDrawerOpen] = useState(false)
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     try {
       setSidebarCollapsed(localStorage.getItem(SIDEBAR_KEY) === "1")
     } catch {}
