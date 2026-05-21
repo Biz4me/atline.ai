@@ -26,7 +26,7 @@ export function CurrentLessonCard({
       </span>
 
       {/* Lesson title */}
-      <h3 className="mt-2 text-[13px] font-medium text-white">
+      <h3 className="mt-2 text-[13px] font-medium text-foreground">
         Lecon {lessonNumber} — {title}
       </h3>
 

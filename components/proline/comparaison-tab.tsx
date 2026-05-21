@@ -68,10 +68,10 @@ export function ComparaisonTab() {
             className={`flex ${index < comparisonData.length - 1 ? "border-b border-border" : ""}`}
           >
             <div className="w-1/3 p-3 text-sm text-muted-foreground">{row.label}</div>
-            <div className="w-1/3 border-l border-border p-3 text-center text-sm font-medium text-white">
+            <div className="w-1/3 border-l border-border p-3 text-center text-sm font-medium text-foreground">
               {row.herbalife}
             </div>
-            <div className="w-1/3 border-l border-border p-3 text-center text-sm font-medium text-white">
+            <div className="w-1/3 border-l border-border p-3 text-center text-sm font-medium text-foreground">
               {row.forever}
             </div>
           </div>

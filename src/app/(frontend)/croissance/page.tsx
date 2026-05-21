@@ -18,7 +18,7 @@ export default function CroissancePage() {
     <DashboardShell>
       <div>
         <div className="mb-6">
-          <h1 className="font-heading text-xl font-semibold text-white">Croissance</h1>
+          <h1 className="font-heading text-xl font-semibold text-foreground">Croissance</h1>
           <p className="mt-1 text-sm text-muted-foreground">XP, badges, défis et communauté</p>
         </div>
         <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />

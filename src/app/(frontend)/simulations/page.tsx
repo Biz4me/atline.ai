@@ -81,7 +81,7 @@ function SimulationsContent() {
   return (
     <DashboardShell>
       <div className="mb-6">
-        <h1 className="font-heading text-xl font-semibold text-white">Simulations</h1>
+        <h1 className="font-heading text-xl font-semibold text-foreground">Simulations</h1>
         <p className="mt-1 text-[12px] text-muted-foreground">Entraîne-toi avant chaque appel réel</p>
       </div>
       <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
@@ -100,16 +100,16 @@ function SimulationsContent() {
         </div>
       )}
       {activeTab === "Historique scores" && (
-        <div className="mt-6 flex flex-col items-center justify-center rounded-xl border border-white/[0.08] bg-card py-16 text-center">
+        <div className="mt-6 flex flex-col items-center justify-center rounded-xl border border-border bg-card py-16 text-center">
           <p className="text-3xl">📊</p>
-          <p className="mt-3 font-medium text-white">Historique des scores</p>
+          <p className="mt-3 font-medium text-foreground">Historique des scores</p>
           <p className="mt-1 text-sm text-muted-foreground">Ta progression dans le temps apparaîtra ici.</p>
         </div>
       )}
       {activeTab === "Analyse présentation" && (
-        <div className="mt-6 flex flex-col items-center justify-center rounded-xl border border-white/[0.08] bg-card py-16 text-center">
+        <div className="mt-6 flex flex-col items-center justify-center rounded-xl border border-border bg-card py-16 text-center">
           <p className="text-3xl">🎙️</p>
-          <p className="mt-3 font-medium text-white">Analyse de présentation</p>
+          <p className="mt-3 font-medium text-foreground">Analyse de présentation</p>
           <p className="mt-1 text-sm text-muted-foreground">Enregistre ta présentation et Atlas l'analyse en détail.</p>
         </div>
       )}

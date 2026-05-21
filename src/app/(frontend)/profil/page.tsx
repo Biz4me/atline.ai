@@ -1,6 +1,8 @@
 "use client"
 
 import { useRef, useState, useEffect } from "react"
+import { useTheme } from "next-themes"
+import { Sun, Moon } from "lucide-react"
 import { DashboardShell } from "@/components/dashboard/shell"
 import { TabsNav } from "@/components/reseau/tabs-nav"
 import { IconFileText, IconCheck, IconX, IconCamera, IconPhoto } from "@tabler/icons-react"
@@ -29,6 +31,7 @@ export default function ProfilPage() {
   const [notifSuivi, setNotifSuivi] = useState(true)
   const [notifFilleuls, setNotifFilleuls] = useState(true)
   const [notifResume, setNotifResume] = useState(false)
+  const { theme, setTheme } = useTheme()
   const { user, loading, initials, displayName, updateProfile } = useUser()
 
   // Avatar upload
@@ -132,7 +135,7 @@ export default function ProfilPage() {
     <DashboardShell>
       <div>
         <div className="mb-6">
-          <h1 className="font-heading text-xl font-semibold text-white">Profil</h1>
+          <h1 className="font-heading text-xl font-semibold text-foreground">Profil</h1>
           <p className="mt-1 text-sm text-muted-foreground">Tes informations et paramètres</p>
         </div>
         <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
@@ -140,7 +143,7 @@ export default function ProfilPage() {
         {activeTab === "Mon Profil" && (
           <div className="space-y-4">
             {/* Avatar + nom */}
-            <div className="flex items-center gap-4 rounded-xl border border-white/[0.08] bg-card p-6">
+            <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-6">
               {/* Avatar with action menu */}
               <div ref={avatarMenuRef} className="relative shrink-0">
                 <button
@@ -168,7 +171,7 @@ export default function ProfilPage() {
 
                 {/* Action menu */}
                 {avatarMenuOpen && (
-                  <div className="absolute left-0 top-[72px] z-20 w-52 overflow-hidden rounded-xl border border-white/[0.08] bg-card shadow-xl">
+                  <div className="absolute left-0 top-[72px] z-20 w-52 overflow-hidden rounded-xl border border-border bg-card shadow-xl">
                     <button
                       onClick={() => cameraInputRef.current?.click()}
                       className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground transition-colors hover:bg-muted"
@@ -176,7 +179,7 @@ export default function ProfilPage() {
                       <IconCamera className="h-4 w-4 text-primary" />
                       Prendre une photo
                     </button>
-                    <div className="mx-4 border-t border-white/[0.06]" />
+                    <div className="mx-4 border-t border-border" />
                     <button
                       onClick={() => galleryInputRef.current?.click()}
                       className="flex w-full items-center gap-3 px-4 py-3 text-sm text-foreground transition-colors hover:bg-muted"
@@ -206,7 +209,7 @@ export default function ProfilPage() {
               </div>
 
               <div>
-                <p className="font-semibold text-white">{loading ? "Chargement…" : displayName}</p>
+                <p className="font-semibold text-foreground">{loading ? "Chargement…" : displayName}</p>
                 <p className="text-sm text-muted-foreground">
                   {user?.email ?? "—"} · {user?.plan === "pro" ? "Plan Pro" : "Plan Gratuit"}
                 </p>
@@ -230,8 +233,8 @@ export default function ProfilPage() {
             )}
 
             {/* Infos */}
-            <div className="rounded-xl border border-white/[0.08] bg-card p-6 space-y-4">
-              <h2 className="text-sm font-medium text-white">Informations personnelles</h2>
+            <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+              <h2 className="text-sm font-medium text-foreground">Informations personnelles</h2>
 
               {editing ? (
                 <div className="grid gap-3 sm:grid-cols-2">
@@ -293,7 +296,7 @@ export default function ProfilPage() {
                     <button onClick={handleSave} disabled={saving} className="rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white hover:bg-primary/90 disabled:opacity-50 transition-colors">
                       {saving ? "Sauvegarde…" : "Sauvegarder"}
                     </button>
-                    <button onClick={cancelEditing} disabled={saving} className="rounded-lg border border-white/[0.08] px-4 py-2 text-sm font-medium text-muted-foreground hover:text-white transition-colors">
+                    <button onClick={cancelEditing} disabled={saving} className="rounded-lg border border-border px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">
                       Annuler
                     </button>
                   </>
@@ -308,10 +311,10 @@ export default function ProfilPage() {
         )}
 
         {activeTab === "Abonnement" && (
-          <div className="rounded-xl border border-white/[0.08] bg-card p-6 space-y-4">
+          <div className="rounded-xl border border-border bg-card p-6 space-y-4">
             <div className="flex items-center justify-between">
               <div>
-                <p className="font-semibold text-white">{user?.plan === "pro" ? "Plan Pro" : "Plan Gratuit"}</p>
+                <p className="font-semibold text-foreground">{user?.plan === "pro" ? "Plan Pro" : "Plan Gratuit"}</p>
                 <p className="text-sm text-muted-foreground">
                   {user?.plan === "pro" ? "$49/mois · Renouvellement le 19 Juin 2026" : "Passe au Pro pour débloquer toutes les fonctionnalités"}
                 </p>
@@ -320,8 +323,8 @@ export default function ProfilPage() {
                 {user?.plan === "pro" ? "Actif" : "Gratuit"}
               </span>
             </div>
-            <div className="border-t border-white/[0.08] pt-4">
-              <button className="text-sm text-muted-foreground hover:text-white transition-colors">
+            <div className="border-t border-border pt-4">
+              <button className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                 {user?.plan === "pro" ? "Gérer mon abonnement →" : "Passer au Pro →"}
               </button>
             </div>
@@ -329,14 +332,39 @@ export default function ProfilPage() {
         )}
 
         {activeTab === "Préférences" && (
-          <div className="rounded-xl border border-white/[0.08] bg-card p-6 space-y-4">
-            <h2 className="text-sm font-medium text-white">Apparence</h2>
+          <div className="rounded-xl border border-border bg-card p-6 space-y-4">
+            <h2 className="text-sm font-medium text-foreground">Apparence</h2>
             <div className="flex items-center justify-between">
               <p className="text-sm text-muted-foreground">Thème</p>
-              <span className="text-sm text-foreground">Dark (défaut)</span>
+              <div className="flex rounded-lg border border-border bg-muted p-1 gap-1">
+                <button
+                  onClick={() => setTheme("dark")}
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+                    theme === "dark"
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <Moon className="h-3.5 w-3.5" />
+                  Sombre
+                </button>
+                <button
+                  onClick={() => setTheme("light")}
+                  className={cn(
+                    "flex items-center gap-1.5 rounded-md px-3 py-1.5 text-xs font-medium transition-colors",
+                    theme === "light"
+                      ? "bg-card text-foreground shadow-sm"
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <Sun className="h-3.5 w-3.5" />
+                  Clair
+                </button>
+              </div>
             </div>
-            <div className="border-t border-white/[0.08] pt-4">
-              <h2 className="text-sm font-medium text-white mb-3">Notifications</h2>
+            <div className="border-t border-border pt-4">
+              <h2 className="text-sm font-medium text-foreground mb-3">Notifications</h2>
               {[
                 { label: "Rappels de suivi", value: notifSuivi, setter: setNotifSuivi },
                 { label: "Alertes filleuls", value: notifFilleuls, setter: setNotifFilleuls },
@@ -352,9 +380,9 @@ export default function ProfilPage() {
         )}
 
         {activeTab === "Mes Documents" && (
-          <div className="flex flex-col items-center justify-center rounded-xl border border-white/[0.08] bg-card py-16 text-center">
+          <div className="flex flex-col items-center justify-center rounded-xl border border-border bg-card py-16 text-center">
             <IconFileText className="h-8 w-8 text-muted-foreground" />
-            <p className="mt-3 font-medium text-white">Aucun document exporté</p>
+            <p className="mt-3 font-medium text-foreground">Aucun document exporté</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Exporte tes sessions Atlas en PDF depuis le chat.
             </p>

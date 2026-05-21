@@ -54,12 +54,12 @@ export function PublicationsTab() {
       {/* Stats row */}
       <div className="flex items-center justify-between rounded-lg border border-border bg-card p-3">
         <div className="text-center">
-          <p className="font-mono text-lg font-bold text-white">12</p>
+          <p className="font-mono text-lg font-bold text-foreground">12</p>
           <p className="text-xs text-muted-foreground">Posts ce mois</p>
         </div>
         <div className="h-8 w-px bg-border" />
         <div className="text-center">
-          <p className="font-mono text-lg font-bold text-white">847</p>
+          <p className="font-mono text-lg font-bold text-foreground">847</p>
           <p className="text-xs text-muted-foreground">Likes totaux</p>
         </div>
         <div className="h-8 w-px bg-border" />
@@ -85,7 +85,7 @@ export function PublicationsTab() {
                 </div>
                 <div className="min-w-0 flex-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-sm font-medium text-white">{post.time}</span>
+                    <span className="text-sm font-medium text-foreground">{post.time}</span>
                     <span
                       className={cn(
                         "rounded-full px-2 py-0.5 text-xs font-medium",
@@ -102,7 +102,7 @@ export function PublicationsTab() {
                   </p>
                 </div>
                 <div className="flex shrink-0 gap-1">
-                  <button className="rounded p-1.5 text-muted-foreground hover:bg-card hover:text-white">
+                  <button className="rounded p-1.5 text-muted-foreground hover:bg-card hover:text-foreground">
                     <IconEdit className="h-4 w-4" />
                   </button>
                   <button className="rounded p-1.5 text-muted-foreground hover:bg-destructive/20 hover:text-destructive">

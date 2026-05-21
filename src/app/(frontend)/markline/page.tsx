@@ -15,7 +15,7 @@ export default function MarklinePage() {
   return (
     <DashboardShell>
       <div className="mb-6">
-        <h1 className="font-heading text-xl font-semibold text-white">Markline</h1>
+        <h1 className="font-heading text-xl font-semibold text-foreground">Markline</h1>
         <p className="mt-1 text-sm text-muted-foreground">Publie et génère des leads automatiquement</p>
       </div>
       <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />

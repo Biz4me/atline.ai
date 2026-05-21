@@ -61,7 +61,7 @@ export default function AgendaPage() {
     <DashboardShell>
       <div className="mb-6 flex items-center justify-between">
         <div>
-          <h1 className="font-heading text-xl font-semibold text-white">Agenda</h1>
+          <h1 className="font-heading text-xl font-semibold text-foreground">Agenda</h1>
           <p className="mt-1 text-sm text-muted-foreground">Tes événements et rappels MLM</p>
         </div>
         <Button size="sm" onClick={() => setShowModal(true)}>
@@ -90,7 +90,7 @@ export default function AgendaPage() {
               <span className="text-xs text-muted-foreground">{day.day}</span>
               <span className={cn(
                 "mt-0.5 font-mono text-lg font-bold",
-                day.isToday ? "text-primary" : "text-white"
+                day.isToday ? "text-primary" : "text-foreground"
               )}>
                 {day.date}
               </span>
@@ -123,7 +123,7 @@ export default function AgendaPage() {
                   />
                   <div className="min-w-0 flex-1">
                     <div className="flex items-center gap-2">
-                      <span className="font-mono text-sm font-medium text-white">{event.time}</span>
+                      <span className="font-mono text-sm font-medium text-foreground">{event.time}</span>
                       <span className="text-sm text-foreground">{event.title}</span>
                     </div>
                     {event.prospect && (

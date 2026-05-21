@@ -288,7 +288,7 @@ export function ChatInterface({
           <div className="flex w-full max-w-[700px] flex-col items-center gap-8">
             <AtlineLogo size="xl" showText={false} />
             <div className="text-center">
-              <h1 className="text-3xl font-bold text-white">
+              <h1 className="text-3xl font-bold text-foreground">
                 Bonjour {user?.firstName ?? ""}
               </h1>
               <p className="mt-2 text-base text-muted-foreground">{subtitle}</p>

@@ -38,7 +38,7 @@ export function LeadsTab() {
               {/* Info */}
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-2">
-                  <span className="font-medium text-white">{lead.name}</span>
+                  <span className="font-medium text-foreground">{lead.name}</span>
                   <span className="rounded-[4px] bg-accent px-1.5 py-0.5 font-mono text-xs font-medium text-white">
                     {lead.score}/10
                   </span>
@@ -63,7 +63,7 @@ export function LeadsTab() {
             <IconSparkles className="h-4 w-4 text-primary" />
           </div>
           <div>
-            <p className="font-medium text-white">Suggestion Atlas</p>
+            <p className="font-medium text-foreground">Suggestion Atlas</p>
             <p className="mt-1 text-sm text-muted-foreground">
               Marc a demandé le prix — c&apos;est le bon moment pour le contacter.
             </p>

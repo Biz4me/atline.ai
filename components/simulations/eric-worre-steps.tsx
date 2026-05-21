@@ -21,7 +21,7 @@ export function EricWorréSteps() {
         onClick={() => setIsOpen(!isOpen)}
         className="flex w-full items-center justify-between p-3 text-left"
       >
-        <span className="text-[13px] font-medium text-white">
+        <span className="text-[13px] font-medium text-foreground">
           Les 5 étapes — Méthode Eric Worre
         </span>
         {isOpen ? (

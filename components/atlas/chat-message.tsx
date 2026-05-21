@@ -37,7 +37,7 @@ export function ChatMessage({ role, content, isStreaming }: ChatMessageProps) {
         </div>
       ) : (
         <div className="w-full">
-        <div className={cn("w-full text-zinc-300 text-base", isStreaming && "atlas-token-in")}>
+        <div className={cn("w-full text-foreground/80 text-base", isStreaming && "atlas-token-in")}>
           <ReactMarkdown
             remarkPlugins={[remarkGfm]}
             components={{

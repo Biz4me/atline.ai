@@ -34,7 +34,7 @@ export function DebriefScreen({
     <div className="space-y-6">
       {/* Header */}
       <div>
-        <h2 className="font-heading text-lg font-semibold text-white">Rapport Atlas</h2>
+        <h2 className="font-heading text-lg font-semibold text-foreground">Rapport Atlas</h2>
         <p className="mt-0.5 text-[12px] text-muted-foreground">
           {scenarioName} · {characterName}
         </p>

@@ -31,7 +31,7 @@ export function EquipeTab() {
       <div className="grid grid-cols-3 gap-2">
         {stats.map((stat) => (
           <Card key={stat.label} className="p-3 text-center">
-            <p className="font-mono text-lg font-bold text-white">{stat.value}</p>
+            <p className="font-mono text-lg font-bold text-foreground">{stat.value}</p>
             <p className="text-[10px] text-muted-foreground">{stat.label}</p>
           </Card>
         ))}

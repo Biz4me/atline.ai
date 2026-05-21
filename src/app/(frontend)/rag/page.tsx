@@ -263,7 +263,7 @@ export default function AdminPage() {
       <DashboardShell>
         <div className="flex flex-col items-center justify-center py-32 text-center">
           <XCircle className="h-10 w-10 text-red-400" />
-          <p className="mt-4 font-semibold text-white">Accès refusé</p>
+          <p className="mt-4 font-semibold text-foreground">Accès refusé</p>
           <p className="mt-1 text-sm text-muted-foreground">Cette page est réservée aux administrateurs.</p>
         </div>
       </DashboardShell>
@@ -338,14 +338,14 @@ export default function AdminPage() {
               onDrop={handleDrop}
               onDragOver={(e) => e.preventDefault()}
               onClick={() => fileInputRef.current?.click()}
-              className="flex flex-1 cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-white/20 bg-card px-6 py-8 transition-colors hover:border-primary/60 hover:bg-primary/5"
+              className="flex flex-1 cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-card px-6 py-8 transition-colors hover:border-primary/60 hover:bg-primary/5"
             >
               <input ref={fileInputRef} type="file" accept={ACCEPTED} onChange={handleFileChange} className="hidden" />
               {file ? (
                 <>
                   <FileText className="h-10 w-10 text-primary" />
                   <div className="text-center">
-                    <p className="text-sm font-medium text-white">{file.name}</p>
+                    <p className="text-sm font-medium text-foreground">{file.name}</p>
                     <p className="mt-0.5 text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
                   </div>
                 </>
@@ -363,7 +363,7 @@ export default function AdminPage() {
             </div>
 
             {/* URL vidéo — inline */}
-            <div className="flex items-center gap-2 rounded-xl border border-white/[0.08] bg-card px-4 py-2.5">
+            <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-2.5">
               <div className="h-4 w-4 rounded bg-red-500/20 flex items-center justify-center flex-shrink-0">
                 <span className="text-[9px] font-bold text-red-400">▶</span>
               </div>
@@ -377,7 +377,7 @@ export default function AdminPage() {
             </div>
 
             {/* Metadata — compact */}
-            <div className="rounded-xl border border-white/[0.08] bg-card px-4 py-3 space-y-3">
+            <div className="rounded-xl border border-border bg-card px-4 py-3 space-y-3">
               <div className="grid gap-3 grid-cols-2">
                 <div className="space-y-1">
                   <label className="text-[11px] font-medium text-muted-foreground">Agent cible</label>
@@ -424,7 +424,7 @@ export default function AdminPage() {
             <div className="flex items-start gap-3 rounded-xl border border-green-500/30 bg-green-500/10 p-3">
               <CheckCircle className="h-4 w-4 shrink-0 text-green-400 mt-0.5" />
               <div>
-                <p className="text-sm font-medium text-green-300">Indexé — {result.points_inserted} chunks · agent <span className="text-white">{result.agent}</span></p>
+                <p className="text-sm font-medium text-green-300">Indexé — {result.points_inserted} chunks · agent <span className="text-foreground">{result.agent}</span></p>
                 {(result as any).payloadError && (
                   <p className="mt-0.5 text-xs text-red-400">Erreur Payload : {(result as any).payloadError}</p>
                 )}
@@ -443,7 +443,7 @@ export default function AdminPage() {
         {/* ── Colonne droite : Bibliothèque ── */}
         <div className="flex h-full flex-col gap-3">
           {/* Header + filtres */}
-          <div className="flex flex-col gap-2 rounded-xl border border-white/[0.08] bg-card p-3">
+          <div className="flex flex-col gap-2 rounded-xl border border-border bg-card p-3">
             <div className="flex items-center justify-between">
               <div>
                 <p className="text-sm font-semibold text-foreground">
@@ -493,7 +493,7 @@ export default function AdminPage() {
                 <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />
               </div>
             ) : docs.length === 0 ? (
-              <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-white/10 py-10 text-center">
+              <div className="flex flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-border py-10 text-center">
                 <FileText className="h-7 w-7 text-muted-foreground/40" />
                 <p className="text-sm text-muted-foreground">Aucun document trouvé</p>
               </div>
@@ -502,19 +502,19 @@ export default function AdminPage() {
                 const ext = getExt(doc.fileName)
                 return (
                   <div key={doc.id}
-                    className="flex items-start justify-between gap-3 rounded-xl border border-white/[0.06] bg-card px-3 py-2.5 hover:border-white/[0.12] transition">
+                    className="flex items-start justify-between gap-3 rounded-xl border border-border bg-card px-3 py-2.5 hover:border-border/80 transition">
                     <div className="min-w-0 flex-1">
                       <p className="truncate text-sm font-medium text-foreground">{doc.title}</p>
                       <div className="mt-1.5 flex flex-wrap items-center gap-1">
-                        <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide", AGENT_COLORS[doc.agent] ?? "bg-white/10 text-white")}>
+                        <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide", AGENT_COLORS[doc.agent] ?? "bg-muted text-foreground")}>
                           {doc.agent}
                         </span>
                         {ext && (
-                          <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide", FORMAT_COLORS[ext] ?? "bg-white/10 text-white")}>
+                          <span className={cn("rounded-full px-2 py-0.5 text-[10px] font-semibold uppercase tracking-wide", FORMAT_COLORS[ext] ?? "bg-muted text-foreground")}>
                             {ext}
                           </span>
                         )}
-                        <span className="rounded-full bg-white/[0.06] px-2 py-0.5 text-[10px] text-muted-foreground">
+                        <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] text-muted-foreground">
                           {DOC_TYPES.find((d) => d.value === doc.docType)?.label ?? doc.docType}
                         </span>
                         {doc.theme && (

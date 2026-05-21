@@ -13,7 +13,7 @@ const data = [
 export function HistoryChart() {
   return (
     <div className="rounded-[8px] border border-border bg-card p-4">
-      <h3 className="mb-3 text-[13px] font-medium text-white">Dernières simulations</h3>
+      <h3 className="mb-3 text-[13px] font-medium text-foreground">Dernières simulations</h3>
       <div className="h-[120px]">
         <ResponsiveContainer width="100%" height="100%">
           <LineChart data={data} margin={{ top: 5, right: 5, left: -20, bottom: 0 }}>

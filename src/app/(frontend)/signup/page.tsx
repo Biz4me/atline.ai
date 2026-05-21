@@ -97,10 +97,10 @@ export default function SignupPage() {
           <AtlineLogo size="lg" showText />
         </div>
 
-        <div className="rounded-2xl border border-white/[0.08] bg-card p-6">
+        <div className="rounded-2xl border border-border bg-card p-6">
           {step === "account" ? (
             <>
-              <h1 className="mb-1 font-heading text-xl font-semibold text-white">Créer un compte</h1>
+              <h1 className="mb-1 font-heading text-xl font-semibold text-foreground">Créer un compte</h1>
               <p className="mb-6 text-sm text-muted-foreground">Étape 1 / 2 · Accès</p>
 
               <form onSubmit={handleAccountSubmit} className="space-y-4">
@@ -150,13 +150,13 @@ export default function SignupPage() {
             <>
               <button
                 onClick={() => setStep("account")}
-                className="mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-white"
+                className="mb-4 flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground"
               >
                 <IconChevronLeft className="h-4 w-4" />
                 Retour
               </button>
 
-              <h1 className="mb-1 font-heading text-xl font-semibold text-white">Ton profil</h1>
+              <h1 className="mb-1 font-heading text-xl font-semibold text-foreground">Ton profil</h1>
               <p className="mb-6 text-sm text-muted-foreground">Étape 2 / 2 · Identité MLM</p>
 
               <form onSubmit={handleProfileSubmit} className="space-y-4">

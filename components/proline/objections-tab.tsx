@@ -78,7 +78,7 @@ export function ObjectionsTab() {
               "shrink-0 rounded-full px-3 py-1.5 text-sm font-medium transition-colors",
               selectedCategory === cat
                 ? "bg-primary text-white"
-                : "border border-border text-muted-foreground hover:border-primary hover:text-white"
+                : "border border-border text-muted-foreground hover:border-primary hover:text-foreground"
             )}
           >
             {cat}
@@ -96,7 +96,7 @@ export function ObjectionsTab() {
                 onClick={() => setExpandedId(isExpanded ? null : obj.id)}
                 className="flex w-full items-center justify-between p-3 text-left"
               >
-                <span className="font-medium text-white">&quot;{obj.question}&quot;</span>
+                <span className="font-medium text-foreground">&quot;{obj.question}&quot;</span>
                 {isExpanded ? (
                   <IconChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" />
                 ) : (

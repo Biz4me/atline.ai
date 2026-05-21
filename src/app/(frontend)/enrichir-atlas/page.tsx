@@ -148,13 +148,13 @@ function EnrichirTab({ userId }: { userId: string }) {
         onDrop={handleDrop}
         onDragOver={(e) => e.preventDefault()}
         onClick={() => fileInputRef.current?.click()}
-        className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-white/20 bg-card p-10 transition-colors hover:border-primary/60 hover:bg-primary/5"
+        className="flex cursor-pointer flex-col items-center justify-center gap-3 rounded-xl border-2 border-dashed border-border bg-card p-10 transition-colors hover:border-primary/60 hover:bg-primary/5"
       >
         <input ref={fileInputRef} type="file" accept={ACCEPTED} onChange={handleFileChange} className="hidden" />
         {file ? (
           <>
             <IconFile className="h-8 w-8 text-primary" />
-            <p className="font-medium text-white">{file.name}</p>
+            <p className="font-medium text-foreground">{file.name}</p>
             <p className="text-xs text-muted-foreground">{(file.size / 1024 / 1024).toFixed(2)} MB</p>
           </>
         ) : (
@@ -169,19 +169,19 @@ function EnrichirTab({ userId }: { userId: string }) {
       </div>
 
       {/* Metadata */}
-      <div className="rounded-xl border border-white/[0.08] bg-card p-5">
+      <div className="rounded-xl border border-border bg-card p-5">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Agent cible</label>
             <select value={agent} onChange={(e) => setAgent(e.target.value)}
-              className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
               {AGENTS.map((a) => <option key={a.value} value={a.value}>{a.label}</option>)}
             </select>
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Type de document</label>
             <select value={docType} onChange={(e) => setDocType(e.target.value)}
-              className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
               {DOC_TYPES.map((d) => <option key={d.value} value={d.value}>{d.label}</option>)}
             </select>
           </div>
@@ -189,12 +189,12 @@ function EnrichirTab({ userId }: { userId: string }) {
             <label className="text-xs font-medium text-muted-foreground">Titre</label>
             <input type="text" value={title} onChange={(e) => setTitle(e.target.value)}
               placeholder="Titre du document"
-              className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none" />
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none" />
           </div>
           <div className="space-y-1.5">
             <label className="text-xs font-medium text-muted-foreground">Langue</label>
             <select value={language} onChange={(e) => setLanguage(e.target.value)}
-              className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
+              className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none">
               {LANGUAGES.map((l) => <option key={l.value} value={l.value}>{l.label}</option>)}
             </select>
           </div>
@@ -212,7 +212,7 @@ function EnrichirTab({ userId }: { userId: string }) {
           <div>
             <p className="font-medium text-green-300">Document indexé avec succès</p>
             <p className="mt-0.5 text-sm text-muted-foreground">
-              {result.points_inserted} chunks insérés pour l'agent <span className="text-white">{result.agent}</span>.
+              {result.points_inserted} chunks insérés pour l'agent <span className="text-foreground">{result.agent}</span>.
             </p>
           </div>
         </div>
@@ -290,7 +290,7 @@ function BibliothèqueTab() {
                 <Icon className="h-5 w-5" style={{ color: meta.color }} />
               </div>
               <div>
-                <h2 className="font-semibold text-white">{meta.label}</h2>
+                <h2 className="font-semibold text-foreground">{meta.label}</h2>
                 <p className="text-xs text-muted-foreground">{totalDocs} document{totalDocs > 1 ? "s" : ""}</p>
               </div>
             </div>
@@ -305,10 +305,10 @@ function BibliothèqueTab() {
                   <div className="space-y-2">
                     {typeDocs.map((doc) => (
                       <div key={doc.id}
-                        className="flex items-center gap-3 rounded-xl border border-white/[0.06] bg-card px-4 py-3">
+                        className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3">
                         <IconFile className="h-4 w-4 shrink-0 text-muted-foreground" />
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-medium text-white">{doc.title}</p>
+                          <p className="truncate text-sm font-medium text-foreground">{doc.title}</p>
                           {doc.fileName && doc.fileName !== doc.title && (
                             <p className="truncate text-xs text-muted-foreground">{doc.fileName}</p>
                           )}
@@ -399,12 +399,12 @@ function ConfigurationTab() {
   return (
     <div className="max-w-2xl space-y-6">
       {CONFIG_AGENTS.map(({ key, label, icon: Icon, color }) => (
-        <div key={key} className="rounded-xl border border-white/[0.08] bg-card">
+        <div key={key} className="rounded-xl border border-border bg-card">
           {/* Header */}
-          <div className="flex items-center justify-between border-b border-white/[0.06] px-5 py-4">
+          <div className="flex items-center justify-between border-b border-border px-5 py-4">
             <div className="flex items-center gap-3">
               <Icon className="h-5 w-5" style={{ color }} />
-              <span className="font-semibold text-white">{label}</span>
+              <span className="font-semibold text-foreground">{label}</span>
             </div>
             <button
               onClick={() => handleSave(key)}
@@ -431,7 +431,7 @@ function ConfigurationTab() {
                 onChange={(e) => update(key, "systemPrompt", e.target.value)}
                 rows={6}
                 placeholder={`Tu es ${label}, un assistant IA spécialisé…`}
-                className="w-full resize-y rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
+                className="w-full resize-y rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground placeholder:text-muted-foreground focus:border-primary focus:outline-none"
               />
             </div>
             <div className="grid grid-cols-2 gap-4">
@@ -444,7 +444,7 @@ function ConfigurationTab() {
                   step={0.05}
                   value={configs[key].temperature}
                   onChange={(e) => update(key, "temperature", parseFloat(e.target.value))}
-                  className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
                 />
               </div>
               <div className="space-y-1.5">
@@ -456,7 +456,7 @@ function ConfigurationTab() {
                   step={256}
                   value={configs[key].maxTokens}
                   onChange={(e) => update(key, "maxTokens", parseInt(e.target.value))}
-                  className="w-full rounded-lg border border-white/[0.08] bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
+                  className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary focus:outline-none"
                 />
               </div>
             </div>
@@ -481,7 +481,7 @@ export default function EnrichirAtlasPage() {
   return (
     <DashboardShell>
       <div className="mb-6">
-        <h1 className="font-heading text-xl font-semibold text-white">Enrichir Atlas</h1>
+        <h1 className="font-heading text-xl font-semibold text-foreground">Enrichir Atlas</h1>
         <p className="mt-1 text-sm text-muted-foreground">Donne plus de connaissances à tes agents IA</p>
       </div>
 

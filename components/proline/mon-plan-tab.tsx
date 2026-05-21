@@ -40,7 +40,7 @@ export function MonPlanTab() {
 
       {/* Plan summary */}
       <Card className="p-4">
-        <h3 className="font-heading text-base font-medium text-white">
+        <h3 className="font-heading text-base font-medium text-foreground">
           Plan de compensation {society}
         </h3>
         <div className="mt-2 flex items-center gap-2 text-sm text-muted-foreground">
@@ -70,7 +70,7 @@ export function MonPlanTab() {
               <div className="flex flex-1 items-center justify-between">
                 <span className={cn(
                   "text-sm",
-                  level.current ? "font-medium text-white" : "text-muted-foreground"
+                  level.current ? "font-medium text-foreground" : "text-muted-foreground"
                 )}>
                   {level.name}
                 </span>
@@ -91,7 +91,7 @@ export function MonPlanTab() {
 
       {/* Revenue simulator */}
       <Card className="p-4">
-        <h3 className="mb-4 font-heading text-base font-medium text-white">
+        <h3 className="mb-4 font-heading text-base font-medium text-foreground">
           Simule tes revenus
         </h3>
 
@@ -99,7 +99,7 @@ export function MonPlanTab() {
         <div className="mb-4">
           <div className="mb-2 flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Ventes personnelles</span>
-            <span className="font-mono text-sm font-medium text-white">${personalSales}</span>
+            <span className="font-mono text-sm font-medium text-foreground">${personalSales}</span>
           </div>
           <input
             type="range"
@@ -120,7 +120,7 @@ export function MonPlanTab() {
         <div className="mb-4">
           <div className="mb-2 flex items-center justify-between">
             <span className="text-sm text-muted-foreground">Distributeurs dans équipe</span>
-            <span className="font-mono text-sm font-medium text-white">{teamSize}</span>
+            <span className="font-mono text-sm font-medium text-foreground">{teamSize}</span>
           </div>
           <input
             type="range"
@@ -151,7 +151,7 @@ export function MonPlanTab() {
       {/* Upload plan */}
       <div className="rounded-lg border-2 border-dashed border-border p-6 text-center">
         <IconUpload className="mx-auto h-8 w-8 text-muted-foreground" />
-        <p className="mt-2 font-medium text-white">Uploader mon plan de compensation PDF</p>
+        <p className="mt-2 font-medium text-foreground">Uploader mon plan de compensation PDF</p>
         <p className="mt-1 text-xs text-muted-foreground">Atlas analysera automatiquement</p>
       </div>
     </div>

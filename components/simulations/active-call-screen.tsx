@@ -49,7 +49,7 @@ export function ActiveCallScreen({ scenarioName, characterName, onEndCall, onBac
       {/* Back button */}
       <button
         onClick={onBack}
-        className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-card hover:text-white"
+        className="absolute left-4 top-4 flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-card hover:text-foreground"
       >
         <ArrowLeft className="h-5 w-5" />
       </button>
@@ -85,7 +85,7 @@ export function ActiveCallScreen({ scenarioName, characterName, onEndCall, onBac
       </div>
 
       {/* Character name */}
-      <p className="text-sm font-medium text-white">{characterName}</p>
+      <p className="text-sm font-medium text-foreground">{characterName}</p>
 
       {/* Status */}
       <p className="mt-1 text-[11px]">

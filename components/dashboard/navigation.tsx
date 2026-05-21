@@ -48,7 +48,7 @@ export function MobileStatsBar() {
   const avatarUrl = (user as any)?.avatarUrl ?? null
 
   return (
-    <header className="mobile-nav-top fixed left-0 right-0 top-0 z-50 flex h-14 items-center border-b border-white/[0.08] px-3 lg:hidden">
+    <header className="mobile-nav-top fixed left-0 right-0 top-0 z-50 flex h-14 items-center border-b border-border px-3 lg:hidden">
       <Link href="/profil" className="mr-2 shrink-0">
         <div className="relative h-10 w-10 overflow-hidden rounded-full bg-primary">
           {avatarUrl ? (
@@ -113,7 +113,7 @@ export function MobileBottomNav({ isOpen, onPlusClick }: MobileBottomNavProps) {
   const pathname = usePathname()
 
   return (
-    <nav className="mobile-nav-bottom fixed bottom-0 left-0 right-0 z-[65] h-[68px] border-t border-white/[0.08] lg:hidden">
+    <nav className="mobile-nav-bottom fixed bottom-0 left-0 right-0 z-[65] h-[68px] border-t border-border lg:hidden">
       <div className="flex h-full items-center justify-around px-1">
         {bottomNavItems.map((item) => {
           const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
@@ -179,7 +179,7 @@ const LANGUAGES = [
 ]
 
 function DrawerItem({ children }: { children: React.ReactNode }) {
-  return <div className="flex h-[62px] items-center border-b border-white/[0.05] px-4">{children}</div>
+  return <div className="flex h-[62px] items-center border-b border-border px-4">{children}</div>
 }
 
 function DrawerIcon({ bg, color, icon: Icon }: { bg: string; color: string; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }> }) {
@@ -191,7 +191,7 @@ function DrawerIcon({ bg, color, icon: Icon }: { bg: string; color: string; icon
 }
 
 function DrawerSeparator() {
-  return <div className="mx-4 my-1 border-t border-white/[0.06]" />
+  return <div className="mx-4 my-1 border-t border-border" />
 }
 
 export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
@@ -561,9 +561,9 @@ export function DesktopTopBar({ breadcrumbs }: DesktopTopBarProps) {
               <div key={item.href} className="flex items-center">
                 <Link href={item.href} className="flex items-center gap-1.5 px-1">
                   <Icon className="h-5 w-5" style={{ color: item.color }} />
-                  <span className="font-mono text-xs font-bold text-white">{item.value}</span>
+                  <span className="font-mono text-xs font-bold text-foreground">{item.value}</span>
                 </Link>
-                {index < statsBarItems.length - 1 && <div className="ml-2 h-4 w-px bg-white/[0.08]" />}
+                {index < statsBarItems.length - 1 && <div className="ml-2 h-4 w-px bg-border" />}
               </div>
             )
           })}

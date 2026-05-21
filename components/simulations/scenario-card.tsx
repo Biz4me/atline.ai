@@ -60,7 +60,7 @@ export function ScenarioCard({
 
       {/* Info */}
       <div className="min-w-0 flex-1">
-        <div className="truncate text-[13px] font-medium text-white">{name}</div>
+        <div className="truncate text-[13px] font-medium text-foreground">{name}</div>
         <div className="mt-0.5 text-[11px] text-muted-foreground">
           {character} · {duration}
         </div>

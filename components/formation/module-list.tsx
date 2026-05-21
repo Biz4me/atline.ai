@@ -43,7 +43,7 @@ function ModuleRow({ module }: { module: Module }) {
         <span
           className={cn(
             "truncate text-[13px] font-medium",
-            isLocked ? "text-[#52525B]" : "text-white"
+            isLocked ? "text-[#52525B]" : "text-foreground"
           )}
         >
           {module.name}
@@ -53,7 +53,7 @@ function ModuleRow({ module }: { module: Module }) {
         </span>
         {/* Progress bar for done/active */}
         {(isDone || isActive) && (
-          <div className="mt-0.5 h-[2px] w-full overflow-hidden rounded-full bg-[rgba(255,255,255,0.08)]">
+          <div className="mt-0.5 h-[2px] w-full overflow-hidden rounded-full bg-border">
             <div
               className={cn(
                 "h-full rounded-full transition-all",

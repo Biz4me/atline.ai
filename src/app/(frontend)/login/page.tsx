@@ -46,8 +46,8 @@ export default function LoginPage() {
           <AtlineLogo size="lg" showText />
         </div>
 
-        <div className="rounded-2xl border border-white/[0.08] bg-card p-6">
-          <h1 className="mb-1 font-heading text-xl font-semibold text-white">Connexion</h1>
+        <div className="rounded-2xl border border-border bg-card p-6">
+          <h1 className="mb-1 font-heading text-xl font-semibold text-foreground">Connexion</h1>
           <p className="mb-6 text-sm text-muted-foreground">Bon retour sur Atline.ai</p>
 
           <form onSubmit={handleSubmit} className="space-y-4">

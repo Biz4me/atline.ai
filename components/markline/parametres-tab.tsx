@@ -50,7 +50,7 @@ export function ParametresTab() {
                 <div className="flex items-center gap-3">
                   <Icon className="h-5 w-5 text-muted-foreground" />
                   <div>
-                    <p className="text-sm font-medium text-white">{platformNames[account.platform]}</p>
+                    <p className="text-sm font-medium text-foreground">{platformNames[account.platform]}</p>
                     {account.username && (
                       <p className="text-xs text-muted-foreground">{account.username}</p>
                     )}
@@ -78,7 +78,7 @@ export function ParametresTab() {
         <div className="space-y-2">
           <Card className="flex items-center justify-between p-3">
             <div>
-              <p className="text-sm font-medium text-white">Meilleur moment</p>
+              <p className="text-sm font-medium text-foreground">Meilleur moment</p>
               <p className="text-xs text-muted-foreground">Publie aux heures optimales</p>
             </div>
             <ToggleSwitch enabled={bestTime} onChange={setBestTime} />
@@ -86,7 +86,7 @@ export function ParametresTab() {
 
           <Card className="flex items-center justify-between p-3">
             <div>
-              <p className="text-sm font-medium text-white">Auto-hashtags</p>
+              <p className="text-sm font-medium text-foreground">Auto-hashtags</p>
               <p className="text-xs text-muted-foreground">Ajoute des hashtags pertinents</p>
             </div>
             <ToggleSwitch enabled={autoHashtags} onChange={setAutoHashtags} />
@@ -94,7 +94,7 @@ export function ParametresTab() {
 
           <Card className="flex items-center justify-between p-3">
             <div>
-              <p className="text-sm font-medium text-white">Filigrane</p>
+              <p className="text-sm font-medium text-foreground">Filigrane</p>
               <p className="text-xs text-muted-foreground">Ajoute ton logo sur les images</p>
             </div>
             <ToggleSwitch enabled={watermark} onChange={setWatermark} />
