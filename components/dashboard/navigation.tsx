@@ -27,6 +27,9 @@ import {
   IconSun,
   IconMoon,
   IconTrophy,
+  IconBriefcase,
+  IconTool,
+  IconMessages,
 } from "@tabler/icons-react"
 import { AtlineLogo } from "./logo"
 import { useUser } from "@/hooks/use-user"
@@ -291,14 +294,11 @@ import { ATLAS_MODULES, CORE_MODULES, SPECIALIZED_MODULES } from "@/lib/modules"
 import { useModules } from "./modules-context"
 
 const navItems = [
-  { href: "/formation",     icon: IconSchool,    label: "Formation"      },
-  { href: "/simulations",   icon: IconBarbell,   label: "Simulations"    },
-  { href: "/reseau",        icon: IconUsers,     label: "Réseau"         },
-  { href: "/agenda",        icon: IconCalendar,  label: "Agenda"         },
-  { href: "/markline",      icon: IconBroadcast, label: "Markline"       },
-  { href: "/proline",       icon: IconChartBar,  label: "Proline"        },
-  { href: "/enrichir-atlas",icon: IconUpload,    label: "Enrichir Atlas" },
-  { href: "/croissance",    icon: IconTrophy,    label: "Croissance"     },
+  { href: "/parcours",    icon: IconSchool,     label: "Mon Parcours"  },
+  { href: "/business",    icon: IconBriefcase,  label: "Mon Business"  },
+  { href: "/outils",      icon: IconTool,       label: "Mes Outils"    },
+  { href: "/croissance",  icon: IconTrophy,     label: "Ma Croissance" },
+  { href: "/communaute",  icon: IconMessages,   label: "Communauté"    },
 ]
 
 interface DesktopSidebarProps {
