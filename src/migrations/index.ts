@@ -15,6 +15,7 @@ import * as migration_20260520_rag_globals from './20260520_rag_globals';
 import * as migration_20260521_000000_rag_locked_docs from './20260521_000000_rag_locked_docs';
 import * as migration_20260521_130946 from './20260521_130946';
 import * as migration_20260522_scripts_library from './20260522_scripts_library';
+import * as migration_20260522_revenue_tracking from './20260522_revenue_tracking';
 
 export const migrations = [
   {
@@ -101,5 +102,10 @@ export const migrations = [
     up: migration_20260522_scripts_library.up,
     down: migration_20260522_scripts_library.down,
     name: '20260522_scripts_library',
+  },
+  {
+    up: migration_20260522_revenue_tracking.up,
+    down: migration_20260522_revenue_tracking.down,
+    name: '20260522_revenue_tracking',
   },
 ];

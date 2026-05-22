@@ -13,6 +13,7 @@ import {
   IconStar,
 } from "@tabler/icons-react"
 import { useUser } from "@/hooks/use-user"
+import { useRevenueTracking } from "@/hooks/use-revenue-tracking"
 import { MoiFab } from "@/components/dashboard/navigation"
 
 const GRID_ITEMS = [
@@ -60,18 +61,28 @@ const LIST_ITEMS = [
 
 export default function MoiPage() {
   const { user, loading } = useUser()
+  const { totalThisMonth, loading: revenueLoading } = useRevenueTracking()
 
   const xp = user?.xp ?? 0
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl mx-auto lg:max-w-none">
-      {/* XP Stats bar */}
-      <div className="flex items-center gap-2 rounded-xl border border-border bg-card px-4 py-3">
-        <IconStar className="h-4 w-4 text-yellow-500" />
+      {/* XP + Revenus stats bar */}
+      <div className="flex items-center gap-3 rounded-xl border border-border bg-card px-4 py-3">
+        <IconStar className="h-4 w-4 text-yellow-500 shrink-0" />
         <span className="text-sm font-semibold text-foreground">
           {loading ? "—" : `${xp.toLocaleString("fr-FR")} XP`}
         </span>
-        <span className="ml-1 text-xs text-muted-foreground">· Niveau {Math.floor(xp / 500) + 1}</span>
+        <span className="text-xs text-muted-foreground">· Niveau {Math.floor(xp / 500) + 1}</span>
+        {!revenueLoading && totalThisMonth > 0 && (
+          <>
+            <span className="mx-1 h-4 w-px bg-border" />
+            <span className="text-sm font-semibold text-emerald-500">
+              {totalThisMonth.toLocaleString("fr-FR", { style: "currency", currency: "EUR", maximumFractionDigits: 0 })}
+            </span>
+            <span className="text-xs text-muted-foreground">ce mois</span>
+          </>
+        )}
       </div>
 
       {/* 2x2 grid */}

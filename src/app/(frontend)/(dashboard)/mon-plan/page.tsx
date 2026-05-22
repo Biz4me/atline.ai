@@ -5,8 +5,9 @@ import { TabsNav } from "@/components/reseau/tabs-nav"
 import { MonPlanTab } from "@/components/proline/mon-plan-tab"
 import { ObjectionsTab } from "@/components/proline/objections-tab"
 import { ComparaisonTab } from "@/components/proline/comparaison-tab"
+import { RevenusTab } from "@/components/proline/revenus-tab"
 
-const tabs = ["Mon plan", "Objections", "Comparaison"]
+const tabs = ["Mon plan", "Revenus", "Objections", "Comparaison"]
 
 export default function MonPlanPage() {
   const [activeTab, setActiveTab] = useState("Mon plan")
@@ -21,6 +22,7 @@ export default function MonPlanPage() {
       <TabsNav tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
       <div className="mt-6">
         {activeTab === "Mon plan" && <MonPlanTab />}
+        {activeTab === "Revenus" && <RevenusTab />}
         {activeTab === "Objections" && <ObjectionsTab />}
         {activeTab === "Comparaison" && <ComparaisonTab />}
       </div>
