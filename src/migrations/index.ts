@@ -14,6 +14,7 @@ import * as migration_20260520_240000_rag_tags from './20260520_240000_rag_tags'
 import * as migration_20260520_rag_globals from './20260520_rag_globals';
 import * as migration_20260521_000000_rag_locked_docs from './20260521_000000_rag_locked_docs';
 import * as migration_20260521_130946 from './20260521_130946';
+import * as migration_20260522_scripts_library from './20260522_scripts_library';
 
 export const migrations = [
   {
@@ -95,5 +96,10 @@ export const migrations = [
     up: migration_20260521_130946.up,
     down: migration_20260521_130946.down,
     name: '20260521_130946'
+  },
+  {
+    up: migration_20260522_scripts_library.up,
+    down: migration_20260522_scripts_library.down,
+    name: '20260522_scripts_library',
   },
 ];

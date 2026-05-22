@@ -376,6 +376,7 @@ export function ChatInterface({
                     isStreaming={msg.isStreaming}
                     messageId={msg.id}
                     onRegenerate={msg.id === lastAssistantId ? handleRegenerate : undefined}
+                    onSave={msg.role === "assistant" ? () => {} : undefined}
                   />
                 ))}
                 {isTyping && <TypingIndicator />}

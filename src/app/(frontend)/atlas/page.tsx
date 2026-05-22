@@ -8,6 +8,7 @@ import { AtlasSidebar } from "@/components/atlas/atlas-sidebar"
 import { ErrorBoundary } from "@/components/error-boundary"
 import { ATLAS_MODULES, CORE_MODULES, SPECIALIZED_MODULES, getModule } from "@/lib/modules"
 import { useModules } from "@/components/dashboard/modules-context"
+import { ScriptsLibrary } from "@/components/atlas/scripts-library"
 import { cn } from "@/lib/utils"
 
 function ModuleCard({
@@ -72,6 +73,13 @@ function ModuleGrid({ onSelect }: { onSelect: (moduleId: string, convId: string 
                 onSelect={onSelect}
               />
             ))}
+          </div>
+        </div>
+
+        {/* Scripts library */}
+        <div className="border-t border-border px-3 py-5">
+          <div className="mx-auto w-full max-w-3xl">
+            <ScriptsLibrary />
           </div>
         </div>
       </div>

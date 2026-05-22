@@ -1,49 +1,103 @@
 "use client"
 
 import Link from "next/link"
-import { IconFlame, IconChevronRight, IconCalendar, IconUsers, IconSparkles } from "@tabler/icons-react"
+import { IconFlame, IconChevronRight, IconCalendar, IconUsers, IconSparkles, IconBarbell, IconSchool, IconUpload } from "@tabler/icons-react"
 import { useUser } from "@/hooks/use-user"
 import { cn } from "@/lib/utils"
+import type { AtlineUser } from "@/hooks/use-user"
 
-const MISSIONS = [
-  {
-    id: "prospect",
-    label: "Relancer Marc — aucun contact depuis 7 jours",
-    priority: "urgent",
-    href: "/reseau",
-  },
-  {
-    id: "simulation",
-    label: "Simulation du jour : Gestion des objections",
-    priority: "normal",
-    href: "/simulations",
-  },
-  {
-    id: "lecon",
-    label: "Continuer la leçon 4 — Prospection",
-    priority: "normal",
-    href: "/formation",
-  },
-]
+// ─── Mission generation ───────────────────────────────────────────────────────
+
+interface Mission {
+  id: string
+  label: string
+  priority: "urgent" | "normal"
+  href: string
+  icon: React.FC<{ className?: string }>
+}
+
+function buildMissions(user: AtlineUser | null): Mission[] {
+  if (!user) return []
+
+  const missions: Mission[] = []
+
+  // 1. Import liste si pas encore fait
+  if (!user.hasProspectList) {
+    missions.push({
+      id: "import",
+      label: "Importe ta première liste de prospects",
+      priority: "urgent",
+      href: "/reseau?tab=ma-liste",
+      icon: IconUpload,
+    })
+  }
+
+  // 2. Simulation (toujours proposée si pas encore beaucoup)
+  if ((user.lastSimScore ?? 0) < 8) {
+    missions.push({
+      id: "simulation",
+      label: "Simulation du jour — améliore ton score",
+      priority: (user.lastSimScore ?? 0) === 0 ? "urgent" : "normal",
+      href: "/simulations",
+      icon: IconBarbell,
+    })
+  }
+
+  // 3. Formation si pas encore commencée ou en cours
+  if ((user.modulesCompleted ?? 0) < 8) {
+    missions.push({
+      id: "formation",
+      label: (user.modulesCompleted ?? 0) === 0
+        ? "Démarre ta première leçon de formation"
+        : `Continue la formation — module ${(user.modulesCompleted ?? 0) + 1}/8`,
+      priority: "normal",
+      href: "/formation",
+      icon: IconSchool,
+    })
+  }
+
+  // 4. Réseau — rappel si liste importée
+  if (user.hasProspectList) {
+    missions.push({
+      id: "reseau",
+      label: "Vérifie tes prospects à relancer aujourd'hui",
+      priority: "normal",
+      href: "/reseau",
+      icon: IconUsers,
+    })
+  }
+
+  // Max 3 missions
+  return missions.slice(0, 3)
+}
+
+// ─── Page ────────────────────────────────────────────────────────────────────
 
 export default function AujourdHuiPage() {
   const { user, loading } = useUser()
 
-  const firstName = user?.firstName ?? "toi"
+  const firstName = user?.firstName ?? ""
   const streak = user?.streak ?? 0
+  const missions = buildMissions(user)
+
+  const greeting = loading
+    ? "Bonjour 👋"
+    : firstName
+    ? `Bonjour ${firstName} 👋`
+    : "Bonjour 👋"
 
   return (
     <div className="flex flex-col gap-6 max-w-2xl mx-auto lg:max-w-none">
       {/* Greeting */}
-      <div className="flex items-center gap-3">
+      <div className="flex items-start justify-between gap-3">
         <div>
-          <h1 className="text-2xl font-bold text-foreground">
-            {loading ? "Bonjour 👋" : `Bonjour ${firstName} 👋`}
-          </h1>
-          <p className="text-sm text-muted-foreground mt-0.5">Voici ce que tu dois faire aujourd'hui.</p>
+          <h1 className="text-2xl font-bold text-foreground">{greeting}</h1>
+          <p className="text-sm text-muted-foreground mt-0.5">
+            {loading ? " " : "Voici ce que tu dois faire aujourd'hui."}
+          </p>
         </div>
         {streak > 0 && (
-          <div className="ml-auto flex items-center gap-1.5 rounded-full bg-orange-500/10 px-3 py-1.5 text-sm font-semibold text-orange-500">
+          <div className="flex shrink-0 items-center gap-1.5 rounded-full bg-orange-500/10 px-3 py-1.5 text-sm font-semibold text-orange-500">
             <IconFlame className="h-4 w-4" />
             {streak}j
           </div>
@@ -55,29 +109,41 @@ export default function AujourdHuiPage() {
         <h2 className="mb-3 text-xs font-semibold uppercase tracking-wider text-muted-foreground">
           Missions du jour
         </h2>
-        <div className="flex flex-col gap-2">
-          {MISSIONS.map((m) => (
-            <Link
-              key={m.id}
-              href={m.href}
-              className={cn(
-                "flex items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors hover:bg-accent",
-                m.priority === "urgent"
-                  ? "border-red-500/30 bg-red-500/5"
-                  : "border-border bg-card"
-              )}
-            >
-              <span
-                className={cn(
-                  "h-2 w-2 shrink-0 rounded-full",
-                  m.priority === "urgent" ? "bg-red-500" : "bg-violet-500"
-                )}
-              />
-              <span className="flex-1 text-sm text-foreground">{m.label}</span>
-              <IconChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
-            </Link>
-          ))}
-        </div>
+
+        {loading ? (
+          <div className="flex flex-col gap-2">
+            {[0, 1, 2].map((i) => (
+              <div key={i} className="h-14 animate-pulse rounded-xl bg-muted" />
+            ))}
+          </div>
+        ) : missions.length === 0 ? (
+          <div className="flex items-center gap-3 rounded-xl border border-emerald-500/30 bg-emerald-500/5 px-4 py-4">
+            <span className="text-lg">🎉</span>
+            <p className="text-sm text-foreground">Toutes tes missions sont terminées — excellent travail !</p>
+          </div>
+        ) : (
+          <div className="flex flex-col gap-2">
+            {missions.map((m) => {
+              const Icon = m.icon
+              return (
+                <Link
+                  key={m.id}
+                  href={m.href}
+                  className={cn(
+                    "flex items-center gap-3 rounded-xl border px-4 py-3.5 transition-colors hover:bg-accent",
+                    m.priority === "urgent"
+                      ? "border-red-500/30 bg-red-500/5"
+                      : "border-border bg-card"
+                  )}
+                >
+                  <Icon className={cn("h-4 w-4 shrink-0", m.priority === "urgent" ? "text-red-500" : "text-violet-500")} />
+                  <span className="flex-1 text-sm text-foreground">{m.label}</span>
+                  <IconChevronRight className="h-4 w-4 shrink-0 text-muted-foreground" />
+                </Link>
+              )
+            })}
+          </div>
+        )}
       </section>
 
       {/* Atlas card */}
@@ -97,7 +163,7 @@ export default function AujourdHuiPage() {
         </div>
       </Link>
 
-      {/* Quick access row */}
+      {/* Quick access */}
       <div className="grid grid-cols-2 gap-3 lg:grid-cols-3">
         <Link
           href="/reseau"

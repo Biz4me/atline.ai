@@ -4,9 +4,10 @@ import { useState } from "react"
 import Link from "next/link"
 import ReactMarkdown from "react-markdown"
 import remarkGfm from "remark-gfm"
-import { Copy, ThumbsUp, ThumbsDown, RotateCcw, Check } from "lucide-react"
+import { Copy, ThumbsUp, ThumbsDown, RotateCcw, Check, Bookmark } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AtlineLogo } from "@/components/dashboard/logo"
+import { SaveScriptModal } from "@/components/atlas/save-script-modal"
 
 interface ChatMessageProps {
   role: "user" | "assistant"
@@ -14,16 +15,18 @@ interface ChatMessageProps {
   isStreaming?: boolean
   messageId?: string
   onRegenerate?: () => void
+  onSave?: (content: string) => void
 }
 
 function toHardBreaks(content: string): string {
   return content.replace(/(?<!\n)\n(?!\n)/g, "  \n")
 }
 
-export function ChatMessage({ role, content, isStreaming, messageId, onRegenerate }: ChatMessageProps) {
+export function ChatMessage({ role, content, isStreaming, messageId, onRegenerate, onSave }: ChatMessageProps) {
   const isUser = role === "user"
   const [copied, setCopied] = useState(false)
   const [vote, setVote] = useState<"up" | "down" | null>(null)
+  const [saveOpen, setSaveOpen] = useState(false)
 
   // Load vote from localStorage on mount
   useState(() => {
@@ -147,7 +150,22 @@ export function ChatMessage({ role, content, isStreaming, messageId, onRegenerat
                 <RotateCcw className="h-3.5 w-3.5" />
               </button>
             )}
+            <button
+              onClick={() => setSaveOpen(true)}
+              className="flex h-7 w-7 items-center justify-center rounded-md text-muted-foreground transition hover:bg-muted hover:text-foreground"
+              title="Sauvegarder le script"
+            >
+              <Bookmark className="h-3.5 w-3.5" />
+            </button>
           </div>
+        )}
+
+        {saveOpen && (
+          <SaveScriptModal
+            content={content}
+            onClose={() => setSaveOpen(false)}
+            onSaved={() => { setSaveOpen(false); onSave?.(content) }}
+          />
         )}
         </div>
       )}
