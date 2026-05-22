@@ -9,35 +9,34 @@ import {
   IconCalendar,
   IconUsers,
   IconSchool,
-  IconSparkles,
-  IconGridDots,
   IconUser,
   IconBroadcast,
   IconChartBar,
-  IconUpload,
   IconChevronLeft,
   IconChevronRight,
   IconBell,
-  IconX,
   IconFlame,
-  IconBarbell,
   IconLogout,
   IconCreditCard,
-  IconLanguage,
-  IconSun,
-  IconMoon,
   IconTrophy,
-  IconBriefcase,
-  IconTool,
+  IconBarbell,
   IconMessages,
   IconAdjustments,
+  IconUpload,
+  IconHome,
+  IconTool,
+  IconSparkles,
+  IconSun,
+  IconMoon,
+  IconGift,
+  IconSettings,
 } from "@tabler/icons-react"
 import { AtlineLogo } from "./logo"
 import { useUser } from "@/hooks/use-user"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 
 // ═══════════════════════════════════════════════════════════════
-// AVATAR IMAGE — fades in once loaded, shows initials as fallback
+// AVATAR IMAGE
 // ═══════════════════════════════════════════════════════════════
 
 function AvatarImg({
@@ -76,72 +75,7 @@ function AvatarImg({
 }
 
 // ═══════════════════════════════════════════════════════════════
-// MOBILE STATS BAR (replaces header)
-// ═══════════════════════════════════════════════════════════════
-
-const statsBarItems = [
-  { href: "/croissance", icon: IconFlame,   value: "12",  color: "#F59E0B", bg: "rgba(245,158,11,0.15)",  label: "Streak"    },
-  { href: "/croissance", icon: IconTrophy,  value: "225", color: "#8B5CF6", bg: "rgba(139,92,246,0.15)",  label: "XP"        },
-  { href: "/reseau",     icon: IconUsers,   value: "24",  color: "#10B981", bg: "rgba(16,185,129,0.15)",  label: "Prospects" },
-]
-
-const PAGE_TITLES: Record<string, string> = {
-  "/parcours":       "Mon Parcours",
-  "/business":       "Mon Business",
-  "/outils":         "Mes Outils",
-  "/croissance":     "Ma Croissance",
-  "/communaute":     "Communauté",
-  "/reseau":         "Réseau",
-  "/agenda":         "Agenda",
-  "/proline":        "Proline",
-  "/markline":       "Markline",
-  "/formation":      "Formation",
-  "/simulations":    "Simulations",
-  "/profil":         "Mon Profil",
-  "/enrichir-atlas": "Enrichir Atlas",
-  "/rag":            "Admin RAG",
-}
-
-export function MobileStatsBar() {
-  const { user, initials, loading } = useUser()
-  const pathname = usePathname()
-  const avatarUrl = (user as any)?.avatarUrl ?? null
-  const title = PAGE_TITLES[pathname] ?? null
-
-  return (
-    <header className="mobile-nav-top fixed left-0 right-0 top-0 z-50 flex h-14 items-center border-b border-border px-3 lg:hidden">
-      <Link href="/profil" className="mr-2 shrink-0">
-        <AvatarImg avatarUrl={avatarUrl} initials={initials} loading={loading} className="h-10 w-10" />
-      </Link>
-
-      <div className="flex flex-1 items-center justify-around">
-        {title ? (
-          <span className="text-sm font-semibold text-foreground">{title}</span>
-        ) : (
-          statsBarItems.map((item) => {
-            const Icon = item.icon
-            return (
-              <Link key={item.href} href={item.href} className="flex items-center gap-1">
-                <div
-                  className="flex h-8 w-8 items-center justify-center rounded-lg"
-                  style={{ backgroundColor: item.bg }}
-                >
-                  <Icon className="h-[18px] w-[18px]" style={{ color: item.color }} />
-                </div>
-                <span className="font-mono text-[12px] font-bold" style={{ color: item.color }}>
-                  {item.value}
-                </span>
-              </Link>
-            )
-          })
-        )}
-      </div>
-    </header>
-  )
-}
-
-// ═══════════════════════════════════════════════════════════════
-// MOBILE BOTTOM NAV (5 tabs)
+// ATLAS SVG LOGO (triangle)
 // ═══════════════════════════════════════════════════════════════
 
 function AtlasTriangleLogo({ className }: { className?: string }) {
@@ -153,228 +87,141 @@ function AtlasTriangleLogo({ className }: { className?: string }) {
   )
 }
 
-const bottomNavItems = [
-  { href: "/parcours",   icon: IconSchool,    label: "Parcours",   color: "#7C6FE8", bg: "rgba(124,111,232,0.15)" },
-  { href: "/business",   icon: IconBriefcase, label: "Business",   color: "#10B981", bg: "rgba(16,185,129,0.15)"  },
-  { href: "/atlas",      icon: null,          label: "Atlas",      color: "",        bg: "", isCenter: true        },
-  { href: "/communaute", icon: IconMessages,  label: "Communauté", color: "#8B5CF6", bg: "rgba(139,92,246,0.15)" },
-]
+// ═══════════════════════════════════════════════════════════════
+// PAGE TITLES
+// ═══════════════════════════════════════════════════════════════
 
-interface MobileBottomNavProps {
-  isOpen: boolean
-  onPlusClick: () => void
+const PAGE_TITLES: Record<string, string> = {
+  "/aujourd-hui":   "Aujourd'hui",
+  "/reseau":        "Réseau",
+  "/moi":           "Moi",
+  "/formation":     "Formation",
+  "/simulations":   "Simulations",
+  "/contenu":       "Contenu",
+  "/mon-plan":      "Mon plan",
+  "/agenda":        "Agenda",
+  "/croissance":    "Croissance",
+  "/communaute":    "Communauté",
+  "/profil":        "Mon Profil",
+  "/enrichir-atlas":"Enrichir Atlas",
+  "/rag":           "Admin RAG",
 }
 
-export function MobileBottomNav({ isOpen, onPlusClick }: MobileBottomNavProps) {
+// ═══════════════════════════════════════════════════════════════
+// MOBILE STATS BAR
+// ═══════════════════════════════════════════════════════════════
+
+export function MobileStatsBar() {
+  const { user } = useUser()
+  const pathname = usePathname()
+  const title = PAGE_TITLES[pathname] ?? null
+  const streak = user?.streak ?? 0
+  const isAtlas = pathname === "/atlas" || pathname.startsWith("/atlas/")
+
+  return (
+    <header className="mobile-nav-top fixed left-0 right-0 top-0 z-50 flex h-14 items-center border-b border-border bg-background px-3 lg:hidden">
+      {/* Logo → Aujourd'hui */}
+      <Link href="/aujourd-hui" className="mr-3 shrink-0">
+        <AtlineLogo showText={false} size="sm" />
+      </Link>
+
+      {/* Content zone */}
+      {title && !isAtlas ? (
+        <span className="flex-1 text-center text-sm font-semibold text-foreground">{title}</span>
+      ) : isAtlas ? (
+        <div className="flex-1" />
+      ) : (
+        <div className="flex flex-1 items-center justify-between">
+          {/* Streak — décoratif */}
+          <div className="flex items-center gap-1">
+            <IconFlame className="h-4 w-4 text-amber-500" />
+            <span className="font-mono text-xs font-bold text-amber-500">{streak}</span>
+          </div>
+
+          {/* Pills */}
+          <div className="flex items-center gap-1.5">
+            <Link
+              href="/croissance"
+              className="flex items-center gap-1 rounded-full bg-amber-500/10 px-2.5 py-1 transition-opacity active:opacity-70"
+            >
+              <IconTrophy className="h-3 w-3 text-amber-500" />
+              <span className="text-[11px] font-semibold text-amber-500">Croissance</span>
+            </Link>
+            <Link
+              href="/moi"
+              className="flex items-center gap-1 rounded-full bg-emerald-500/10 px-2.5 py-1 transition-opacity active:opacity-70"
+            >
+              <IconTool className="h-3 w-3 text-emerald-500" />
+              <span className="text-[11px] font-semibold text-emerald-500">Outils</span>
+            </Link>
+          </div>
+
+          {/* Prospects — décoratif */}
+          <div className="flex items-center gap-1">
+            <IconUsers className="h-4 w-4 text-emerald-500" />
+            <span className="font-mono text-xs font-bold text-emerald-500">—</span>
+          </div>
+        </div>
+      )}
+    </header>
+  )
+}
+
+// ═══════════════════════════════════════════════════════════════
+// MOBILE BOTTOM NAV (4 tabs, sans labels)
+// ═══════════════════════════════════════════════════════════════
+
+const BOTTOM_TABS = [
+  { href: "/aujourd-hui", label: "Aujourd'hui", isAtlas: false },
+  { href: "/atlas",       label: "Atlas",       isAtlas: true  },
+  { href: "/reseau",      label: "Réseau",       isAtlas: false },
+  { href: "/moi",         label: "Moi",          isAtlas: false },
+]
+
+export function MobileBottomNav() {
   const pathname = usePathname()
 
   return (
-    <nav className="mobile-nav-bottom fixed bottom-0 left-0 right-0 z-[65] h-[68px] border-t border-border lg:hidden">
-      <div className="flex h-full items-center justify-around px-1">
-        {bottomNavItems.map((item) => {
-          const isActive = pathname === item.href || pathname.startsWith(item.href + "/")
-
-          if (item.isCenter) {
-            const isAtlasActive = pathname === "/atlas" || pathname.startsWith("/atlas/")
-            return (
-              <Link key={item.href} href={item.href} className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2">
-                <div className={cn(
-                  "flex h-12 w-12 items-center justify-center rounded-xl transition-opacity",
-                  isAtlasActive ? "opacity-100" : "opacity-70"
-                )} style={{ backgroundColor: "rgba(124,111,232,0.2)" }}>
-                  <AtlasTriangleLogo className="h-8 w-8" />
-                </div>
-                {isAtlasActive && <span className="h-1 w-1 rounded-full bg-primary" />}
-              </Link>
-            )
-          }
-
-          const Icon = item.icon!
+    <nav className="mobile-nav-bottom fixed bottom-0 left-0 right-0 z-[65] h-[68px] border-t border-border bg-background lg:hidden">
+      <div className="flex h-full items-center justify-around">
+        {BOTTOM_TABS.map((tab) => {
+          const isActive = pathname === tab.href || pathname.startsWith(tab.href + "/")
           return (
-            <Link key={item.href} href={item.href} className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2">
-              <div
-                className={cn("flex h-12 w-12 items-center justify-center rounded-xl transition-opacity", isActive ? "opacity-100" : "opacity-50")}
-                style={{ backgroundColor: item.bg }}
-              >
-                <Icon className="h-7 w-7" style={{ color: item.color }} />
-              </div>
-              {isActive && <span className="h-1 w-1 rounded-full bg-primary" />}
+            <Link
+              key={tab.href}
+              href={tab.href}
+              aria-label={tab.label}
+              className="flex min-h-[44px] flex-1 flex-col items-center justify-center gap-1"
+            >
+              {tab.isAtlas ? (
+                <AtlasTriangleLogo
+                  className={cn("h-6 w-6 transition-opacity", isActive ? "opacity-100" : "opacity-35")}
+                />
+              ) : tab.href === "/aujourd-hui" ? (
+                <IconHome
+                  className={cn("h-6 w-6 transition-opacity", isActive ? "text-primary opacity-100" : "text-muted-foreground opacity-50")}
+                />
+              ) : tab.href === "/reseau" ? (
+                <IconUsers
+                  className={cn("h-6 w-6 transition-opacity", isActive ? "text-primary opacity-100" : "text-muted-foreground opacity-50")}
+                />
+              ) : (
+                <IconUser
+                  className={cn("h-6 w-6 transition-opacity", isActive ? "text-primary opacity-100" : "text-muted-foreground opacity-50")}
+                />
+              )}
+              <span className={cn("h-1 w-1 rounded-full bg-primary transition-opacity", isActive ? "opacity-100" : "opacity-0")} />
             </Link>
           )
         })}
-        {/* Plus button */}
-        <button onClick={onPlusClick} className="flex min-h-[44px] flex-col items-center justify-center gap-1 px-2">
-          <div
-            className="flex h-12 w-12 items-center justify-center rounded-xl transition-colors"
-            style={{ backgroundColor: isOpen ? "rgba(124,111,232,0.2)" : "rgba(113,113,122,0.15)" }}
-          >
-            {isOpen
-              ? <IconX className="h-7 w-7 text-primary" />
-              : <IconGridDots className="h-7 w-7 text-[#71717A]" />
-            }
-          </div>
-        </button>
       </div>
     </nav>
   )
 }
 
 // ═══════════════════════════════════════════════════════════════
-// PLUS DRAWER (bottom sheet)
+// DESKTOP SIDEBAR
 // ═══════════════════════════════════════════════════════════════
-
-interface PlusDrawerProps {
-  isOpen: boolean
-  onClose: () => void
-}
-
-const LANGUAGES = [
-  { code: "fr", label: "Français", flag: "🇫🇷" },
-  { code: "en", label: "English",  flag: "🇬🇧" },
-  { code: "es", label: "Español",  flag: "🇪🇸" },
-]
-
-function DrawerItem({ children }: { children: React.ReactNode }) {
-  return <div className="flex h-[62px] items-center border-b border-border px-4">{children}</div>
-}
-
-function DrawerIcon({ bg, color, icon: Icon }: { bg: string; color: string; icon: React.ComponentType<{ className?: string; style?: React.CSSProperties }> }) {
-  return (
-    <div className="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl" style={{ backgroundColor: bg }}>
-      <Icon className="h-6 w-6" style={{ color }} />
-    </div>
-  )
-}
-
-function DrawerSeparator() {
-  return <div className="mx-4 my-1 border-t border-border" />
-}
-
-export function PlusDrawer({ isOpen, onClose }: PlusDrawerProps) {
-  const { theme, setTheme } = useTheme()
-  const { logout } = useUser()
-  const [lang, setLang] = useState("fr")
-  const [langOpen, setLangOpen] = useState(false)
-  const isDark = theme === "dark"
-
-  if (!isOpen) return null
-
-  const currentLang = LANGUAGES.find((l) => l.code === lang)!
-
-  return (
-    <>
-      <div className="fixed inset-x-0 top-0 bottom-[68px] z-[60] bg-black/60 lg:hidden" onClick={onClose} />
-      <div className="fixed bottom-[68px] left-0 right-0 z-[70] rounded-t-[24px] bg-background lg:hidden">
-        <div className="flex justify-center py-3">
-          <div className="h-[3px] w-10 rounded-full bg-foreground/20" />
-        </div>
-        <button onClick={onClose} className="absolute right-4 top-3 flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground hover:bg-card">
-          <IconX className="h-5 w-5" />
-        </button>
-        <div className="max-h-[calc(75vh-68px)] overflow-y-auto pb-6">
-
-          {/* ── Destinations secondaires ── */}
-          <DrawerItem>
-            <Link href="/croissance" onClick={onClose} className="flex w-full items-center gap-3">
-              <DrawerIcon bg="rgba(245,158,11,0.12)" color="#F59E0B" icon={IconTrophy} />
-              <div className="flex flex-1 flex-col">
-                <span className="text-sm font-medium text-foreground">Ma Croissance</span>
-                <span className="text-[11px] text-muted-foreground">XP · Badges · Défis · Classement</span>
-              </div>
-            </Link>
-          </DrawerItem>
-          <DrawerItem>
-            <Link href="/outils" onClick={onClose} className="flex w-full items-center gap-3">
-              <DrawerIcon bg="rgba(16,185,129,0.12)" color="#10B981" icon={IconTool} />
-              <div className="flex flex-1 flex-col">
-                <span className="text-sm font-medium text-foreground">Mes Outils</span>
-                <span className="text-[11px] text-muted-foreground">Proline · Enrichir Atlas</span>
-              </div>
-            </Link>
-          </DrawerItem>
-
-          <DrawerSeparator />
-
-          {/* ── Compte ── */}
-          <DrawerItem>
-            <Link href="/profil" onClick={onClose} className="flex w-full items-center gap-3">
-              <DrawerIcon bg="rgba(113,113,122,0.12)" color="#71717A" icon={IconUser} />
-              <span className="flex-1 text-sm font-medium text-foreground">Profil</span>
-            </Link>
-          </DrawerItem>
-          <DrawerItem>
-            <Link href="/abonnement" onClick={onClose} className="flex w-full items-center gap-3">
-              <DrawerIcon bg="rgba(124,111,232,0.15)" color="#7C6FE8" icon={IconCreditCard} />
-              <div className="flex flex-1 flex-col">
-                <span className="text-sm font-medium text-foreground">Abonnement</span>
-                <span className="text-[11px] text-muted-foreground">Plan Pro · Actif</span>
-              </div>
-            </Link>
-          </DrawerItem>
-
-          <DrawerSeparator />
-
-          {/* ── Préférences ── */}
-          <DrawerItem>
-            <button onClick={() => setLangOpen((v) => !v)} className="flex w-full items-center gap-3">
-              <DrawerIcon bg="rgba(6,182,212,0.12)" color="#06B6D4" icon={IconLanguage} />
-              <span className="flex-1 text-left text-sm font-medium text-foreground">Langue</span>
-              <span className="text-sm text-muted-foreground">{currentLang.flag} {currentLang.label}</span>
-            </button>
-          </DrawerItem>
-          {langOpen && (
-            <div className="mx-4 mb-1 overflow-hidden rounded-xl border border-border bg-card">
-              {LANGUAGES.map((l) => (
-                <button key={l.code} onClick={() => { setLang(l.code); setLangOpen(false) }}
-                  className={cn("flex w-full items-center gap-3 px-4 py-3 text-sm transition-colors", lang === l.code ? "text-primary" : "text-foreground hover:bg-muted")}
-                >
-                  <span className="text-base">{l.flag}</span>
-                  <span>{l.label}</span>
-                  {lang === l.code && <span className="ml-auto h-1.5 w-1.5 rounded-full bg-primary" />}
-                </button>
-              ))}
-            </div>
-          )}
-          <DrawerItem>
-            <div className="flex w-full items-center gap-3">
-              <DrawerIcon
-                bg={isDark ? "rgba(113,113,122,0.12)" : "rgba(245,158,11,0.12)"}
-                color={isDark ? "#71717A" : "#F59E0B"}
-                icon={isDark ? IconMoon : IconSun}
-              />
-              <span className="flex-1 text-sm font-medium text-foreground">{isDark ? "Mode sombre" : "Mode clair"}</span>
-              <ToggleSwitch enabled={isDark} onChange={(v) => setTheme(v ? "dark" : "light")} />
-            </div>
-          </DrawerItem>
-
-          <DrawerSeparator />
-
-          <DrawerItem>
-            <button onClick={() => { logout(); onClose() }} className="flex w-full items-center gap-3">
-              <DrawerIcon bg="rgba(239,68,68,0.12)" color="#EF4444" icon={IconLogout} />
-              <span className="text-sm font-medium text-red-400">Déconnexion</span>
-            </button>
-          </DrawerItem>
-
-        </div>
-      </div>
-    </>
-  )
-}
-
-// ═══════════════════════════════════════════════════════════════
-// DESKTOP SIDEBAR — flat nav, style Claude
-// ═══════════════════════════════════════════════════════════════
-import { ATLAS_MODULES, CORE_MODULES, SPECIALIZED_MODULES } from "@/lib/modules"
-import { useModules } from "./modules-context"
-
-const navItems = [
-  { href: "/parcours",    icon: IconSchool,     label: "Mon Parcours"  },
-  { href: "/business",    icon: IconBriefcase,  label: "Mon Business"  },
-  { href: "/outils",      icon: IconTool,       label: "Mes Outils"    },
-  { href: "/croissance",  icon: IconTrophy,     label: "Ma Croissance" },
-  { href: "/communaute",  icon: IconMessages,   label: "Communauté"    },
-]
 
 interface DesktopSidebarProps {
   collapsed?: boolean
@@ -382,134 +229,81 @@ interface DesktopSidebarProps {
   enableTransition?: boolean
 }
 
-function ModuleNavList({ collapsed, activeConvId }: { collapsed: boolean; activeConvId?: string }) {
-  const { moduleConversations } = useModules()
-  const pathname = usePathname()
-  const isAtlasPage = pathname === "/atlas" || pathname.startsWith("/atlas/")
+// Level 1 — quotidien (Aujourd'hui + Réseau — Atlas est traité séparément)
+const L1_ITEMS = [
+  { href: "/aujourd-hui", icon: IconHome,    label: "Aujourd'hui" },
+  { href: "/reseau",      icon: IconUsers,   label: "Réseau"      },
+]
 
-  const [tooltip, setTooltip] = useState<{ text: string; y: number } | null>(null)
+// Level 2 — secondaire
+const L2_ITEMS = [
+  { href: "/formation",   icon: IconSchool,    label: "Formation"   },
+  { href: "/simulations", icon: IconBarbell,   label: "Simulations" },
+  { href: "/contenu",     icon: IconBroadcast, label: "Contenu"     },
+  { href: "/mon-plan",    icon: IconChartBar,  label: "Mon plan"    },
+  { href: "/agenda",      icon: IconCalendar,  label: "Agenda"      },
+  { href: "/croissance",  icon: IconTrophy,    label: "Croissance"  },
+]
 
-  const handleClick = (moduleId: string) => {
-    const convId = moduleConversations[moduleId]
-    if (isAtlasPage) {
-      window.dispatchEvent(new CustomEvent("atlas:select-module", { detail: { moduleId, convId } }))
-    } else {
-      const url = convId ? `/atlas?c=${convId}&m=${moduleId}` : `/atlas?m=${moduleId}`
-      window.location.href = url
-    }
-  }
-
-  const renderDot = (mod: (typeof ATLAS_MODULES)[number]) => {
-    const convId = moduleConversations[mod.id]
-    const isActive = isAtlasPage && activeConvId != null && convId === activeConvId
-    return (
-      <button
-        key={mod.id}
-        onClick={() => handleClick(mod.id)}
-        onMouseEnter={(e) => {
-          const rect = e.currentTarget.getBoundingClientRect()
-          setTooltip({ text: mod.subtitle, y: rect.top + rect.height / 2 })
-        }}
-        className={cn(
-          "relative flex h-8 w-8 items-center justify-center rounded-md transition-colors",
-          isActive ? "ring-2 ring-current" : "hover:bg-muted"
-        )}
-        style={isActive ? { color: mod.color } : undefined}
-        title={mod.subtitle}
-      >
-        <span
-          className="h-2.5 w-2.5 rounded-full"
-          style={{ backgroundColor: mod.color, opacity: isActive ? 1 : 0.6 }}
-        />
-      </button>
-    )
-  }
-
-  if (collapsed) {
-    return (
-      <div
-        className="flex flex-col items-center gap-0.5 overflow-y-auto overflow-x-hidden py-2 px-1"
-        onMouseLeave={() => setTooltip(null)}
-      >
-        {CORE_MODULES.map(renderDot)}
-        <div className="my-1 w-5 border-t border-border" />
-        {SPECIALIZED_MODULES.map(renderDot)}
-        {tooltip && (
-          <div
-            className="pointer-events-none fixed left-16 z-[200] max-w-[160px] rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md"
-            style={{ top: tooltip.y, transform: "translateY(-50%)" }}
-          >
-            {tooltip.text}
-          </div>
-        )}
-      </div>
-    )
-  }
-
-  const renderRow = (mod: (typeof ATLAS_MODULES)[number]) => {
-    const convId = moduleConversations[mod.id]
-    const isActive = isAtlasPage && activeConvId != null && convId === activeConvId
-    return (
-      <button
-        key={mod.id}
-        onClick={() => handleClick(mod.id)}
-        className={cn(
-          "flex w-full items-center gap-2.5 rounded-md px-2 py-1.5 text-left text-sm transition-colors",
-          isActive
-            ? "bg-primary/10 text-primary"
-            : "text-muted-foreground hover:bg-muted hover:text-foreground"
-        )}
-      >
-        <span className="h-2 w-2 shrink-0 rounded-full" style={{ backgroundColor: mod.color }} />
-        <span className="truncate">{mod.subtitle}</span>
-      </button>
-    )
-  }
-
-  return (
-    <div className="flex flex-col overflow-y-auto py-2 px-2 gap-0.5">
-      <p className="mb-1 px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-        Modules
-      </p>
-      {CORE_MODULES.map(renderRow)}
-      <div className="my-1 border-t border-border" />
-      <p className="mb-0.5 px-1 text-[10px] font-semibold uppercase tracking-wider text-muted-foreground/60">
-        Spécialisé
-      </p>
-      {SPECIALIZED_MODULES.map(renderRow)}
-    </div>
-  )
-}
+const L2_BOTTOM = [
+  { href: "/communaute",    icon: IconMessages,   label: "Communauté"    },
+  { href: "/profil",        icon: IconUser,       label: "Profil"        },
+]
 
 export function DesktopSidebar({ collapsed = false, onToggle, enableTransition = true }: DesktopSidebarProps) {
   const pathname = usePathname()
   const { user } = useUser()
-  const [activeConvId, setActiveConvId] = useState<string | undefined>(undefined)
-  const isAtlas = pathname === "/atlas" || pathname.startsWith("/atlas/")
-
-  useEffect(() => {
-    const handler = (e: Event) => {
-      const detail = (e as CustomEvent).detail
-      setActiveConvId(detail?.convId ?? undefined)
-    }
-    window.addEventListener("atlas:select-module", handler)
-    window.addEventListener("atlas:conversation-active", handler)
-    return () => {
-      window.removeEventListener("atlas:select-module", handler)
-      window.removeEventListener("atlas:conversation-active", handler)
-    }
-  }, [])
-
-  const handleNewConversation = () => {
-    if (isAtlas) {
-      setActiveConvId(undefined)
-      window.dispatchEvent(new CustomEvent("atlas:new-chat"))
-    } else {
-      window.location.href = "/atlas"
-    }
-  }
 
   const isActive = (href: string) => pathname === href || pathname.startsWith(href + "/")
+  const isAtlas = isActive("/atlas")
+
+  // ── Collapsed sidebar item helper ────────────────────────────
+  function CollapsedItem({ href, icon: Icon, label, small = false }: {
+    href: string; icon: React.ComponentType<{ className?: string }>; label: string; small?: boolean
+  }) {
+    const active = isActive(href)
+    return (
+      <div className="group relative flex justify-center">
+        <Link
+          href={href}
+          className={cn(
+            "flex items-center justify-center rounded-md transition-colors",
+            small ? "h-7 w-7" : "h-9 w-9",
+            active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+          )}
+        >
+          <Icon className={cn("shrink-0", small ? "h-[13px] w-[13px]" : "h-[17px] w-[17px]")} />
+        </Link>
+        <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
+          {label}
+        </span>
+      </div>
+    )
+  }
+
+  // ── Expanded sidebar item helper ─────────────────────────────
+  function ExpandedItem({ href, icon: Icon, label, small = false }: {
+    href: string; icon: React.ComponentType<{ className?: string }>; label: string; small?: boolean
+  }) {
+    const active = isActive(href)
+    return (
+      <Link
+        href={href}
+        className={cn(
+          "flex items-center gap-3 rounded-md transition-colors",
+          small
+            ? "px-2 py-[5px] text-[10px]"
+            : "px-3 py-2.5 text-[13px]",
+          active
+            ? "bg-primary/10 text-primary"
+            : "text-muted-foreground hover:bg-muted hover:text-foreground"
+        )}
+      >
+        <Icon className={cn("shrink-0", small ? "h-[13px] w-[13px]" : "h-[17px] w-[17px]")} />
+        <span className={small ? "font-medium" : "font-medium"}>{label}</span>
+      </Link>
+    )
+  }
 
   return (
     <aside className={cn(
@@ -518,155 +312,125 @@ export function DesktopSidebar({ collapsed = false, onToggle, enableTransition =
       collapsed ? "w-16" : "w-60"
     )}>
       {/* Logo */}
-      <div className="flex h-14 items-center border-b border-border px-4">
+      <div className="flex h-14 shrink-0 items-center border-b border-border px-4">
         <AtlineLogo showText={!collapsed} size="md" />
       </div>
 
-      {/* + Nouvelle conversation */}
-      <div className={cn("px-3 pt-3 pb-2", collapsed && "px-2 flex justify-center")}>
-        {collapsed ? (
-          <div className="group relative">
-            <button
-              onClick={handleNewConversation}
-              className="flex h-9 w-9 items-center justify-center rounded-lg hover:bg-muted transition"
-            >
-              <IconSparkles className="h-5 w-5 text-primary" />
-            </button>
-            <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
-              Nouvelle conversation
-            </span>
-          </div>
-        ) : (
-          <button
-            onClick={handleNewConversation}
-            className="flex w-full items-center gap-2 rounded-lg border border-border bg-card px-3 py-2 text-sm text-foreground hover:bg-muted transition"
-          >
-            <IconSparkles className="h-4 w-4 text-primary flex-shrink-0" />
-            <span>Nouvelle conversation</span>
-          </button>
-        )}
-      </div>
+      {/* Scrollable nav */}
+      <nav className="flex min-h-0 flex-1 flex-col overflow-y-auto overflow-x-hidden px-2 py-3">
 
-      {/* Middle section — always flex-1 so nav never jumps */}
-      <div className="flex min-h-0 flex-1 flex-col">
-        <ModuleNavList collapsed={collapsed} activeConvId={activeConvId} />
-      </div>
-
-      {/* Navigation — always at bottom, never flex-1 */}
-      <nav className={cn(
-        "flex flex-col px-2 py-1",
-        collapsed && "border-t border-border",
-        collapsed ? "overflow-visible" : "overflow-y-auto"
-      )}>
-        <div className="space-y-0.5">
-          {navItems.map((item) => {
-            const Icon = item.icon
-            const active = isActive(item.href)
-            return collapsed ? (
-              <div key={item.href} className="group relative flex justify-center">
-                <Link
-                  href={item.href}
-                  className={cn(
-                    "flex h-9 w-9 items-center justify-center rounded-md transition-colors",
-                    active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  <Icon className="h-5 w-5 shrink-0" />
-                </Link>
-                <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
-                  {item.label}
-                </span>
-              </div>
-            ) : (
+        {/* ── ATLAS — Level 1 special ── */}
+        <div className={cn("mb-1", collapsed ? "flex justify-center" : "")}>
+          {collapsed ? (
+            <div className="group relative flex justify-center">
               <Link
-                key={item.href}
-                href={item.href}
+                href="/atlas"
                 className={cn(
-                  "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-                  active ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
+                  "flex h-9 w-9 items-center justify-center rounded-lg transition-colors",
+                  isAtlas ? "bg-primary/20" : "bg-primary/10 hover:bg-primary/20"
                 )}
               >
-                <Icon className="h-5 w-5 shrink-0" />
-                <span>{item.label}</span>
+                <AtlasTriangleLogo className="h-5 w-5" />
               </Link>
-            )
-          })}
-          {(user as any)?.isAdmin && (
-            <>
-              {collapsed ? (
-                <div className="group relative flex justify-center">
-                  <Link
-                    href="/rag"
-                    className={cn(
-                      "flex h-9 w-9 items-center justify-center rounded-md transition-colors",
-                      isActive("/rag") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    )}
-                  >
-                    <IconUpload className="h-5 w-5 shrink-0" />
-                  </Link>
-                  <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
-                    Admin RAG
-                  </span>
-                </div>
-              ) : (
-                <Link
-                  href="/rag"
-                  className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-                    isActive("/rag") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  <IconUpload className="h-5 w-5 shrink-0" />
-                  <span>Admin RAG</span>
-                </Link>
+              <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
+                Atlas — Coach IA
+              </span>
+            </div>
+          ) : (
+            <Link
+              href="/atlas"
+              className={cn(
+                "flex items-center gap-2.5 rounded-xl px-3 py-2.5 transition-all",
+                isAtlas
+                  ? "bg-primary text-white shadow-sm"
+                  : "bg-primary/8 text-primary hover:bg-primary/15"
               )}
-              {collapsed ? (
-                <div className="group relative flex justify-center">
-                  <Link
-                    href="/enrichir-atlas"
-                    className={cn(
-                      "flex h-9 w-9 items-center justify-center rounded-md transition-colors",
-                      isActive("/enrichir-atlas") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                    )}
-                  >
-                    <IconAdjustments className="h-5 w-5 shrink-0" />
-                  </Link>
-                  <span className="pointer-events-none absolute left-full top-1/2 -translate-y-1/2 ml-3 whitespace-nowrap rounded-md border border-border bg-card px-2 py-1 text-xs text-foreground shadow-md opacity-0 group-hover:opacity-100 transition-opacity z-[100]">
-                    Config. Agents
-                  </span>
-                </div>
-              ) : (
-                <Link
-                  href="/enrichir-atlas"
-                  className={cn(
-                    "flex items-center gap-3 rounded-md px-3 py-2 text-sm transition-colors",
-                    isActive("/enrichir-atlas") ? "bg-primary/10 text-primary" : "text-muted-foreground hover:bg-muted hover:text-foreground"
-                  )}
-                >
-                  <IconAdjustments className="h-5 w-5 shrink-0" />
-                  <span>Config. Agents</span>
-                </Link>
-              )}
-            </>
+            >
+              <AtlasTriangleLogo className="h-[17px] w-[17px] shrink-0" />
+              <span className="flex-1 text-[13px] font-semibold">Atlas</span>
+              <span className={cn(
+                "rounded-full px-1.5 py-0.5 text-[9px] font-bold uppercase tracking-wide",
+                isAtlas ? "bg-white/20 text-white" : "bg-primary/15 text-primary"
+              )}>
+                Coach IA
+              </span>
+            </Link>
           )}
         </div>
+
+        {/* ── Level 1 items ── */}
+        <div className={cn("space-y-0.5", collapsed ? "flex flex-col items-center gap-0.5 space-y-0" : "")}>
+          {L1_ITEMS.map((item) =>
+            collapsed
+              ? <CollapsedItem key={item.href} {...item} />
+              : <ExpandedItem key={item.href} {...item} />
+          )}
+        </div>
+
+        {/* ── Separator ── */}
+        <div className="my-2 mx-1 border-t border-border" />
+
+        {/* ── Level 2 items ── */}
+        <div className={cn("space-y-0.5", collapsed ? "flex flex-col items-center gap-0.5 space-y-0" : "")}>
+          {L2_ITEMS.map((item) =>
+            collapsed
+              ? <CollapsedItem key={item.href} {...item} small />
+              : <ExpandedItem key={item.href} {...item} small />
+          )}
+        </div>
+
+        {/* ── Separator ── */}
+        <div className="my-2 mx-1 border-t border-border" />
+
+        {/* ── Bottom level 2 (Communauté + Profil) ── */}
+        <div className={cn("space-y-0.5", collapsed ? "flex flex-col items-center gap-0.5 space-y-0" : "")}>
+          {L2_BOTTOM.map((item) =>
+            collapsed
+              ? <CollapsedItem key={item.href} {...item} small />
+              : <ExpandedItem key={item.href} {...item} small />
+          )}
+        </div>
+
+        {/* ── Admin items ── */}
+        {(user as any)?.isAdmin && (
+          <>
+            <div className="my-2 mx-1 border-t border-border" />
+            <div className={cn("space-y-0.5", collapsed ? "flex flex-col items-center gap-0.5 space-y-0" : "")}>
+              {collapsed ? (
+                <>
+                  <CollapsedItem href="/rag" icon={IconUpload} label="Admin RAG" small />
+                  <CollapsedItem href="/enrichir-atlas" icon={IconAdjustments} label="Config. Agents" small />
+                </>
+              ) : (
+                <>
+                  <ExpandedItem href="/rag" icon={IconUpload} label="Admin RAG" small />
+                  <ExpandedItem href="/enrichir-atlas" icon={IconAdjustments} label="Config. Agents" small />
+                </>
+              )}
+            </div>
+          </>
+        )}
       </nav>
 
       {/* Collapse toggle */}
       <button
         onClick={onToggle}
-        className="flex h-10 items-center justify-center border-t border-border text-muted-foreground transition-colors hover:text-foreground"
+        className="flex h-10 shrink-0 items-center justify-center border-t border-border text-muted-foreground transition-colors hover:text-foreground"
       >
         {collapsed ? <IconChevronRight className="h-5 w-5" /> : <IconChevronLeft className="h-5 w-5" />}
       </button>
 
       {/* User section */}
-      <div className={cn("border-t border-border", collapsed ? "px-1 py-2" : "p-3")}>
+      <div className={cn("shrink-0 border-t border-border", collapsed ? "px-1 py-2" : "p-3")}>
         <UserSection collapsed={collapsed} />
       </div>
     </aside>
   )
 }
+
+// ═══════════════════════════════════════════════════════════════
+// USER SECTION (desktop sidebar bottom)
+// ═══════════════════════════════════════════════════════════════
 
 function UserSection({ collapsed }: { collapsed: boolean }) {
   const { user, loading, logout, initials, displayName } = useUser()
@@ -676,7 +440,6 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
   const planLabel = user?.plan === "pro" ? "Plan Pro" : "Plan Gratuit"
   const avatarUrl = (user as any)?.avatarUrl ?? null
 
-  // 200ms guard to absorb ghost-clicks on mount
   useEffect(() => {
     const t = setTimeout(() => setClickable(true), 200)
     return () => clearTimeout(t)
@@ -694,27 +457,18 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
 
   return (
     <div className="relative" ref={menuRef}>
-      {/* Popup menu */}
       {menuOpen && (
         <div className={cn(
           "absolute z-[100] rounded-lg border border-border bg-card p-1 shadow-lg overflow-hidden",
-          collapsed
-            ? "bottom-0 left-full ml-2 w-52"
-            : "bottom-full left-0 right-0 mb-2"
+          collapsed ? "bottom-0 left-full ml-2 w-52" : "bottom-full left-0 right-0 mb-2"
         )}>
-          <Link
-            href="/profil"
-            onClick={() => setMenuOpen(false)}
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-foreground hover:bg-muted transition"
-          >
+          <Link href="/profil" onClick={() => setMenuOpen(false)}
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-foreground hover:bg-muted transition">
             <IconUser className="h-4 w-4 flex-shrink-0" />
             <span>Mon profil</span>
           </Link>
-          <Link
-            href="/abonnement"
-            onClick={() => setMenuOpen(false)}
-            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-foreground hover:bg-muted transition"
-          >
+          <Link href="/abonnement" onClick={() => setMenuOpen(false)}
+            className="flex items-center gap-3 rounded-md px-3 py-2 text-sm text-foreground hover:bg-muted transition">
             <IconCreditCard className="h-4 w-4 flex-shrink-0" />
             <div>
               <div>Abonnement</div>
@@ -722,24 +476,19 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
             </div>
           </Link>
           <div className="my-1 border-t border-border" />
-          <button
-            onClick={() => { logout(); setMenuOpen(false) }}
-            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-red-400 hover:bg-muted transition"
-          >
+          <button onClick={() => { logout(); setMenuOpen(false) }}
+            className="flex w-full items-center gap-3 rounded-md px-3 py-2 text-sm text-red-400 hover:bg-muted transition">
             <IconLogout className="h-4 w-4 flex-shrink-0" />
             <span>Déconnexion</span>
           </button>
         </div>
       )}
-
       <button
         onClick={() => clickable && setMenuOpen((v) => !v)}
         className={cn(
           "flex items-center rounded-md transition-colors hover:bg-muted",
           !clickable && "pointer-events-none",
-          collapsed
-            ? "px-1 py-1 w-full justify-center"
-            : "gap-3 w-full px-2 py-2"
+          collapsed ? "px-1 py-1 w-full justify-center" : "gap-3 w-full px-2 py-2"
         )}
       >
         <AvatarImg avatarUrl={avatarUrl} initials={initials} loading={loading} className="h-9 w-9 shrink-0" textSize="text-sm" />
@@ -759,51 +508,136 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
 // ═══════════════════════════════════════════════════════════════
 
 export function DesktopTopBar() {
+  const { user } = useUser()
   const pathname = usePathname()
   const title = PAGE_TITLES[pathname] ?? null
+  const streak = user?.streak ?? 0
+  const xp = user?.xp ?? 0
 
   return (
     <header className="sticky top-0 z-30 hidden h-14 items-center border-b border-border bg-background/80 px-6 backdrop-blur-sm lg:grid lg:grid-cols-3">
-      {/* left — spacer */}
-      <div />
-
-      {/* center — page title */}
-      <div className="flex items-center justify-center">
+      {/* left — page title */}
+      <div className="flex items-center">
         {title && <span className="text-sm font-semibold text-foreground">{title}</span>}
       </div>
 
-      {/* right — stats + actions */}
-      <div className="flex items-center justify-end gap-4">
-        <div className="flex items-center gap-3">
-          {statsBarItems.map((item, index) => {
-            const Icon = item.icon
-            return (
-              <div key={item.href} className="flex items-center">
-                <Link href={item.href} className="flex items-center gap-1.5 px-1">
-                  <Icon className="h-5 w-5" style={{ color: item.color }} />
-                  <span className="font-mono text-xs font-bold text-foreground">{item.value}</span>
-                </Link>
-                {index < statsBarItems.length - 1 && <div className="ml-2 h-4 w-px bg-border" />}
-              </div>
-            )
-          })}
+      {/* center — spacer */}
+      <div />
+
+      {/* right — stats + bell */}
+      <div className="flex items-center justify-end gap-3">
+        <div className="flex items-center gap-4 text-xs">
+          <div className="flex items-center gap-1.5">
+            <IconFlame className="h-4 w-4 text-amber-500" />
+            <span className="font-mono font-bold text-foreground">{streak}</span>
+          </div>
+          <div className="h-4 w-px bg-border" />
+          <div className="flex items-center gap-1.5">
+            <IconTrophy className="h-4 w-4 text-violet-500" />
+            <span className="font-mono font-bold text-foreground">{xp} XP</span>
+          </div>
+          <div className="h-4 w-px bg-border" />
+          <div className="flex items-center gap-1.5">
+            <IconUsers className="h-4 w-4 text-emerald-500" />
+            <span className="font-mono font-bold text-foreground">—</span>
+          </div>
         </div>
         <button className="relative flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-card">
           <IconBell className="h-5 w-5 text-muted-foreground" />
           <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-primary" />
         </button>
-        <TopBarAvatar />
       </div>
     </header>
   )
 }
 
-function TopBarAvatar() {
-  const { user, initials, loading, logout } = useUser()
+// ═══════════════════════════════════════════════════════════════
+// MOI PAGE — FAB PLUS
+// ═══════════════════════════════════════════════════════════════
+
+export function MoiFab() {
+  const { user, loading, logout, initials, displayName } = useUser()
+  const { theme, setTheme } = useTheme()
+  const [open, setOpen] = useState(false)
   const avatarUrl = (user as any)?.avatarUrl ?? null
+  const planLabel = user?.plan === "pro" ? "Plan Pro" : "Plan Gratuit"
+  const isDark = theme === "dark"
+
   return (
-    <button onClick={logout} title="Déconnexion" className="shrink-0 transition-opacity hover:opacity-80">
-      <AvatarImg avatarUrl={avatarUrl} initials={initials} loading={loading} className="h-8 w-8" />
-    </button>
+    <>
+      {/* Overlay */}
+      {open && (
+        <div className="fixed inset-0 z-[60] bg-black/40 lg:hidden" onClick={() => setOpen(false)} />
+      )}
+
+      {/* Sheet */}
+      {open && (
+        <div className="fixed bottom-[68px] left-0 right-0 z-[70] rounded-t-[24px] bg-background lg:hidden animate-in slide-in-from-bottom-4 duration-200">
+          <div className="flex justify-center py-3">
+            <div className="h-[3px] w-10 rounded-full bg-foreground/20" />
+          </div>
+
+          {/* Avatar + nom + plan */}
+          <div className="flex items-center gap-3 border-b border-border px-5 pb-4">
+            <AvatarImg avatarUrl={avatarUrl} initials={initials} loading={loading} className="h-12 w-12" textSize="text-base" />
+            <div>
+              <p className="font-semibold text-foreground">{displayName}</p>
+              <p className="text-xs text-muted-foreground">{planLabel}</p>
+            </div>
+          </div>
+
+          <div className="px-3 py-2 space-y-1">
+            <Link href="/profil" onClick={() => setOpen(false)}
+              className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-foreground hover:bg-muted transition">
+              <IconUser className="h-5 w-5 text-muted-foreground" />
+              <span>Mon profil</span>
+            </Link>
+            <button
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-foreground hover:bg-muted transition"
+              onClick={() => setOpen(false)}
+            >
+              <IconSettings className="h-5 w-5 text-muted-foreground" />
+              <span>Paramètres</span>
+            </button>
+            <Link href="/abonnement" onClick={() => setOpen(false)}
+              className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-foreground hover:bg-muted transition">
+              <IconCreditCard className="h-5 w-5 text-muted-foreground" />
+              <span>Abonnement</span>
+            </Link>
+            <button
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-foreground hover:bg-muted transition"
+              onClick={() => setOpen(false)}
+            >
+              <IconGift className="h-5 w-5 text-muted-foreground" />
+              <span>Parrainer</span>
+            </button>
+
+            {/* Dark mode */}
+            <div className="flex items-center gap-3 rounded-xl px-3 py-3">
+              {isDark ? <IconMoon className="h-5 w-5 text-muted-foreground" /> : <IconSun className="h-5 w-5 text-amber-500" />}
+              <span className="flex-1 text-sm text-foreground">{isDark ? "Mode sombre" : "Mode clair"}</span>
+              <ToggleSwitch enabled={isDark} onChange={(v) => setTheme(v ? "dark" : "light")} />
+            </div>
+
+            <div className="my-1 border-t border-border" />
+
+            <button onClick={() => { logout(); setOpen(false) }}
+              className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-red-400 hover:bg-muted transition">
+              <IconLogout className="h-5 w-5" />
+              <span>Déconnexion</span>
+            </button>
+          </div>
+          <div className="h-6" />
+        </div>
+      )}
+
+      {/* FAB button */}
+      <button
+        onClick={() => setOpen((v) => !v)}
+        className="fixed bottom-[84px] right-4 z-[55] flex h-12 w-12 items-center justify-center rounded-full bg-primary text-white shadow-lg transition-transform active:scale-95 lg:hidden"
+      >
+        <IconSparkles className="h-5 w-5" />
+      </button>
+    </>
   )
 }
