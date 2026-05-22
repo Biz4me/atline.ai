@@ -23,6 +23,9 @@ export interface AtlineUser {
   socialPlatforms?: string[]
   hasProspectList?: boolean
   onboardingCompleted?: boolean
+  username?: string
+  calcomLink?: string
+  whatsappNumber?: string
 }
 
 type ProfileUpdate = Partial<Pick<AtlineUser, "firstName" | "lastName" | "phone" | "mlmCompany" | "mlmLevel">>

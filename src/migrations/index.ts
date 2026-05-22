@@ -16,6 +16,7 @@ import * as migration_20260521_000000_rag_locked_docs from './20260521_000000_ra
 import * as migration_20260521_130946 from './20260521_130946';
 import * as migration_20260522_scripts_library from './20260522_scripts_library';
 import * as migration_20260522_revenue_tracking from './20260522_revenue_tracking';
+import * as migration_20260522_user_public_profile from './20260522_user_public_profile';
 
 export const migrations = [
   {
@@ -107,5 +108,10 @@ export const migrations = [
     up: migration_20260522_revenue_tracking.up,
     down: migration_20260522_revenue_tracking.down,
     name: '20260522_revenue_tracking',
+  },
+  {
+    up: migration_20260522_user_public_profile.up,
+    down: migration_20260522_user_public_profile.down,
+    name: '20260522_user_public_profile',
   },
 ];

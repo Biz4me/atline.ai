@@ -131,5 +131,21 @@ export const Users: CollectionConfig = {
       defaultValue: false,
       saveToJWT: true,
     },
+    {
+      name: 'username',
+      type: 'text',
+      unique: true,
+      admin: { description: 'Identifiant public — URL carte de visite : atline.ai/[username]' },
+    },
+    {
+      name: 'calcomLink',
+      type: 'text',
+      admin: { description: 'Lien Cal.com complet, ex: https://cal.com/prenom' },
+    },
+    {
+      name: 'whatsappNumber',
+      type: 'text',
+      admin: { description: 'Numéro WhatsApp au format international, ex: +33612345678' },
+    },
   ],
 }

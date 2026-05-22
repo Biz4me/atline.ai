@@ -4,12 +4,165 @@ import { useRef, useState, useEffect } from "react"
 import { useTheme } from "next-themes"
 import { Sun, Moon } from "lucide-react"
 import { TabsNav } from "@/components/reseau/tabs-nav"
-import { IconFileText, IconCheck, IconX, IconCamera, IconPhoto } from "@tabler/icons-react"
+import { IconFileText, IconCheck, IconX, IconCamera, IconPhoto, IconCopy, IconExternalLink } from "@tabler/icons-react"
 import { useUser } from "@/hooks/use-user"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 import { cn } from "@/lib/utils"
 
-const tabs = ["Mon Profil", "Abonnement", "Préférences", "Mes Documents", "Zone Danger"]
+// ─── Carte de visite tab ──────────────────────────────────────────────────────
+
+function CarteTab() {
+  const { user } = useUser()
+  const [username, setUsername] = useState("")
+  const [calcomLink, setCalcomLink] = useState("")
+  const [whatsappNumber, setWhatsappNumber] = useState("")
+  const [saving, setSaving] = useState(false)
+  const [saved, setSaved] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [copied, setCopied] = useState(false)
+
+  // Init from user once loaded
+  useEffect(() => {
+    if (user) {
+      setUsername((user as any).username ?? "")
+      setCalcomLink((user as any).calcomLink ?? "")
+      setWhatsappNumber((user as any).whatsappNumber ?? "")
+    }
+  }, [user])
+
+  const profileUrl = username ? `https://atline.ai/${username}` : null
+  const qrUrl = profileUrl
+    ? `https://api.qrserver.com/v1/create-qr-code/?size=160x160&data=${encodeURIComponent(profileUrl)}&bgcolor=09090B&color=FFFFFF&format=png`
+    : null
+
+  const handleSave = async () => {
+    setError(null)
+    setSaving(true)
+    try {
+      const res = await fetch("/api/user/public-profile", {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ username, calcomLink, whatsappNumber }),
+      })
+      const data = await res.json()
+      if (!res.ok) throw new Error(data.error ?? "Erreur")
+      setSaved(true)
+      setTimeout(() => setSaved(false), 3000)
+    } catch (e: any) {
+      setError(e.message)
+    } finally {
+      setSaving(false)
+    }
+  }
+
+  const handleCopy = () => {
+    if (!profileUrl) return
+    navigator.clipboard.writeText(profileUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2500)
+  }
+
+  return (
+    <div className="space-y-5">
+      {/* Preview + QR */}
+      {profileUrl && (
+        <div className="flex items-center gap-4 rounded-xl border border-border bg-card p-4">
+          {qrUrl && (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img src={qrUrl} alt="QR Code" width={80} height={80} className="rounded-lg shrink-0" />
+          )}
+          <div className="flex-1 min-w-0">
+            <p className="text-xs text-muted-foreground mb-1">Ton lien public</p>
+            <p className="text-sm font-semibold text-foreground truncate">{profileUrl}</p>
+            <div className="mt-2 flex gap-2">
+              <button
+                onClick={handleCopy}
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition"
+              >
+                {copied ? <IconCheck className="h-3.5 w-3.5 text-emerald-400" /> : <IconCopy className="h-3.5 w-3.5" />}
+                {copied ? "Copié" : "Copier"}
+              </button>
+              <a
+                href={profileUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground transition"
+              >
+                <IconExternalLink className="h-3.5 w-3.5" />
+                Voir
+              </a>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Form */}
+      <div className="space-y-4 rounded-xl border border-border bg-card p-5">
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Nom d'utilisateur public
+          </label>
+          <div className="flex items-center gap-0 overflow-hidden rounded-lg border border-border bg-background">
+            <span className="px-3 text-sm text-muted-foreground">atline.ai/</span>
+            <input
+              type="text"
+              value={username}
+              onChange={(e) => setUsername(e.target.value.toLowerCase().replace(/[^a-z0-9_-]/g, ""))}
+              placeholder="ton-prenom"
+              className="flex-1 bg-transparent py-2 pr-3 text-sm text-foreground focus:outline-none"
+            />
+          </div>
+          <p className="mt-1 text-[11px] text-muted-foreground">Lettres minuscules, chiffres, - et _ uniquement.</p>
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Lien Cal.com (prise de RDV)
+          </label>
+          <input
+            type="url"
+            value={calcomLink}
+            onChange={(e) => setCalcomLink(e.target.value)}
+            placeholder="https://cal.com/ton-prenom"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary/60 focus:outline-none placeholder:text-muted-foreground/50"
+          />
+        </div>
+
+        <div>
+          <label className="mb-1.5 block text-xs font-semibold text-muted-foreground uppercase tracking-wide">
+            Numéro WhatsApp
+          </label>
+          <input
+            type="tel"
+            value={whatsappNumber}
+            onChange={(e) => setWhatsappNumber(e.target.value)}
+            placeholder="+33612345678"
+            className="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground focus:border-primary/60 focus:outline-none placeholder:text-muted-foreground/50"
+          />
+        </div>
+
+        {error && <p className="text-xs text-red-400">{error}</p>}
+
+        <button
+          onClick={handleSave}
+          disabled={saving}
+          className={cn(
+            "flex h-9 w-full items-center justify-center gap-2 rounded-lg text-sm font-medium transition disabled:opacity-50",
+            saved ? "bg-emerald-500 text-white" : "bg-primary text-white hover:bg-primary/90"
+          )}
+        >
+          {saving ? (
+            <span className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+          ) : saved ? (
+            <><IconCheck className="h-4 w-4" /> Sauvegardé</>
+          ) : "Sauvegarder"}
+        </button>
+      </div>
+    </div>
+  )
+}
+
+const tabs = ["Mon Profil", "Ma carte", "Abonnement", "Préférences", "Mes Documents", "Zone Danger"]
 
 const MLM_LEVEL_OPTIONS = [
   { value: "debutant", label: "Débutant" },
@@ -344,6 +497,10 @@ export default function ProfilPage() {
               </div>
             </div>
           </div>
+        )}
+
+        {activeTab === "Ma carte" && (
+          <CarteTab />
         )}
 
         {activeTab === "Abonnement" && (
