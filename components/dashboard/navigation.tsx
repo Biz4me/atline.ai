@@ -33,6 +33,7 @@ import {
 } from "@tabler/icons-react"
 import { AtlineLogo } from "./logo"
 import { useUser } from "@/hooks/use-user"
+import { useStats } from "@/hooks/use-stats"
 import { ToggleSwitch } from "@/components/ui/toggle-switch"
 
 // ═══════════════════════════════════════════════════════════════
@@ -104,6 +105,7 @@ const PAGE_TITLES: Record<string, string> = {
   "/communaute":    "Communauté",
   "/profil":        "Mon Profil",
   "/enrichir-atlas":"Enrichir Atlas",
+  "/parrainage":    "Parrainage",
   "/rag":           "Admin RAG",
 }
 
@@ -113,6 +115,7 @@ const PAGE_TITLES: Record<string, string> = {
 
 export function MobileStatsBar() {
   const { user } = useUser()
+  const { stats, loaded: statsLoaded } = useStats()
   const pathname = usePathname()
   const title = PAGE_TITLES[pathname] ?? null
   const streak = user?.streak ?? 0
@@ -156,10 +159,12 @@ export function MobileStatsBar() {
             </Link>
           </div>
 
-          {/* Prospects — décoratif */}
+          {/* Prospects actifs */}
           <div className="flex items-center gap-1">
             <IconUsers className="h-4 w-4 text-emerald-500" />
-            <span className="font-mono text-xs font-bold text-emerald-500">—</span>
+            <span className="font-mono text-xs font-bold text-emerald-500">
+              {statsLoaded ? stats.activeProspects : "—"}
+            </span>
           </div>
         </div>
       )}
@@ -509,6 +514,7 @@ function UserSection({ collapsed }: { collapsed: boolean }) {
 
 export function DesktopTopBar() {
   const { user } = useUser()
+  const { stats, loaded: statsLoaded } = useStats()
   const pathname = usePathname()
   const title = PAGE_TITLES[pathname] ?? null
   const streak = user?.streak ?? 0
@@ -539,7 +545,9 @@ export function DesktopTopBar() {
           <div className="h-4 w-px bg-border" />
           <div className="flex items-center gap-1.5">
             <IconUsers className="h-4 w-4 text-emerald-500" />
-            <span className="font-mono font-bold text-foreground">—</span>
+            <span className="font-mono font-bold text-foreground">
+              {statsLoaded ? stats.activeProspects : "—"}
+            </span>
           </div>
         </div>
         <button className="relative flex h-9 w-9 items-center justify-center rounded-md transition-colors hover:bg-card">
@@ -604,13 +612,11 @@ export function MoiFab() {
               <IconCreditCard className="h-5 w-5 text-muted-foreground" />
               <span>Abonnement</span>
             </Link>
-            <button
-              className="flex w-full items-center gap-3 rounded-xl px-3 py-3 text-sm text-foreground hover:bg-muted transition"
-              onClick={() => setOpen(false)}
-            >
+            <Link href="/parrainage" onClick={() => setOpen(false)}
+              className="flex items-center gap-3 rounded-xl px-3 py-3 text-sm text-foreground hover:bg-muted transition">
               <IconGift className="h-5 w-5 text-muted-foreground" />
               <span>Parrainer</span>
-            </button>
+            </Link>
 
             {/* Dark mode */}
             <div className="flex items-center gap-3 rounded-xl px-3 py-3">

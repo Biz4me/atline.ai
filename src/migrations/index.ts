@@ -17,6 +17,7 @@ import * as migration_20260521_130946 from './20260521_130946';
 import * as migration_20260522_scripts_library from './20260522_scripts_library';
 import * as migration_20260522_revenue_tracking from './20260522_revenue_tracking';
 import * as migration_20260522_user_public_profile from './20260522_user_public_profile';
+import * as migration_20260522_referrals from './20260522_referrals';
 
 export const migrations = [
   {
@@ -113,5 +114,10 @@ export const migrations = [
     up: migration_20260522_user_public_profile.up,
     down: migration_20260522_user_public_profile.down,
     name: '20260522_user_public_profile',
+  },
+  {
+    up: migration_20260522_referrals.up,
+    down: migration_20260522_referrals.down,
+    name: '20260522_referrals',
   },
 ];

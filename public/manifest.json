@@ -1,12 +1,14 @@
 {
-  "name": "Atline.ai",
+  "name": "Atline",
   "short_name": "Atline",
   "description": "Ton coach IA pour performer en MLM",
-  "start_url": "/",
+  "start_url": "/aujourd-hui",
   "display": "standalone",
   "background_color": "#09090B",
   "theme_color": "#09090B",
   "orientation": "portrait",
+  "lang": "fr",
+  "categories": ["business", "productivity"],
   "icons": [
     {
       "src": "/icon-192.png",
@@ -21,7 +23,21 @@
       "purpose": "any maskable"
     }
   ],
-  "screenshots": [],
-  "categories": ["business", "productivity"],
-  "lang": "fr"
+  "shortcuts": [
+    {
+      "name": "Atlas",
+      "short_name": "Atlas",
+      "description": "Ouvrir le coach IA",
+      "url": "/atlas",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Réseau",
+      "short_name": "Réseau",
+      "description": "Voir mon pipeline",
+      "url": "/reseau",
+      "icons": [{ "src": "/icon-192.png", "sizes": "192x192" }]
+    }
+  ],
+  "screenshots": []
 }
