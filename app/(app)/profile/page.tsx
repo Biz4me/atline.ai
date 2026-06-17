@@ -47,7 +47,7 @@ export default function ProfilePage() {
           <span className="text-[11px] text-muted-foreground">jours de série</span>
         </Card>
         <Card className="flex flex-col items-center gap-1 p-3 text-center">
-          <Trophy className="size-5 text-money" />
+          <Trophy className="size-5 text-gold" />
           <span className="font-display text-xl font-semibold">Niv. {currentUser.level}</span>
           <span className="text-[11px] text-muted-foreground">niveau</span>
         </Card>
@@ -62,7 +62,7 @@ export default function ProfilePage() {
       <Card className="flex items-center justify-between p-4">
         <div>
           <p className="text-xs font-medium text-muted-foreground">Commission du mois</p>
-          <p className="font-display text-2xl font-semibold text-money">{euro(networkStats.monthCommission)}</p>
+          <p className="font-display text-2xl font-semibold text-gold">{euro(networkStats.monthCommission)}</p>
         </div>
         <Link
           href="/network"
