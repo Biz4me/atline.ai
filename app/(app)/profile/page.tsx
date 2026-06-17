@@ -13,6 +13,7 @@ import {
   Check,
 } from 'lucide-react'
 import { useState } from 'react'
+import Link from 'next/link'
 import { Card } from '@/components/card'
 import { DiscAvatar } from '@/components/disc-avatar'
 import { currentUser, businesses, euro, networkStats } from '@/lib/data'
@@ -136,21 +137,35 @@ export default function ProfilePage() {
         </Card>
       </section>
 
+      {/* Abonnement */}
+      <Link href="/abonnement">
+        <Card className="flex items-center gap-3 p-4 transition-colors active:bg-muted/50">
+          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+            <Crown className="size-5 text-primary" />
+          </span>
+          <div className="flex-1">
+            <p className="text-sm font-bold text-foreground">Plan Pro</p>
+            <p className="text-xs text-muted-foreground">Actif · Renouvellement le 1 juillet</p>
+          </div>
+          <ChevronRight className="size-4 text-muted-foreground" />
+        </Card>
+      </Link>
+
       {/* Réglages */}
       <section>
         <h2 className="mb-2 px-1 text-sm font-semibold text-muted-foreground">Réglages</h2>
         <Card className="divide-y divide-border p-0">
           {[
-            { icon: Bell, label: 'Notifications' },
-            { icon: Shield, label: 'Confidentialité & sécurité' },
-            { icon: Settings, label: "Préférences de l'app" },
-            { icon: CircleHelp, label: 'Aide & support' },
+            { icon: Bell, label: 'Notifications', href: '/notifications' },
+            { icon: Shield, label: 'Confidentialité & sécurité', href: '/settings' },
+            { icon: Settings, label: "Préférences de l'app", href: '/settings' },
+            { icon: CircleHelp, label: 'Aide & support', href: '/settings' },
           ].map((row) => (
-            <button key={row.label} className="flex w-full items-center gap-3 px-4 py-3.5 text-left">
+            <Link key={row.label} href={row.href} className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-muted">
               <row.icon className="size-5 text-muted-foreground" />
-              <span className="flex-1 text-sm font-medium">{row.label}</span>
+              <span className="flex-1 text-sm font-medium text-foreground">{row.label}</span>
               <ChevronRight className="size-4 text-muted-foreground" />
-            </button>
+            </Link>
           ))}
         </Card>
       </section>
