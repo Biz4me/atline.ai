@@ -34,7 +34,7 @@ export function NovaPillars() {
               <button
                 type="button"
                 onClick={() => toast('Guide bientôt disponible', { description: g.title })}
-                className="flex w-full items-center gap-3 rounded-2xl border border-border bg-surface p-3.5 text-left shadow-sm transition-colors active:bg-muted"
+                className="flex w-full items-center gap-3 rounded-2xl border border-border bg-surface p-3.5 text-left shadow-card transition-colors active:bg-muted"
               >
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-accent text-accent-foreground">
                   <BookOpen className="size-5 stroke-[1.5]" />

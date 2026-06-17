@@ -20,7 +20,7 @@ export function BusinessSwitcher() {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3 text-sm font-semibold shadow-sm transition-colors active:bg-muted"
+        className="inline-flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3 text-sm font-semibold shadow-card transition-colors active:bg-muted"
       >
         <span
           className="flex size-6 items-center justify-center rounded-full text-[11px] font-bold text-white"

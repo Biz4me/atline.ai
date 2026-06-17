@@ -192,7 +192,7 @@ function AtlasAction({
     <button
       type="button"
       onClick={() => toast.success(`Atlas : ${title}`)}
-      className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-3.5 text-left shadow-sm transition-colors active:bg-muted"
+      className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-3.5 text-left shadow-card transition-colors active:bg-muted"
     >
       <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-primary text-primary-foreground">
         <Icon className="size-5 stroke-[1.5]" />

@@ -92,7 +92,7 @@ function ContactsContent() {
               <li key={c.id}>
                 <Link
                   href={`/contacts/${c.id}`}
-                  className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-3 shadow-sm transition-colors active:bg-muted"
+                  className="flex items-center gap-3 rounded-2xl border border-border bg-surface p-3 shadow-card transition-colors active:bg-muted"
                 >
                   <DiscAvatar firstName={c.firstName} lastName={c.lastName} disc={c.disc} />
                   <div className="min-w-0 flex-1">

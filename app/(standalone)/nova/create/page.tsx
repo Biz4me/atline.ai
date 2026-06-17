@@ -137,7 +137,7 @@ export default function CreatePostPage() {
                     type="button"
                     onClick={() => setType(o.id)}
                     className={cn(
-                      'flex items-center gap-3 rounded-2xl border bg-surface p-4 text-left shadow-sm transition-colors',
+                      'flex items-center gap-3 rounded-2xl border bg-surface p-4 text-left shadow-card transition-colors',
                       active ? 'border-primary ring-1 ring-primary' : 'border-border active:bg-muted',
                     )}
                   >
@@ -281,7 +281,7 @@ export default function CreatePostPage() {
                 <p className="text-sm font-semibold text-foreground">Nova rédige ton post…</p>
               </div>
             ) : (
-              <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-sm">
+              <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
                 <div className="flex aspect-square items-center justify-center bg-accent">
                   {visual === 'none' ? (
                     <ImageOff className="size-10 text-accent-foreground/50" />
@@ -359,7 +359,7 @@ function VisualOption({
       type="button"
       onClick={onClick}
       className={cn(
-        'flex items-center gap-3 rounded-2xl border bg-surface p-4 text-left shadow-sm transition-colors',
+        'flex items-center gap-3 rounded-2xl border bg-surface p-4 text-left shadow-card transition-colors',
         active ? 'border-primary ring-1 ring-primary' : 'border-border active:bg-muted',
       )}
     >
