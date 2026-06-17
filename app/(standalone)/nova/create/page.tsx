@@ -34,9 +34,9 @@ const typeOptions: {
   icon: typeof Heart
   pillar: string
 }[] = [
-  { id: 'lifestyle', label: 'Lifestyle', ratio: '70%', ratioColor: 'text-info', desc: 'Inspire et crée du lien', icon: Heart, pillar: 'Inspiration' },
-  { id: 'produit', label: 'Produit', ratio: '20%', ratioColor: 'text-success', desc: 'Montre la preuve sociale', icon: Package, pillar: 'Preuve sociale' },
-  { id: 'opportunite', label: 'Opportunité', ratio: '10%', ratioColor: 'text-primary', desc: 'Présente le business', icon: Rocket, pillar: 'Vision' },
+  { id: 'lifestyle', label: 'Lifestyle', ratio: '70%', ratioColor: 'text-success', pillarColor: 'bg-success', desc: 'Inspire et crée du lien', icon: Heart, pillar: 'Inspiration' },
+  { id: 'produit', label: 'Produit', ratio: '20%', ratioColor: 'text-info', pillarColor: 'bg-info', desc: 'Montre la preuve sociale', icon: Package, pillar: 'Preuve sociale' },
+  { id: 'opportunite', label: 'Opportunité', ratio: '10%', ratioColor: 'text-primary', pillarColor: 'bg-primary', desc: 'Présente le business', icon: Rocket, pillar: 'Vision' },
 ]
 
 const platforms = [
@@ -209,7 +209,7 @@ export default function CreatePostPage() {
               <div>
                 <p className="eyebrow mb-2">Pilier éditorial</p>
                 <div className="flex items-center gap-2 rounded-xl border border-border bg-accent/60 p-3">
-                  <span className="size-2.5 rounded-full bg-primary" />
+                  <span className={`size-2.5 rounded-full ${selectedType?.pillarColor ?? 'bg-success'}`} />
                   <span className="text-sm font-bold text-foreground">
                     {selectedType?.pillar ?? 'Inspiration'}
                   </span>
