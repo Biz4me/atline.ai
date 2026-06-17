@@ -425,13 +425,12 @@ export default function ContactDetailPage({
                 <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/50 p-3">
                   <HelpCircle className="size-5 shrink-0 text-muted-foreground stroke-[1.5]" />
                   <span className="flex-1 text-sm text-muted-foreground">Profil de personnalité non défini</span>
-                  <button
-                    type="button"
-                    onClick={() => setEditOpen(true)}
+                  <Link
+                    href={`/disc-quiz/${contact.id}`}
                     className="shrink-0 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-foreground"
                   >
-                    Définir
-                  </button>
+                    Définir le profil
+                  </Link>
                 </div>
               )}
             </div>
