@@ -23,6 +23,7 @@ import {
   StickyNote,
 } from 'lucide-react'
 import { toast } from 'sonner'
+import Link from 'next/link'
 
 const discDescriptions: Record<string, string> = {
   D: 'Direct, orienté résultats. Va droit au but, décide vite.',
@@ -81,7 +82,7 @@ export default function ContactDetailPage({
           <ActionTile
             icon={MessageSquare}
             label="Message"
-            onClick={() => toast.success('Ouvrir messagerie')}
+            href={`/messages/${contact.id}`}
           />
           <ActionTile
             icon={PhoneCall}
@@ -91,6 +92,7 @@ export default function ContactDetailPage({
           <ActionTile
             icon={CalendarPlus}
             label="RDV"
+            href="/nova"
             onClick={() => toast.success('Planifier un rendez-vous')}
           />
         </div>
@@ -208,18 +210,25 @@ export default function ContactDetailPage({
 function ActionTile({
   icon: Icon,
   label,
+  href,
   onClick,
 }: {
   icon: typeof MessageSquare
   label: string
-  onClick: () => void
+  href?: string
+  onClick?: () => void
 }) {
+  const cls = 'flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-surface py-4 text-center shadow-card transition-colors active:bg-muted'
+  if (href) {
+    return (
+      <Link href={href} onClick={onClick} className={cls}>
+        <Icon className="size-5 stroke-[1.5] text-muted-foreground" />
+        <span className="text-xs font-semibold text-foreground">{label}</span>
+      </Link>
+    )
+  }
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-surface py-4 text-center shadow-card transition-colors active:bg-muted"
-    >
+    <button type="button" onClick={onClick} className={cls}>
       <Icon className="size-5 stroke-[1.5] text-muted-foreground" />
       <span className="text-xs font-semibold text-foreground">{label}</span>
     </button>

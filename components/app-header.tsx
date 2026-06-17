@@ -60,14 +60,14 @@ export function AppHeader({
               <Plus className="size-5 stroke-[1.5]" />
             </Link>
           )}
-          <button
-            type="button"
+          <Link
+            href="/notifications"
             aria-label="Notifications"
             className="relative flex size-9 items-center justify-center rounded-full text-fg-2 transition-colors active:bg-muted"
           >
             <Bell className="size-5 stroke-[1.5]" />
             <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-primary ring-2 ring-background" />
-          </button>
+          </Link>
           <Link href="/profile" aria-label="Mon profil">
             <DiscAvatar
               firstName={currentUser.firstName}
