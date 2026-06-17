@@ -10,7 +10,7 @@ import { inboxMessages } from '@/lib/data'
 export default function NovaPage() {
   return (
     <>
-      <AppHeader title="Nova" />
+      <AppHeader title="Nova" showCreate />
       <div className="px-4 pt-4">
         <Tabs defaultValue="calendrier">
           <TabsList className="grid w-full grid-cols-3 rounded-xl bg-muted p-1">

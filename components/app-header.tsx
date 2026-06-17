@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Bell, ChevronLeft, SquarePen } from 'lucide-react'
+import { Bell, ChevronLeft, SquarePen, Plus } from 'lucide-react'
 import { DiscAvatar } from '@/components/disc-avatar'
 import { currentUser } from '@/lib/data'
 import Link from 'next/link'
@@ -11,6 +11,7 @@ interface AppHeaderProps {
   back?: boolean
   showActions?: boolean
   showNova?: boolean
+  showCreate?: boolean
 }
 
 export function AppHeader({
@@ -18,6 +19,7 @@ export function AppHeader({
   back = false,
   showActions = true,
   showNova = false,
+  showCreate = false,
 }: AppHeaderProps) {
   const router = useRouter()
   return (
@@ -47,6 +49,15 @@ export function AppHeader({
               className="flex size-9 items-center justify-center rounded-full text-fg-2 transition-colors active:bg-muted"
             >
               <SquarePen className="size-5 stroke-[1.5]" />
+            </Link>
+          )}
+          {showCreate && (
+            <Link
+              href="/nova/create"
+              aria-label="Nouveau post"
+              className="flex size-9 items-center justify-center rounded-full text-fg-2 transition-colors active:bg-muted"
+            >
+              <Plus className="size-5 stroke-[1.5]" />
             </Link>
           )}
           <button
