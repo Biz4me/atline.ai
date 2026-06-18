@@ -22,31 +22,29 @@ export default function DebriefPage() {
     <div className="flex min-h-dvh flex-col bg-background">
       {/* Header */}
       <header
-        className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-3 backdrop-blur"
+        className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-3 backdrop-blur lg:px-8"
         style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
       >
         <button
           type="button"
           onClick={() => router.back()}
-          className="-ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"
+          className="-ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted lg:hidden"
         >
           <ChevronLeft className="size-5 stroke-[1.5]" />
         </button>
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="hidden lg:flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted transition-colors"
+        >
+          <ChevronLeft className="size-4 stroke-[1.5]" />
+        </button>
         <div className="flex-1 min-w-0">
-          <h1 className="truncate text-base font-bold text-foreground">Débrief · Phase Invitation</h1>
+          <h1 className="truncate text-base font-bold text-foreground lg:text-[18px]">Débrief · Phase Invitation</h1>
         </div>
       </header>
 
-      {/* Breadcrumb */}
-      <div className="px-4 pt-3">
-        <p className="text-xs text-muted-foreground">
-          Mes sessions{' '}
-          <span className="text-muted-foreground/60">›</span>{' '}
-          <span className="text-foreground">Débrief · Phase Invitation</span>
-        </p>
-      </div>
-
-      <div className="flex flex-col gap-5 px-4 pt-5 pb-24">
+      <div className="flex flex-col gap-5 px-4 pt-5 pb-24 lg:px-8 lg:pt-8 lg:max-w-3xl lg:mx-auto lg:pb-32">
 
         {/* Score */}
         <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-surface p-6">
@@ -116,10 +114,10 @@ export default function DebriefPage() {
       </div>
 
       {/* CTA fixé en bas */}
-      <div className="fixed bottom-0 left-0 right-0 border-t border-border bg-background/95 px-4 py-4 backdrop-blur"
+      <div className="fixed bottom-0 inset-x-0 border-t border-border bg-background/95 px-4 py-4 backdrop-blur lg:left-60"
         style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
       >
-        <div className="mx-auto max-w-[480px]">
+        <div className="mx-auto max-w-sm">
           <button
             type="button"
             onClick={() => router.push('/aria')}

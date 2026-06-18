@@ -74,8 +74,8 @@ export default function AgendaPage() {
       </header>
 
       {/* View tabs */}
-      <div className="sticky top-[57px] z-20 border-b border-border bg-background px-4 py-2">
-        <div className="grid grid-cols-3 gap-1 rounded-xl bg-muted p-1">
+      <div className="sticky top-[57px] z-20 border-b border-border bg-background px-4 py-2 lg:px-8">
+        <div className="grid grid-cols-3 gap-1 rounded-xl bg-muted p-1 lg:max-w-xs">
           {(['jour', 'semaine', 'mois'] as View[]).map((v) => (
             <button
               key={v}
@@ -92,7 +92,7 @@ export default function AgendaPage() {
         </div>
       </div>
 
-      <div className="flex-1 px-4 pt-4 pb-8">
+      <div className="flex-1 px-4 pt-4 pb-8 lg:px-8 lg:pt-6 lg:max-w-5xl lg:mx-auto lg:w-full">
         {view === 'jour' && <JourView />}
         {view === 'semaine' && <SemaineView />}
         {view === 'mois' && <MoisView />}
@@ -185,8 +185,8 @@ function SemaineView() {
       <div className="overflow-hidden rounded-xl border border-border">
         {HOURS.map((h) => (
           <div key={h} className="flex border-t border-border first:border-t-0">
-            <div className="flex w-10 shrink-0 items-start justify-end pr-2 pt-1">
-              <span className="text-[9px] text-muted-foreground tabular-nums">{h}h</span>
+            <div className="flex w-10 shrink-0 items-start justify-end pr-2 pt-1 lg:w-14">
+              <span className="text-[9px] text-muted-foreground tabular-nums lg:text-[11px]">{h}h</span>
             </div>
             {DOW_FULL.map((_, di) => {
               const appt = appts.find((a) => a.dayIndex === di && a.hour === h)
@@ -196,13 +196,14 @@ function SemaineView() {
                   type="button"
                   onClick={() => appt && toast.info(appt.name)}
                   className={cn(
-                    'flex flex-1 items-start border-l border-border p-0.5 min-h-[36px] transition-colors',
+                    'flex flex-1 items-start border-l border-border p-0.5 min-h-[36px] lg:min-h-[56px] transition-colors',
                     appt ? 'active:opacity-80' : 'active:bg-muted/50'
                   )}
                 >
                   {appt && (
-                    <span className={cn('w-full rounded px-1 py-0.5 text-[9px] font-bold leading-tight', appt.typeColor)}>
-                      {appt.name.split(' ')[0]}
+                    <span className={cn('w-full rounded px-1 py-0.5 text-[9px] font-bold leading-tight lg:text-[11px] lg:px-2 lg:py-1', appt.typeColor)}>
+                      <span className="block">{appt.name.split(' ')[0]}</span>
+                      <span className="hidden lg:block font-normal opacity-80">{appt.time}</span>
                     </span>
                   )}
                 </button>
