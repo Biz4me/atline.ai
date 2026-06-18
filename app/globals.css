@@ -162,10 +162,25 @@
     box-shadow: 0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04);
   }
 
-  /* App shell wrappers constrain to a phone width and center on larger screens */
+  /* App shell — mobile : centré 480px / desktop : pleine largeur */
   .app-shell {
     @apply mx-auto w-full max-w-[480px] min-h-dvh bg-background relative;
   }
+}
+
+/* Desktop shell overrides */
+@media (min-width: 1024px) {
+  .app-shell {
+    max-width: none;
+    margin-left: 0;
+    margin-right: 0;
+  }
+}
+
+/* Desktop sidebar widths */
+:root {
+  --sidebar-w: 240px;
+  --sidebar-collapsed-w: 64px;
 }
 
 /* Hide scrollbars on horizontal chip rails */

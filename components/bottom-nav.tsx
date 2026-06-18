@@ -260,7 +260,7 @@ export function BottomNav() {
 
       {/* ── Nav bar ── */}
       <nav
-        className="fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[480px] bg-surface/95 backdrop-blur-md shadow-[0_-1px_0_rgba(0,0,0,0.06)]"
+        className="lg:hidden fixed inset-x-0 bottom-0 z-40 mx-auto max-w-[480px] bg-surface/95 backdrop-blur-md shadow-[0_-1px_0_rgba(0,0,0,0.06)]"
         style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
       >
         <div className="grid grid-cols-5 items-end px-2 pt-2 pb-2">
