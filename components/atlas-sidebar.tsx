@@ -43,7 +43,7 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
     setTimeout(() => {
       setMessages((prev) => [
         ...prev,
-        { id: Date.now().toString(), from: 'atlas', text: 'Je prends en compte ta question. Pour l'instant je suis en mode démo — bientôt connecté à ton CRM.' },
+        { id: Date.now().toString(), from: 'atlas', text: "Je prends en compte ta question. Pour l'instant je suis en mode demo - bientot connecte a ton CRM." },
       ])
     }, 800)
   }
