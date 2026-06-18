@@ -11,26 +11,44 @@ import {
 } from '@/components/ui/sheet'
 import { cn } from '@/lib/utils'
 
-export function BusinessSwitcher() {
+export function BusinessSwitcher({ collapsed }: { collapsed?: boolean } = {}) {
   const { current, all, setCurrent } = useBusiness()
   const [open, setOpen] = useState(false)
 
   return (
     <>
-      <button
-        type="button"
-        onClick={() => setOpen(true)}
-        className="inline-flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3 text-sm font-semibold shadow-card transition-colors active:bg-muted"
-      >
-        <span
-          className="flex size-6 items-center justify-center rounded-full text-[11px] font-bold text-white"
-          style={{ backgroundColor: current.color }}
+      {collapsed ? (
+        /* Mode replié : cercle seul */
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="flex size-9 items-center justify-center rounded-full transition-colors hover:ring-2 hover:ring-border"
+          title={current.name}
         >
-          {current.initials}
-        </span>
-        {current.name}
-        <ChevronDown className="size-3.5 text-muted-foreground" />
-      </button>
+          <span
+            className="flex size-9 items-center justify-center rounded-full text-[13px] font-bold text-white"
+            style={{ backgroundColor: current.color }}
+          >
+            {current.initials}
+          </span>
+        </button>
+      ) : (
+        /* Mode normal : pill complet */
+        <button
+          type="button"
+          onClick={() => setOpen(true)}
+          className="inline-flex items-center gap-2 rounded-full border border-border bg-surface py-1.5 pl-1.5 pr-3 text-sm font-semibold shadow-card transition-colors active:bg-muted"
+        >
+          <span
+            className="flex size-6 items-center justify-center rounded-full text-[11px] font-bold text-white"
+            style={{ backgroundColor: current.color }}
+          >
+            {current.initials}
+          </span>
+          {current.name}
+          <ChevronDown className="size-3.5 text-muted-foreground" />
+        </button>
+      )}
 
       <Sheet open={open} onOpenChange={setOpen}>
         <SheetContent side="bottom" className="mx-auto max-w-[480px] rounded-t-3xl">

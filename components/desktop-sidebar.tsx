@@ -1,7 +1,6 @@
 'use client'
 
 import Link from 'next/link'
-import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
   Compass, Sparkles, Users, Users2, GitFork, Zap,
@@ -49,28 +48,12 @@ export function DesktopSidebar({ collapsed, onToggle }: Props) {
         collapsed ? 'w-16' : 'w-60',
       )}
     >
-      {/* Logo */}
+      {/* BusinessSwitcher — direct, pas de logo */}
       <div className={cn(
-        'flex items-center gap-3 px-4 h-14 shrink-0',
-        collapsed && 'justify-center px-0',
+        'flex items-center px-3 py-3 shrink-0',
+        collapsed && 'justify-center px-2',
       )}>
-        <Image
-          src="/brand/atline-icon.png"
-          alt="Atline"
-          width={30}
-          height={30}
-          className="rounded-[9px] shrink-0"
-        />
-        {!collapsed && (
-          <span className="font-display text-[17px] font-extrabold tracking-tight text-foreground">
-            atline
-          </span>
-        )}
-      </div>
-
-      {/* BusinessSwitcher */}
-      <div className={cn('px-3 pb-3 shrink-0', collapsed && 'px-2 overflow-hidden')}>
-        <BusinessSwitcher />
+        <BusinessSwitcher collapsed={collapsed} />
       </div>
 
       <div className="mx-3 h-px bg-border shrink-0" />
