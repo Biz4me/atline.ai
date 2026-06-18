@@ -4,26 +4,30 @@ import Link from 'next/link'
 import Image from 'next/image'
 import { usePathname } from 'next/navigation'
 import {
-  Compass, Sparkles, Users, GitFork, Zap,
+  Compass, Sparkles, Users, Users2, GitFork, Zap,
   BookOpen, CalendarDays, MessageSquare, Wrench,
-  Settings, User, PanelLeftClose, PanelLeftOpen,
+  Settings, User, PanelLeftClose, PanelLeftOpen, Mic,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { BusinessSwitcher } from '@/components/business-switcher'
 
+// Ordre = flux naturel de l'utilisateur (action directe)
 const NAV_PRIMARY = [
-  { href: '/home',      label: 'Parcours',  icon: Compass },
-  { href: '/atlas',     label: 'Atlas',     icon: Sparkles },
-  { href: '/contacts',  label: 'Contacts',  icon: Users },
-  { href: '/network',   label: 'Réseau',    icon: GitFork },
-  { href: '/nova',      label: 'Nova',      icon: Zap },
+  { href: '/home',      label: 'Parcours',    icon: Compass },
+  { href: '/atlas',     label: 'Atlas',       icon: Sparkles },
+  { href: '/contacts',  label: 'Contacts',    icon: Users },
+  { href: '/aria',      label: 'Simulation',  icon: Mic },
+  { href: '/agenda',    label: 'Agenda',      icon: CalendarDays },
+  { href: '/messages',  label: 'Messages',    icon: MessageSquare },
+  { href: '/nova',      label: 'Nova',        icon: Zap },
+  { href: '/network',   label: 'Réseau',      icon: GitFork },
 ]
 
+// Support (développement + paramétrage)
 const NAV_SECONDARY = [
-  { href: '/formation', label: 'Formation', icon: BookOpen },
-  { href: '/agenda',    label: 'Agenda',    icon: CalendarDays },
-  { href: '/messages',  label: 'Messages',  icon: MessageSquare },
-  { href: '/toolbox',   label: 'Outils',    icon: Wrench },
+  { href: '/formation',  label: 'Formation',   icon: BookOpen },
+  { href: '/communaute', label: 'Communauté',  icon: Users2 },
+  { href: '/toolbox',    label: 'Outils',      icon: Wrench },
 ]
 
 interface Props {
