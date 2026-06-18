@@ -56,7 +56,7 @@ export function DesktopSidebar({ collapsed, onToggle }: Props) {
             type="button"
             onClick={onToggle}
             title="Développer"
-            className="flex size-9 items-center justify-center rounded-xl text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
+            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
           >
             <PanelLeftOpen className="size-4" />
           </button>
