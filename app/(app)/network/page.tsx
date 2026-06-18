@@ -63,129 +63,141 @@ export default function NetworkPage() {
   return (
     <>
       <TopBar />
-      <div className="flex flex-col gap-6 px-4 pt-5 pb-8">
+      <div className="px-4 pt-5 pb-8 lg:px-8 lg:pt-8 lg:max-w-6xl lg:mx-auto">
 
-        {/* Titre */}
         <h1 className="font-display text-[32px] font-extrabold leading-tight tracking-[-0.025em] text-foreground">
           Réseau
         </h1>
 
-        {/* Card commissions gold */}
-        <div className="relative overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
-          <div className="absolute top-0 left-0 right-0 h-1 bg-amber-400" />
-          <div className="flex flex-col items-center gap-2 px-4 py-5">
-            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
-              Commissions ce mois
-            </p>
-            <p className="font-display text-[44px] font-extrabold tabular-nums leading-none text-amber-500">
-              342,50 €
-            </p>
-            <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/15 px-3 py-1 text-[11px] font-bold text-green-600">
-              <BadgeCheck className="size-3.5" />
-              Licence active
-            </span>
-          </div>
-        </div>
+        <div className="mt-6 flex flex-col gap-6 lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
 
-        {/* Grid stats */}
-        <div className="grid grid-cols-3 gap-2.5">
-          {topStats.map(({ label, value, color }) => (
-            <div key={label} className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-surface px-3 py-4 text-center shadow-card">
-              <span className="font-display text-2xl font-extrabold tabular-nums" style={{ color }}>{value}</span>
-              <span className="text-[11px] text-muted-foreground">{label}</span>
+          {/* ── Colonne gauche : commissions + stats ── */}
+          <div className="flex flex-col gap-6">
+
+            {/* Card commissions gold */}
+            <div className="relative overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
+              <div className="absolute top-0 left-0 right-0 h-1 bg-amber-400" />
+              <div className="flex flex-col items-center gap-2 px-4 py-5">
+                <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+                  Commissions ce mois
+                </p>
+                <p className="font-display text-[44px] font-extrabold tabular-nums leading-none text-amber-500">
+                  342,50 €
+                </p>
+                <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/15 px-3 py-1 text-[11px] font-bold text-green-600">
+                  <BadgeCheck className="size-3.5" />
+                  Licence active
+                </span>
+              </div>
             </div>
-          ))}
-        </div>
 
-        {/* Lien parrainage */}
-        <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3.5 shadow-card">
-          <LinkIcon className="size-5 shrink-0 stroke-[1.5] text-primary" />
-          <span className="flex-1 truncate font-mono text-sm text-foreground">atline.ai/lea-moreau</span>
-          <button
-            type="button"
-            onClick={handleCopy}
-            className="flex items-center gap-1.5 rounded-xl border border-border bg-muted px-3 py-1.5 text-xs font-bold text-foreground active:bg-background"
-          >
-            {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
-            Copier
-          </button>
-        </div>
+            {/* Grid stats */}
+            <div className="grid grid-cols-3 gap-2.5">
+              {topStats.map(({ label, value, color }) => (
+                <div key={label} className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-surface px-3 py-4 text-center shadow-card">
+                  <span className="font-display text-2xl font-extrabold tabular-nums" style={{ color }}>{value}</span>
+                  <span className="text-[11px] text-muted-foreground">{label}</span>
+                </div>
+              ))}
+            </div>
 
-        {/* Détail commissions */}
-        <div>
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-primary">Détail des commissions</p>
-          <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-card divide-y divide-border">
-            {commGroups.map((g) => (
-              <div key={g.title}>
-                <p className="px-4 pt-3 pb-1 text-[11px] font-bold uppercase tracking-widest text-primary">{g.title}</p>
-                {g.rows.map((r) => (
-                  <div key={r.name} className="flex items-center gap-3 px-4 py-2.5 last:pb-3">
-                    <span className="flex-1 text-sm font-semibold text-foreground">{r.name}</span>
-                    <span className="font-display text-[15px] font-extrabold tabular-nums text-amber-500">
-                      {euro(r.amount)}
-                    </span>
+            {/* Lien parrainage */}
+            <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3.5 shadow-card">
+              <LinkIcon className="size-5 shrink-0 stroke-[1.5] text-primary" />
+              <span className="flex-1 truncate font-mono text-sm text-foreground">atline.ai/lea-moreau</span>
+              <button
+                type="button"
+                onClick={handleCopy}
+                className="flex items-center gap-1.5 rounded-xl border border-border bg-muted px-3 py-1.5 text-xs font-bold text-foreground active:bg-background"
+              >
+                {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+                Copier
+              </button>
+            </div>
+
+            {/* Détail commissions */}
+            <div>
+              <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-primary">Détail des commissions</p>
+              <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-card divide-y divide-border">
+                {commGroups.map((g) => (
+                  <div key={g.title}>
+                    <p className="px-4 pt-3 pb-1 text-[11px] font-bold uppercase tracking-widest text-primary">{g.title}</p>
+                    {g.rows.map((r) => (
+                      <div key={r.name} className="flex items-center gap-3 px-4 py-2.5 last:pb-3">
+                        <span className="flex-1 text-sm font-semibold text-foreground">{r.name}</span>
+                        <span className="font-display text-[15px] font-extrabold tabular-nums text-amber-500">
+                          {euro(r.amount)}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 ))}
               </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Mon équipe */}
-        <div>
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-primary">Mon équipe</p>
-          <div className="flex flex-col gap-2.5">
-            {network.map((m) => (
-              <MemberRow key={m.id} member={m} />
-            ))}
-          </div>
-        </div>
-
-        {/* Arbre + Carte */}
-        <div className="grid grid-cols-2 gap-2.5">
-          <button
-            type="button"
-            onClick={() => toast.info('Arbre du réseau — bientôt')}
-            className="flex flex-col gap-2.5 rounded-2xl border border-border bg-surface p-4 text-left shadow-card active:bg-muted"
-          >
-            <div className="flex size-10 items-center justify-center rounded-xl bg-blue-500/15">
-              <GitFork className="size-5 stroke-[1.5] text-blue-500" />
             </div>
-            <p className="text-sm font-bold text-foreground">Arbre</p>
-            <p className="text-xs text-muted-foreground">Vue hiérarchique</p>
-          </button>
-          <button
-            type="button"
-            onClick={() => toast.info('Carte du réseau — bientôt')}
-            className="flex flex-col gap-2.5 rounded-2xl border border-border bg-surface p-4 text-left shadow-card active:bg-muted"
-          >
-            <div className="flex size-10 items-center justify-center rounded-xl bg-green-500/15">
-              <Map className="size-5 stroke-[1.5] text-green-600" />
-            </div>
-            <p className="text-sm font-bold text-foreground">Carte</p>
-            <p className="text-xs text-muted-foreground">Vue géographique</p>
-          </button>
-        </div>
 
-        {/* Outils réseau */}
-        <div>
-          <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-primary">Outils réseau</p>
-          <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-card divide-y divide-border">
-            {outils.map(({ icon: Icon, label, href }) => (
+          </div>
+
+          {/* ── Colonne droite : équipe + outils ── */}
+          <div className="flex flex-col gap-6">
+
+            {/* Mon équipe */}
+            <div>
+              <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-primary">Mon équipe</p>
+              <div className="flex flex-col gap-2.5">
+                {network.map((m) => (
+                  <MemberRow key={m.id} member={m} />
+                ))}
+              </div>
+            </div>
+
+            {/* Arbre + Carte */}
+            <div className="grid grid-cols-2 gap-2.5">
               <button
-                key={label}
                 type="button"
-                onClick={() => href === '#' ? toast.info(`${label} — bientôt`) : (window.location.href = href)}
-                className="flex w-full items-center gap-3.5 px-4 py-3.5 text-left transition-colors active:bg-muted"
+                onClick={() => toast.info('Arbre du réseau — bientôt')}
+                className="flex flex-col gap-2.5 rounded-2xl border border-border bg-surface p-4 text-left shadow-card active:bg-muted hover:bg-muted/40"
               >
-                <Icon className="size-5 shrink-0 stroke-[1.5] text-muted-foreground" />
-                <span className="flex-1 text-sm font-bold text-foreground">{label}</span>
-                <ChevronRight className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                <div className="flex size-10 items-center justify-center rounded-xl bg-blue-500/15">
+                  <GitFork className="size-5 stroke-[1.5] text-blue-500" />
+                </div>
+                <p className="text-sm font-bold text-foreground">Arbre</p>
+                <p className="text-xs text-muted-foreground">Vue hiérarchique</p>
               </button>
-            ))}
-          </div>
-        </div>
+              <button
+                type="button"
+                onClick={() => toast.info('Carte du réseau — bientôt')}
+                className="flex flex-col gap-2.5 rounded-2xl border border-border bg-surface p-4 text-left shadow-card active:bg-muted hover:bg-muted/40"
+              >
+                <div className="flex size-10 items-center justify-center rounded-xl bg-green-500/15">
+                  <Map className="size-5 stroke-[1.5] text-green-600" />
+                </div>
+                <p className="text-sm font-bold text-foreground">Carte</p>
+                <p className="text-xs text-muted-foreground">Vue géographique</p>
+              </button>
+            </div>
 
+            {/* Outils réseau */}
+            <div>
+              <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-primary">Outils réseau</p>
+              <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-card divide-y divide-border">
+                {outils.map(({ icon: Icon, label, href }) => (
+                  <button
+                    key={label}
+                    type="button"
+                    onClick={() => href === '#' ? toast.info(`${label} — bientôt`) : (window.location.href = href)}
+                    className="flex w-full items-center gap-3.5 px-4 py-3.5 text-left transition-colors active:bg-muted hover:bg-muted/40"
+                  >
+                    <Icon className="size-5 shrink-0 stroke-[1.5] text-muted-foreground" />
+                    <span className="flex-1 text-sm font-bold text-foreground">{label}</span>
+                    <ChevronRight className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                  </button>
+                ))}
+              </div>
+            </div>
+
+          </div>
+
+        </div>
       </div>
     </>
   )
@@ -199,7 +211,7 @@ function MemberRow({ member }: { member: NetworkMember }) {
     <button
       type="button"
       onClick={() => toast.info(`${member.firstName} ${member.lastName}`)}
-      className="flex w-full items-center gap-3 rounded-2xl border border-border bg-surface p-3.5 text-left shadow-card transition-colors active:bg-muted"
+      className="flex w-full items-center gap-3 rounded-2xl border border-border bg-surface p-3.5 text-left shadow-card transition-colors active:bg-muted hover:bg-muted/40"
     >
       <DiscAvatar firstName={member.firstName} lastName={member.lastName} disc={member.disc} />
       <div className="flex-1 min-w-0">

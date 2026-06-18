@@ -77,7 +77,7 @@ function ContactsContent() {
     <>
       <TopBar />
 
-      <div className="flex flex-col gap-4 px-4 pt-5">
+      <div className="flex flex-col gap-4 px-4 pt-5 lg:px-8 lg:pt-8 lg:max-w-3xl lg:mx-auto">
         {/* Titre + bouton + */}
         <div className="flex items-center justify-between">
           <h1 className="font-display text-[32px] font-extrabold leading-tight tracking-[-0.025em] text-foreground">

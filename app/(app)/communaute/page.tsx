@@ -153,7 +153,7 @@ export default function CommunautePage() {
     <>
       <AppHeader title="Communauté" back showActions={false} />
 
-      <div className="flex flex-col gap-4 px-4 pt-4">
+      <div className="flex flex-col gap-4 px-4 pt-4 lg:px-8 lg:pt-8 lg:max-w-3xl lg:mx-auto">
         {/* Spaces tabs */}
         <div className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1">
           {spaces.map((s) => (

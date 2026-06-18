@@ -94,7 +94,7 @@ export default function ToolboxPage() {
     <>
       <AppHeader title="Boîte à outils" back />
 
-      <div className="flex flex-col gap-5 px-4 pt-4">
+      <div className="flex flex-col gap-5 px-4 pt-4 lg:px-8 lg:pt-8 lg:max-w-2xl lg:mx-auto">
         {/* Liens rapides */}
         <section>
           <SectionTitle>Liens rapides</SectionTitle>

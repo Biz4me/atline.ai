@@ -42,7 +42,7 @@ export default function SettingsPage() {
     <>
       <AppHeader title="Paramètres" back showActions={false} />
 
-      <div className="flex flex-col gap-5 px-4 pt-4">
+      <div className="flex flex-col gap-5 px-4 pt-4 lg:px-8 lg:pt-8 lg:max-w-2xl lg:mx-auto">
         {/* Notifications */}
         <section>
           <SectionTitle>Notifications</SectionTitle>

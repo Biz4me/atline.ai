@@ -27,7 +27,7 @@ export default function ProfilePage() {
     <div className="flex flex-col">
       <TopBar />
 
-      <div className="flex flex-col gap-6 px-4 pt-5 pb-8">
+      <div className="flex flex-col gap-6 px-4 pt-5 pb-8 lg:px-8 lg:pt-8 lg:max-w-2xl lg:mx-auto">
         {/* Titre */}
         <h1 className="font-display text-[32px] font-extrabold leading-tight tracking-[-0.025em] text-foreground">
           Moi

@@ -110,7 +110,7 @@ export default function FormationPage() {
     <>
       <AppHeader title="Formation" back />
 
-      <div className="flex flex-col gap-5 px-4 pt-4">
+      <div className="flex flex-col gap-5 px-4 pt-4 lg:px-8 lg:pt-8 lg:max-w-3xl lg:mx-auto">
         {/* Progress global */}
         <Card className="p-4">
           <div className="mb-2 flex items-center justify-between">

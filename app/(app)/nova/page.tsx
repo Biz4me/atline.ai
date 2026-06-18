@@ -14,17 +14,17 @@ export default function NovaPage() {
   return (
     <>
       <header
-        className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-3 backdrop-blur"
+        className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-3 backdrop-blur lg:px-8"
         style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
       >
         <button
           type="button"
           onClick={() => router.back()}
-          className="-ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"
+          className="-ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted lg:hidden"
         >
           <ChevronLeft className="size-5 stroke-[1.5]" />
         </button>
-        <h1 className="flex-1 font-display text-lg font-bold text-foreground">Nova</h1>
+        <h1 className="flex-1 font-display text-lg font-bold text-foreground lg:text-[22px]">Nova</h1>
         <button
           type="button"
           onClick={() => toast.info('Créer un post')}
@@ -33,7 +33,7 @@ export default function NovaPage() {
           <Plus className="size-5 stroke-[1.5]" />
         </button>
       </header>
-      <div className="px-4 pt-4">
+      <div className="px-4 pt-4 lg:px-8 lg:pt-6 lg:max-w-3xl lg:mx-auto">
         <Tabs defaultValue="calendrier">
           <TabsList className="grid w-full grid-cols-3 rounded-xl bg-muted p-1">
             <TabsTrigger value="calendrier">Calendrier</TabsTrigger>
