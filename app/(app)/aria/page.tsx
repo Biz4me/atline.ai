@@ -74,20 +74,20 @@ function SetupScreen({
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <header
-        className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-3 backdrop-blur"
+        className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-3 backdrop-blur lg:px-8"
         style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
       >
         <button
           type="button"
           onClick={() => router.back()}
-          className="-ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"
+          className="-ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted lg:hidden"
         >
           <ChevronLeft className="size-5 stroke-[1.5]" />
         </button>
-        <h1 className="flex-1 font-display text-lg font-bold text-foreground">Préparer mon appel</h1>
+        <h1 className="flex-1 font-display text-lg font-bold text-foreground">Simulation ARIA</h1>
       </header>
 
-      <div className="flex flex-col gap-6 px-4 pt-5 pb-10">
+      <div className="flex flex-col gap-6 px-4 pt-5 pb-10 lg:px-8 lg:max-w-2xl lg:mx-auto">
         <div className="rounded-2xl border border-border bg-surface p-5">
           <div className="mb-5 flex items-center gap-3">
             <span className="flex size-11 shrink-0 items-center justify-center rounded-xl bg-primary/10">

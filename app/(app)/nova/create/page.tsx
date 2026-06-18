@@ -305,7 +305,7 @@ export default function CreatePostPage() {
 
       {/* Fixed continue button */}
       <div
-        className="fixed inset-x-0 bottom-0 z-30 mx-auto max-w-[480px] border-t border-border bg-background/95 p-4 backdrop-blur"
+        className="fixed inset-x-0 bottom-0 z-30 border-t border-border bg-background/95 p-4 backdrop-blur lg:left-60"
         style={{ paddingBottom: 'max(1rem, env(safe-area-inset-bottom))' }}
       >
         <button
