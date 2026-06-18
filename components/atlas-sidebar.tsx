@@ -13,7 +13,7 @@ const rdvs = [
 type Msg = { id: string; from: 'atlas' | 'user'; text: string }
 
 const INITIAL_MESSAGES: Msg[] = [
-  { id: '1', from: 'atlas', text: 'Bonjour ! Sophie est en phase de closing — relance-la avec un chiffre concret : « En 3 mois j'ai ajouté 400€/mois. »' },
+  { id: '1', from: 'atlas', text: "Bonjour ! Sophie est en phase de closing — relance-la avec un chiffre concret : « En 3 mois j'ai ajouté 400€/mois. »" },
 ]
 
 interface Props {
