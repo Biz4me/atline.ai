@@ -72,7 +72,7 @@ export default function AbonnementPage() {
     <>
       <AppHeader title="Abonnement" back showActions={false} />
 
-      <div className="flex flex-col gap-5 px-4 pt-4">
+      <div className="flex flex-col gap-5 px-4 pt-4 lg:px-8 lg:pt-8 lg:max-w-2xl lg:mx-auto pb-10">
         {/* Plan actuel */}
         <Card accent className="p-4">
           <div className="flex items-start justify-between">

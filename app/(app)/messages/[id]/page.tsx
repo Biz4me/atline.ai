@@ -83,7 +83,7 @@ export default function ConversationPage({ params }: { params: Promise<{ id: str
       <header className="flex items-center gap-3 border-b border-border bg-surface/95 px-4 py-3 backdrop-blur"
         style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
       >
-        <button type="button" onClick={() => router.back()} className="-ml-1 flex size-9 items-center justify-center rounded-full text-fg-2 active:bg-muted">
+        <button type="button" onClick={() => router.back()} className="-ml-1 flex size-9 items-center justify-center rounded-full text-fg-2 active:bg-muted lg:hidden">
           <ChevronLeft className="size-5 stroke-[1.5]" />
         </button>
         <Link href={`/contacts/${contact.id}`} className="flex flex-1 items-center gap-2.5 min-w-0">

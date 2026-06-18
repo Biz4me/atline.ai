@@ -74,7 +74,7 @@ export default function ModulePage({ params }: { params: Promise<{ id: string }>
     <>
       <AppHeader title={mod.title} back />
 
-      <div className="flex flex-col gap-5 px-4 pt-4">
+      <div className="flex flex-col gap-5 px-4 pt-4 pb-10 lg:px-8 lg:pt-8 lg:max-w-3xl lg:mx-auto">
         {/* Module header */}
         <Card className="p-4">
           <span className="eyebrow mb-1 text-muted-foreground">{mod.category}</span>
