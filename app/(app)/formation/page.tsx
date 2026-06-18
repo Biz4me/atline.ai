@@ -110,7 +110,7 @@ export default function FormationPage() {
     <>
       <AppHeader title="Formation" back />
 
-      <div className="flex flex-col gap-5 px-4 pt-4 lg:px-8 lg:pt-8 lg:max-w-3xl lg:mx-auto">
+      <div className="flex flex-col gap-5 px-4 pt-4 lg:px-8 lg:pt-8 lg:max-w-5xl lg:mx-auto">
         {/* Progress global */}
         <Card className="p-4">
           <div className="mb-2 flex items-center justify-between">
@@ -152,7 +152,7 @@ export default function FormationPage() {
 
         {/* Modules */}
         <section>
-          <div className="flex flex-col gap-3">
+          <div className="grid gap-3 lg:grid-cols-2">
             {filtered.map((mod) => (
               <Link key={mod.id} href={mod.locked ? '#' : `/formation/${mod.id}`}>
                 <Card className={cn('overflow-hidden transition-colors', mod.locked ? 'opacity-60' : 'active:bg-muted/50')}>

@@ -299,11 +299,18 @@ export default function ContactDetailPage({
   const avatarBg = contact.disc ? personalityBg[contact.disc] : 'bg-zinc-400'
   const statut = getStatut(contact.stage)
 
+  /* shared blocks rendered in both mobile and desktop columns */
+  const actionTiles = [
+    { icon: MessageSquare, label: 'Message', href: `/messages/${contact.id}` },
+    { icon: PhoneCall,    label: 'Appel',   href: undefined, action: () => toast.success(`Appel vers ${contact.firstName}`) },
+    { icon: CalendarPlus, label: 'RDV',     href: '/nova' },
+  ]
+
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      {/* Header avec statut centré */}
+      {/* Header mobile only */}
       <div
-        className="sticky top-0 z-30 flex items-center gap-2 border-b border-border bg-background/90 px-4 py-3 backdrop-blur"
+        className="sticky top-0 z-30 flex items-center gap-2 border-b border-border bg-background/90 px-4 py-3 backdrop-blur lg:hidden"
         style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
       >
         <button
@@ -323,72 +330,124 @@ export default function ContactDetailPage({
         </button>
       </div>
 
-      <div className="flex flex-col gap-5 px-4 pt-6 pb-10">
-        {/* Avatar + nom */}
-        <div className="flex flex-col items-center gap-3 text-center">
-          <div className={cn('flex size-20 items-center justify-center rounded-full text-2xl font-bold text-white', avatarBg)}>
-            {initials}
+      {/* ── Desktop header ── */}
+      <div className="hidden lg:flex items-center gap-3 border-b border-border px-8 py-4">
+        <button type="button" onClick={() => router.back()} className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted transition-colors">
+          <ChevronLeft className="size-4 stroke-[1.5]" />
+        </button>
+        <h1 className="font-display text-[22px] font-bold text-foreground flex-1">
+          {contact.firstName} {contact.lastName}
+        </h1>
+        <span className={cn('rounded-full px-3 py-1 text-xs font-bold', stagePill[contact.stage] ?? 'bg-muted text-muted-foreground')}>
+          {stageLabel[contact.stage] ?? contact.stage}
+        </span>
+        <button type="button" onClick={() => setEditOpen(true)}
+          className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors">
+          <Pencil className="size-4 stroke-[1.5]" />
+          Modifier
+        </button>
+      </div>
+
+      {/* ── Layout : mobile = 1 col / desktop = 2 cols ── */}
+      <div className="flex flex-col gap-5 px-4 pt-6 pb-10 lg:grid lg:grid-cols-[300px_1fr] lg:gap-0 lg:px-0 lg:pt-0 lg:pb-0 lg:items-start lg:min-h-0 lg:flex-1">
+
+        {/* ── Colonne gauche (profil + actions) ── */}
+        <div className="flex flex-col gap-5 lg:border-r lg:border-border lg:px-8 lg:py-8 lg:sticky lg:top-0 lg:h-[calc(100dvh-73px)] lg:overflow-y-auto">
+          {/* Avatar + nom (mobile only — desktop has header) */}
+          <div className="flex flex-col items-center gap-3 text-center lg:hidden">
+            <div className={cn('flex size-20 items-center justify-center rounded-full text-2xl font-bold text-white', avatarBg)}>
+              {initials}
+            </div>
+            <div>
+              <h2 className="font-display text-2xl font-bold text-foreground">
+                {contact.firstName} {contact.lastName}
+              </h2>
+              <div className="mt-1.5 flex items-center justify-center gap-2">
+                <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-bold', stagePill[contact.stage] ?? 'bg-muted text-muted-foreground')}>
+                  {stageLabel[contact.stage] ?? contact.stage}
+                </span>
+                {contact.city && <span className="text-sm text-muted-foreground">{contact.city}</span>}
+              </div>
+            </div>
           </div>
-          <div>
-            <h2 className="font-display text-2xl font-bold text-foreground">
-              {contact.firstName} {contact.lastName}
-            </h2>
-            <div className="mt-1.5 flex items-center justify-center gap-2">
-              <span className={cn('rounded-full px-2.5 py-0.5 text-xs font-bold', stagePill[contact.stage] ?? 'bg-muted text-muted-foreground')}>
-                {stageLabel[contact.stage] ?? contact.stage}
+
+          {/* Avatar desktop centré */}
+          <div className="hidden lg:flex flex-col items-center gap-4 text-center">
+            <div className={cn('flex size-24 items-center justify-center rounded-full text-3xl font-bold text-white', avatarBg)}>
+              {initials}
+            </div>
+            {contact.city && <span className="text-sm text-muted-foreground">{contact.city}</span>}
+          </div>
+
+          {/* 3 tiles actions */}
+          <div className="grid grid-cols-3 gap-2">
+            {actionTiles.map((tile) => {
+              const Icon = tile.icon
+              const cls = 'flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-surface py-4 text-center transition-colors hover:bg-muted/40 active:bg-muted'
+              if (tile.href) {
+                return (
+                  <Link key={tile.label} href={tile.href} className={cls}>
+                    <Icon className="size-5 stroke-[1.5] text-primary" />
+                    <span className="text-xs font-semibold text-foreground">{tile.label}</span>
+                  </Link>
+                )
+              }
+              return (
+                <button key={tile.label} type="button" onClick={tile.action} className={cls}>
+                  <Icon className="size-5 stroke-[1.5] text-primary" />
+                  <span className="text-xs font-semibold text-foreground">{tile.label}</span>
+                </button>
+              )
+            })}
+          </div>
+
+          {/* Simuler + Atlas */}
+          <div className="grid grid-cols-2 gap-2">
+            <Link href={`/aria?contact=${contact.id}`}
+              className="flex items-center justify-center gap-2 rounded-2xl bg-primary/10 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/15 active:bg-primary/20">
+              <Mic className="size-4 stroke-[1.5]" />
+              Simuler
+            </Link>
+            <button type="button" onClick={() => toast.success('Atlas analyse ce contact…')}
+              className="flex items-center justify-center gap-2 rounded-2xl bg-primary/10 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/15 active:bg-primary/20">
+              <span className="font-display text-base font-bold">A</span>
+              Atlas
+            </button>
+          </div>
+
+          {/* Coordonnées desktop (dans la colonne gauche) */}
+          <div className="hidden lg:flex flex-col divide-y divide-border rounded-2xl border border-border bg-surface overflow-hidden">
+            {contact.phone && (
+              <div className="flex items-center gap-3 px-4 py-3">
+                <Phone className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                <a href={`tel:${contact.phone}`} className="text-sm font-semibold text-primary">{contact.phone}</a>
+              </div>
+            )}
+            {contact.email && (
+              <div className="flex items-center gap-3 px-4 py-3">
+                <Mail className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                <span className="text-sm text-muted-foreground">{contact.email}</span>
+              </div>
+            )}
+            {contact.source && (
+              <div className="flex items-center gap-3 px-4 py-3">
+                <Link2 className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                <span className={cn('text-sm font-semibold', sourceColor(contact.source))}>
+                  Source : {contact.source}
+                </span>
+              </div>
+            )}
+            <div className="flex items-center gap-3 px-4 py-3">
+              <Clock className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+              <span className="text-sm text-muted-foreground">
+                Dernier contact · <span className="font-semibold text-foreground">{contact.lastInteraction}</span>
               </span>
-              {contact.city && (
-                <span className="text-sm text-muted-foreground">{contact.city}</span>
-              )}
             </div>
           </div>
         </div>
 
-        {/* 3 tiles actions */}
-        <div className="grid grid-cols-3 gap-2">
-          {[
-            { icon: MessageSquare, label: 'Message', href: `/messages/${contact.id}` },
-            { icon: PhoneCall, label: 'Appel', href: undefined, action: () => toast.success(`Appel vers ${contact.firstName}`) },
-            { icon: CalendarPlus, label: 'RDV', href: '/nova' },
-          ].map((tile) => {
-            const Icon = tile.icon
-            const cls = 'flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-surface py-4 text-center transition-colors active:bg-muted'
-            if (tile.href) {
-              return (
-                <Link key={tile.label} href={tile.href} className={cls}>
-                  <Icon className="size-5 stroke-[1.5] text-primary" />
-                  <span className="text-xs font-semibold text-foreground">{tile.label}</span>
-                </Link>
-              )
-            }
-            return (
-              <button key={tile.label} type="button" onClick={tile.action} className={cls}>
-                <Icon className="size-5 stroke-[1.5] text-primary" />
-                <span className="text-xs font-semibold text-foreground">{tile.label}</span>
-              </button>
-            )
-          })}
-        </div>
-
-        {/* 2 boutons larges Simuler + Atlas */}
-        <div className="grid grid-cols-2 gap-2">
-          <Link
-            href={`/aria?contact=${contact.id}`}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-primary/10 py-3 text-sm font-bold text-primary transition-colors active:bg-primary/20"
-          >
-            <Mic className="size-4 stroke-[1.5]" />
-            Simuler
-          </Link>
-          <button
-            type="button"
-            onClick={() => toast.success('Atlas analyse ce contact…')}
-            className="flex items-center justify-center gap-2 rounded-2xl bg-primary/10 py-3 text-sm font-bold text-primary transition-colors active:bg-primary/20"
-          >
-            <span className="font-display text-base font-bold">A</span>
-            Atlas
-          </button>
-        </div>
-
+        {/* ── Colonne droite (tabs) ── */}
+        <div className="lg:px-8 lg:py-8 lg:overflow-y-auto lg:h-[calc(100dvh-73px)]">
         {/* Tabs */}
         <Tabs defaultValue="infos">
           <TabsList className="grid w-full grid-cols-3 rounded-xl bg-muted p-1">
@@ -507,7 +566,10 @@ export default function ContactDetailPage({
             )}
           </TabsContent>
         </Tabs>
+        </div>
+        {/* end right column */}
       </div>
+      {/* end 2-col layout */}
 
       {/* Edit sheet */}
       {editOpen && <EditSheet contact={contact} onClose={() => setEditOpen(false)} />}
