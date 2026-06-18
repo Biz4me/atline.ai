@@ -1,16 +1,38 @@
 'use client'
 
-import { AppHeader } from '@/components/app-header'
+import { useRouter } from 'next/navigation'
+import { ChevronLeft, Plus } from 'lucide-react'
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs'
 import { NovaCalendar } from '@/components/nova/nova-calendar'
 import { NovaInbox } from '@/components/nova/nova-inbox'
 import { NovaPillars } from '@/components/nova/nova-pillars'
 import { inboxMessages } from '@/lib/data'
+import { toast } from 'sonner'
 
 export default function NovaPage() {
+  const router = useRouter()
   return (
     <>
-      <AppHeader title="Nova" showCreate />
+      <header
+        className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-3 backdrop-blur"
+        style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
+      >
+        <button
+          type="button"
+          onClick={() => router.back()}
+          className="-ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"
+        >
+          <ChevronLeft className="size-5 stroke-[1.5]" />
+        </button>
+        <h1 className="flex-1 font-display text-lg font-bold text-foreground">Nova</h1>
+        <button
+          type="button"
+          onClick={() => toast.info('Créer un post')}
+          className="flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"
+        >
+          <Plus className="size-5 stroke-[1.5]" />
+        </button>
+      </header>
       <div className="px-4 pt-4">
         <Tabs defaultValue="calendrier">
           <TabsList className="grid w-full grid-cols-3 rounded-xl bg-muted p-1">

@@ -2,13 +2,13 @@
 
 import { useMemo, useState } from 'react'
 import Link from 'next/link'
-import { BusinessSwitcher } from '@/components/business-switcher'
+import { TopBar } from '@/components/top-bar'
 import { useBusiness } from '@/components/business-provider'
 import { DiscAvatar } from '@/components/disc-avatar'
 import { StagePill } from '@/components/pills'
 import { contacts, discColors } from '@/lib/data'
 import type { ContactStage } from '@/lib/types'
-import { Search, Plus, Bell, MessageCircle, X } from 'lucide-react'
+import { Search, Plus } from 'lucide-react'
 import { AddContactSheet } from '@/components/add-contact-sheet'
 import { cn } from '@/lib/utils'
 
@@ -47,20 +47,12 @@ function sourceColor(source: string) {
   return sourceColors[key] ?? 'text-muted-foreground'
 }
 
-const discInfo = [
-  { letter: 'Rouge', color: '#DC2626', bg: 'bg-red-100', text: 'text-red-700', desc: 'Direct' },
-  { letter: 'Vert', color: '#22C55E', bg: 'bg-green-100', text: 'text-green-700', desc: 'Relationnel' },
-  { letter: 'Bleu', color: '#3B82F6', bg: 'bg-blue-100', text: 'text-blue-700', desc: 'Analytique' },
-  { letter: 'Jaune', color: '#F59E0B', bg: 'bg-amber-100', text: 'text-amber-700', desc: 'Enthousiaste' },
-]
-
 function ContactsContent() {
   const { current } = useBusiness()
   const [segment, setSegment] = useState<Segment>('prospects')
   const [stageFilter, setStageFilter] = useState('tous')
   const [query, setQuery] = useState('')
   const [addOpen, setAddOpen] = useState(false)
-  const [discDismissed, setDiscDismissed] = useState(false)
 
   const handleSegmentChange = (seg: Segment) => {
     setSegment(seg)
@@ -83,24 +75,7 @@ function ContactsContent() {
 
   return (
     <>
-      {/* Header V15 */}
-      <header
-        className="sticky top-0 z-30 flex items-center gap-2 border-b border-border bg-background/90 px-4 py-3 backdrop-blur"
-        style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
-      >
-        <BusinessSwitcher />
-        <div className="flex-1" />
-        <div className="flex items-center gap-1">
-          <Link href="/notifications" className="relative flex size-9 items-center justify-center rounded-full text-fg-2 active:bg-muted">
-            <Bell className="size-5 stroke-[1.5]" />
-            <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-primary ring-2 ring-background" />
-          </Link>
-          <Link href="/messages" className="relative flex size-9 items-center justify-center rounded-full text-fg-2 active:bg-muted">
-            <MessageCircle className="size-5 stroke-[1.5]" />
-            <span className="absolute right-1 top-1 flex size-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground ring-2 ring-background">2</span>
-          </Link>
-        </div>
-      </header>
+      <TopBar />
 
       <div className="flex flex-col gap-4 px-4 pt-5">
         {/* Titre + bouton + */}
@@ -128,29 +103,6 @@ function ContactsContent() {
             className="w-full rounded-xl border border-border bg-surface py-3 pl-10 pr-4 text-sm outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
           />
         </div>
-
-        {/* DISC info card dismissable */}
-        {!discDismissed && (
-          <div className="relative rounded-2xl border border-border bg-surface p-4">
-            <button type="button" onClick={() => setDiscDismissed(true)} className="absolute right-3 top-3 text-muted-foreground">
-              <X className="size-4" />
-            </button>
-            <p className="mb-1.5 text-sm font-bold text-foreground">Travaille mieux avec tes contacts</p>
-            <p className="mb-3 text-xs text-muted-foreground leading-relaxed">
-              Attribue une couleur de personnalité à chaque contact. Aria et Atlas s'en servent pour adapter leur approche.
-            </p>
-            <div className="grid grid-cols-2 gap-2">
-              {discInfo.map((d) => (
-                <span key={d.letter} className={cn('flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-bold', d.bg, d.text)}>
-                  {d.letter} · {d.desc}
-                </span>
-              ))}
-            </div>
-            <button type="button" className="mt-3 text-xs font-semibold text-primary">
-              Comment ça marche →
-            </button>
-          </div>
-        )}
 
         {/* 3 tabs segments */}
         <div className="grid grid-cols-3 rounded-xl bg-muted p-1 gap-1">

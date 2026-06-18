@@ -1,8 +1,7 @@
 'use client'
 
-import { BusinessSwitcher } from '@/components/business-switcher'
+import { TopBar } from '@/components/top-bar'
 import { Card } from '@/components/card'
-import { currentUser } from '@/lib/data'
 import {
   ChevronRight,
   Flame,
@@ -12,14 +11,11 @@ import {
   History,
   Search,
   Users,
-  Bell,
-  MessageCircle,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { DiscAvatar } from '@/components/disc-avatar'
 
 /* ── Plan du jour ──────────────────────────────────────────── */
 const dailyTasks = [
@@ -70,29 +66,9 @@ export default function HomePage() {
 
   return (
     <>
-      {/* Header home — business switcher + icônes */}
-      <header
-        className="sticky top-0 z-30 flex items-center gap-2 border-b border-border bg-background/90 px-4 py-3 backdrop-blur"
-        style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
-      >
-        <BusinessSwitcher />
-        <div className="flex-1" />
-        <div className="flex items-center gap-1">
-          <Link href="/notifications" className="relative flex size-9 items-center justify-center rounded-full text-fg-2 transition-colors active:bg-muted">
-            <Bell className="size-5 stroke-[1.5]" />
-            <span className="absolute right-1.5 top-1.5 size-2 rounded-full bg-primary ring-2 ring-background" />
-          </Link>
-          <Link href="/messages" className="relative flex size-9 items-center justify-center rounded-full text-fg-2 transition-colors active:bg-muted">
-            <MessageCircle className="size-5 stroke-[1.5]" />
-            <span className="absolute right-1 top-1 flex size-4 items-center justify-center rounded-full bg-primary text-[9px] font-bold text-primary-foreground ring-2 ring-background">2</span>
-          </Link>
-          <Link href="/profile" aria-label="Mon profil">
-            <DiscAvatar firstName={currentUser.firstName} lastName={currentUser.lastName} disc="I" size="sm" />
-          </Link>
-        </div>
-      </header>
+      <TopBar />
 
-      <div className="flex flex-col gap-5 px-4 pt-5 pb-8">
+      <div className="flex flex-col gap-6 px-4 pt-5 pb-8">
 
         {/* Titre */}
         <h1 className="font-display text-[32px] font-extrabold leading-tight tracking-[-0.025em] text-foreground">
@@ -241,7 +217,7 @@ export default function HomePage() {
                 82
               </span>
               <div>
-                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-wide mb-0.5">Dernière session</p>
+                <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-0.5">Dernière session</p>
                 <p className="text-xs text-foreground leading-relaxed italic">
                   « Bonne accroche — travaille ta relance sur l'objection prix. »
                 </p>

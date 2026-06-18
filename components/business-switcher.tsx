@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Check, ChevronsUpDown } from 'lucide-react'
+import { Check, ChevronDown } from 'lucide-react'
 import { useBusiness } from '@/components/business-provider'
 import {
   Sheet,
@@ -29,7 +29,7 @@ export function BusinessSwitcher() {
           {current.initials}
         </span>
         {current.name}
-        <ChevronsUpDown className="size-3.5 text-muted-foreground" />
+        <ChevronDown className="size-3.5 text-muted-foreground" />
       </button>
 
       <Sheet open={open} onOpenChange={setOpen}>

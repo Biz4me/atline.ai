@@ -1,126 +1,117 @@
 'use client'
 
 import {
+  ContactRound,
+  Mic,
+  CalendarPlus,
   Crown,
-  Copy,
-  Check,
+  CreditCard,
+  Settings,
   LogOut,
-  Pencil,
-  Mail,
-  Phone,
+  ChevronRight,
 } from 'lucide-react'
-import { useState } from 'react'
-import { Card } from '@/components/card'
+import { TopBar } from '@/components/top-bar'
 import { DiscAvatar } from '@/components/disc-avatar'
 import { currentUser } from '@/lib/data'
 import { toast } from 'sonner'
+import Link from 'next/link'
 
-const referralLink = 'atline.ai/rejoindre/lea-moreau'
+const stats = [
+  { icon: ContactRound, value: '14', label: 'Contacts' },
+  { icon: Mic, value: '8', label: 'Simulations' },
+  { icon: CalendarPlus, value: '5', label: 'RDV' },
+]
 
 export default function ProfilePage() {
-  const [copied, setCopied] = useState(false)
-
-  const handleCopy = () => {
-    navigator.clipboard.writeText(`https://${referralLink}`)
-    setCopied(true)
-    toast.success('Lien copié !')
-    setTimeout(() => setCopied(false), 2000)
-  }
-
   return (
-    <div className="flex flex-col items-center gap-5 px-4 pb-8 pt-8">
-      {/* Avatar large */}
-      <div className="relative">
-        <DiscAvatar firstName={currentUser.firstName} lastName={currentUser.lastName} disc="I" size="xl" />
-        <button
-          type="button"
-          onClick={() => toast.info('Changer la photo')}
-          className="absolute -bottom-1 -right-1 flex size-7 items-center justify-center rounded-full border-2 border-background bg-primary text-primary-foreground"
-        >
-          <Pencil className="size-3 stroke-[2]" />
-        </button>
-      </div>
+    <div className="flex flex-col">
+      <TopBar />
 
-      {/* Nom + plan */}
-      <div className="flex flex-col items-center gap-2 text-center">
-        <h1 className="font-display text-[28px] font-bold leading-tight tracking-[-0.025em] text-foreground">
-          {currentUser.firstName} {currentUser.lastName}
+      <div className="flex flex-col gap-6 px-4 pt-5 pb-8">
+        {/* Titre */}
+        <h1 className="font-display text-[32px] font-extrabold leading-tight tracking-[-0.025em] text-foreground">
+          Moi
         </h1>
-        <div className="inline-flex items-center gap-1.5 rounded-full bg-primary/10 px-3 py-1 text-xs font-bold text-primary">
-          <Crown className="size-3.5" />
-          Plan Pro
-        </div>
-        <p className="max-w-[260px] text-sm text-muted-foreground leading-relaxed">
-          Distributrice indépendante · MLM depuis 2 ans. Passionnée d'accompagnement et de bien-être.
-        </p>
-      </div>
 
-      {/* Hub public — lien de parrainage */}
-      <div className="w-full">
-        <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Mon hub public</p>
-        <Card className="p-4">
-          <p className="mb-3 text-xs text-muted-foreground">
-            Partage ce lien pour que tes prospects rejoignent ton équipe.
-          </p>
-          <div className="flex items-center gap-2 rounded-xl border border-border bg-muted px-3 py-2.5">
-            <span className="flex-1 truncate text-sm font-medium text-foreground">
-              {referralLink}
-            </span>
+        {/* Mon activité */}
+        <div>
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-primary">Mon activité</p>
+          <div className="grid grid-cols-3 gap-2.5">
+            {stats.map(({ icon: Icon, value, label }) => (
+              <div key={label} className="flex flex-col items-center gap-1.5 rounded-2xl border border-border bg-surface px-3 py-4 text-center shadow-card">
+                <Icon className="size-4 stroke-[1.5] text-muted-foreground" />
+                <span className="font-display text-xl font-extrabold tabular-nums text-foreground">{value}</span>
+                <span className="text-[11px] text-muted-foreground">{label}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        {/* Compte */}
+        <div>
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-primary">Compte</p>
+
+          {/* Card profil */}
+          <button
+            type="button"
+            onClick={() => toast.info('Mon profil — bientôt')}
+            className="flex w-full items-center gap-3 rounded-2xl border border-border bg-surface p-4 text-left shadow-card transition-colors active:bg-muted"
+          >
+            <DiscAvatar
+              firstName={currentUser.firstName}
+              lastName={currentUser.lastName}
+              disc="I"
+              size="md"
+            />
+            <div className="flex-1 min-w-0">
+              <p className="font-bold text-[15px] text-foreground">
+                {currentUser.firstName} {currentUser.lastName}
+              </p>
+              <div className="mt-1 flex items-center gap-2">
+                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2.5 py-0.5 text-[11px] font-bold text-primary">
+                  <Crown className="size-3" />
+                  Pro
+                </span>
+                <span className="text-xs text-muted-foreground">Voir mon profil</span>
+              </div>
+            </div>
+            <ChevronRight className="size-5 shrink-0 stroke-[1.5] text-muted-foreground" />
+          </button>
+
+          {/* Menu list */}
+          <div className="mt-2.5 overflow-hidden rounded-2xl border border-border bg-surface shadow-card divide-y divide-border">
+            <Link
+              href="/abonnement"
+              className="flex items-center gap-3.5 px-4 py-3.5 transition-colors active:bg-muted"
+            >
+              <CreditCard className="size-5 shrink-0 stroke-[1.5] text-amber-500" />
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-bold text-foreground">Abonnement</p>
+                <p className="text-xs text-muted-foreground">Pro · renouvellement le 3 juil.</p>
+              </div>
+              <ChevronRight className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+            </Link>
+
+            <Link
+              href="/settings"
+              className="flex items-center gap-3.5 px-4 py-3.5 transition-colors active:bg-muted"
+            >
+              <Settings className="size-5 shrink-0 stroke-[1.5] text-muted-foreground" />
+              <span className="flex-1 text-sm font-bold text-foreground">Réglages</span>
+              <ChevronRight className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+            </Link>
+
             <button
               type="button"
-              onClick={handleCopy}
-              aria-label="Copier le lien"
-              className="shrink-0 rounded-lg p-1.5 text-primary transition-colors active:bg-primary/10"
+              onClick={() => toast.error('Déconnexion')}
+              className="flex w-full items-center gap-3.5 px-4 py-3.5 transition-colors active:bg-muted"
             >
-              {copied ? (
-                <Check className="size-4 stroke-2" />
-              ) : (
-                <Copy className="size-4 stroke-[1.5]" />
-              )}
+              <LogOut className="size-5 shrink-0 stroke-[1.5] text-destructive" />
+              <span className="text-sm font-bold text-destructive">Déconnexion</span>
             </button>
           </div>
-        </Card>
+        </div>
       </div>
-
-      {/* Coordonnées */}
-      <div className="w-full">
-        <p className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-muted-foreground">Coordonnées</p>
-        <Card className="divide-y divide-border p-0">
-          <div className="flex items-center gap-3 px-4 py-3">
-            <Mail className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Email</span>
-            <span className="ml-auto text-sm font-semibold text-foreground">lea.moreau@email.fr</span>
-          </div>
-          <div className="flex items-center gap-3 px-4 py-3">
-            <Phone className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-            <span className="text-sm text-muted-foreground">Téléphone</span>
-            <a href="tel:0612345678" className="ml-auto text-sm font-semibold text-primary">
-              06 12 34 56 78
-            </a>
-          </div>
-        </Card>
-      </div>
-
-      {/* CTA Modifier */}
-      <button
-        type="button"
-        onClick={() => toast.info('Modifier mon profil')}
-        className="w-full rounded-2xl bg-primary py-4 text-sm font-bold text-primary-foreground transition-transform active:scale-[0.98]"
-      >
-        Modifier mon profil
-      </button>
-
-      {/* Déconnexion */}
-      <button
-        type="button"
-        onClick={() => toast.error('Déconnexion')}
-        className="flex w-full items-center justify-center gap-2 rounded-2xl border border-border py-3.5 text-sm font-semibold text-destructive transition-colors active:bg-muted"
-      >
-        <LogOut className="size-4 stroke-[1.5]" />
-        Se déconnecter
-      </button>
-
-      <p className="text-xs text-muted-foreground">Atline · version 1.0.0</p>
     </div>
   )
 }

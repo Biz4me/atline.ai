@@ -1,245 +1,221 @@
 'use client'
 
 import { useState } from 'react'
-import { AppHeader } from '@/components/app-header'
-import { BusinessSwitcher } from '@/components/business-switcher'
-import { Card, SectionTitle } from '@/components/card'
+import { TopBar } from '@/components/top-bar'
 import { DiscAvatar } from '@/components/disc-avatar'
-import { network, networkStats, planLabels, euro } from '@/lib/data'
+import { network, euro } from '@/lib/data'
 import type { NetworkMember } from '@/lib/types'
 import {
-  Users, BarChart3, Wallet, ChevronDown, BadgeCheck, ChevronRight,
-  ShoppingBag, Share2, CalendarCheck, MessageSquare, Video,
-  ArrowUpRight, Clock, TrendingUp,
+  BadgeCheck, ChevronRight, Copy, Check,
+  GitFork, Map, Shuffle, Package, Briefcase, Bot,
+  Link as LinkIcon,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
-import Link from 'next/link'
+import { toast } from 'sonner'
 
-const toolboxLinks = [
-  { id: 'boutique', icon: ShoppingBag, label: 'Boutique', color: 'bg-primary/10 text-primary', href: '/toolbox' },
-  { id: 'parrainage', icon: Share2, label: 'Parrainage', color: 'bg-success/10 text-success', href: '/toolbox' },
-  { id: 'rdv', icon: CalendarCheck, label: 'Prendre RDV', color: 'bg-violet-50 text-violet-600', href: '/toolbox' },
-  { id: 'whatsapp', icon: MessageSquare, label: 'WhatsApp', color: 'bg-emerald-50 text-emerald-600', href: '/toolbox' },
-  { id: 'zoom', icon: Video, label: 'Zoom', color: 'bg-blue-50 text-blue-600', href: '/toolbox' },
-  { id: 'more', icon: ChevronRight, label: 'Tout voir', color: 'bg-muted text-muted-foreground', href: '/toolbox' },
+const topStats = [
+  { label: 'N1 actifs', value: '4', color: '#22C55E' },
+  { label: 'N2', value: '9', color: '#3B82F6' },
+  { label: 'Équipe', value: '17', color: '#F97316' },
 ]
 
-const commissions = [
-  { label: 'N1 — Filleuls directs', amount: 1420, rate: '15%', count: 8 },
-  { label: 'N2 — Équipe filleuls', amount: 856, rate: '7%', count: 21 },
-  { label: 'Fast Start', amount: 400, rate: 'Bonus', count: 2 },
-  { label: 'Rétention', amount: 171.5, rate: '5%', count: null },
+const commGroups = [
+  {
+    title: 'N1 — Filleuls directs',
+    rows: [
+      { name: 'Sophie Lefèvre', amount: 1420 },
+      { name: 'Karim Haddad', amount: 856 },
+    ],
+  },
+  {
+    title: 'Fast Start',
+    rows: [{ name: 'Nadia Benali', amount: 400 }],
+  },
+  {
+    title: 'Rétention',
+    rows: [{ name: 'Équipe globale', amount: 171.5 }],
+  },
 ]
 
-const placements = [
-  { id: 'p1', firstName: 'Julie', lastName: 'Fontaine', disc: 'I' as const, daysLeft: 18, status: 'En attente de placement' },
-  { id: 'p2', firstName: 'Marc', lastName: 'Lemaire', disc: 'C' as const, daysLeft: 6, status: 'Place avant expiration !' },
+const planLabels: Record<string, string> = {
+  distributeur: 'Distributeur',
+  pro: 'Pro',
+  leader: 'Leader',
+}
+
+const outils = [
+  { icon: Shuffle, label: 'Placements', href: '#' },
+  { icon: Package, label: 'Produits', href: '#' },
+  { icon: Briefcase, label: 'Boîte à outils', href: '/toolbox' },
+  { icon: Bot, label: 'Bot prospect', href: '#' },
 ]
 
 export default function NetworkPage() {
+  const [copied, setCopied] = useState(false)
+
+  const handleCopy = () => {
+    navigator.clipboard.writeText('https://atline.ai/lea-moreau')
+    setCopied(true)
+    toast.success('Lien copié !')
+    setTimeout(() => setCopied(false), 2000)
+  }
+
   return (
     <>
-      <AppHeader title="Réseau" />
-      <div className="flex flex-col gap-5 px-4 pt-4">
-        <div className="flex justify-end">
-          <BusinessSwitcher />
-        </div>
+      <TopBar />
+      <div className="flex flex-col gap-6 px-4 pt-5 pb-8">
 
-        {/* Metrics */}
-        <div className="grid grid-cols-3 gap-3">
-          <Stat icon={Users} value={String(networkStats.directReferrals)} label="Filleuls directs" />
-          <Stat icon={BarChart3} value={String(networkStats.teamVolume)} label="Volume équipe" />
-          <Stat
-            icon={Wallet}
-            valueNode={<span className="money text-base">{euro(networkStats.monthCommission)}</span>}
-            label="Commission"
-          />
-        </div>
+        {/* Titre */}
+        <h1 className="font-display text-[32px] font-extrabold leading-tight tracking-[-0.025em] text-foreground">
+          Réseau
+        </h1>
 
-        {/* Boîte à outils */}
-        <section>
-          <SectionTitle
-            action={
-              <Link href="/toolbox" className="text-xs font-semibold text-primary">
-                Tout voir
-              </Link>
-            }
-          >
-            Boîte à outils
-          </SectionTitle>
-          <div className="grid grid-cols-3 gap-2">
-            {toolboxLinks.map((tool) => {
-              const Icon = tool.icon
-              return (
-                <Link key={tool.id} href={tool.href}>
-                  <Card className="flex flex-col items-center gap-2 p-3 text-center transition-colors active:bg-muted/50">
-                    <span className={cn('flex size-10 items-center justify-center rounded-xl', tool.color)}>
-                      <Icon className="size-5 stroke-[1.5]" />
-                    </span>
-                    <span className="text-xs font-semibold text-foreground">{tool.label}</span>
-                  </Card>
-                </Link>
-              )
-            })}
+        {/* Card commissions gold */}
+        <div className="relative overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
+          <div className="absolute top-0 left-0 right-0 h-1 bg-amber-400" />
+          <div className="flex flex-col items-center gap-2 px-4 py-5">
+            <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">
+              Commissions ce mois
+            </p>
+            <p className="font-display text-[44px] font-extrabold tabular-nums leading-none text-amber-500">
+              342,50 €
+            </p>
+            <span className="inline-flex items-center gap-1.5 rounded-full bg-green-500/15 px-3 py-1 text-[11px] font-bold text-green-600">
+              <BadgeCheck className="size-3.5" />
+              Licence active
+            </span>
           </div>
-        </section>
+        </div>
 
-        {/* Placements filleuls */}
-        {placements.length > 0 && (
-          <section>
-            <SectionTitle>Placements filleuls</SectionTitle>
-            <div className="flex flex-col gap-2">
-              {placements.map((p) => (
-                <Card key={p.id} className={cn('flex items-center gap-3 p-3.5', p.daysLeft <= 7 && 'border-destructive/30 bg-destructive/5')}>
-                  <DiscAvatar firstName={p.firstName} lastName={p.lastName} disc={p.disc} />
-                  <div className="min-w-0 flex-1">
-                    <p className="text-sm font-bold text-foreground">
-                      {p.firstName} {p.lastName}
-                    </p>
-                    <p className={cn('text-xs', p.daysLeft <= 7 ? 'font-semibold text-destructive' : 'text-muted-foreground')}>
-                      {p.status}
-                    </p>
-                  </div>
-                  <div className="flex items-center gap-1 rounded-full bg-muted px-2.5 py-1">
-                    <Clock className="size-3 text-muted-foreground" />
-                    <span className={cn('text-xs font-bold', p.daysLeft <= 7 ? 'text-destructive' : 'text-foreground')}>
-                      {p.daysLeft}j
+        {/* Grid stats */}
+        <div className="grid grid-cols-3 gap-2.5">
+          {topStats.map(({ label, value, color }) => (
+            <div key={label} className="flex flex-col items-center gap-1 rounded-2xl border border-border bg-surface px-3 py-4 text-center shadow-card">
+              <span className="font-display text-2xl font-extrabold tabular-nums" style={{ color }}>{value}</span>
+              <span className="text-[11px] text-muted-foreground">{label}</span>
+            </div>
+          ))}
+        </div>
+
+        {/* Lien parrainage */}
+        <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3.5 shadow-card">
+          <LinkIcon className="size-5 shrink-0 stroke-[1.5] text-primary" />
+          <span className="flex-1 truncate font-mono text-sm text-foreground">atline.ai/lea-moreau</span>
+          <button
+            type="button"
+            onClick={handleCopy}
+            className="flex items-center gap-1.5 rounded-xl border border-border bg-muted px-3 py-1.5 text-xs font-bold text-foreground active:bg-background"
+          >
+            {copied ? <Check className="size-3.5" /> : <Copy className="size-3.5" />}
+            Copier
+          </button>
+        </div>
+
+        {/* Détail commissions */}
+        <div>
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-primary">Détail des commissions</p>
+          <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-card divide-y divide-border">
+            {commGroups.map((g) => (
+              <div key={g.title}>
+                <p className="px-4 pt-3 pb-1 text-[11px] font-bold uppercase tracking-widest text-primary">{g.title}</p>
+                {g.rows.map((r) => (
+                  <div key={r.name} className="flex items-center gap-3 px-4 py-2.5 last:pb-3">
+                    <span className="flex-1 text-sm font-semibold text-foreground">{r.name}</span>
+                    <span className="font-display text-[15px] font-extrabold tabular-nums text-amber-500">
+                      {euro(r.amount)}
                     </span>
                   </div>
-                </Card>
-              ))}
-            </div>
-          </section>
-        )}
-
-        {/* Commissions détail */}
-        <section>
-          <SectionTitle
-            action={
-              <div className="flex items-center gap-1 text-xs font-semibold text-success">
-                <TrendingUp className="size-3.5" />
-                +18% vs M-1
-              </div>
-            }
-          >
-            Mes commissions du mois
-          </SectionTitle>
-          <Card className="divide-y divide-border p-0">
-            {commissions.map((c) => (
-              <div key={c.label} className="flex items-center px-4 py-3">
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-semibold text-foreground">{c.label}</p>
-                  {c.count !== null && (
-                    <p className="text-xs text-muted-foreground">{c.count} personnes · {c.rate}</p>
-                  )}
-                </div>
-                <span className="money text-base">{euro(c.amount)}</span>
+                ))}
               </div>
             ))}
-            <div className="flex items-center bg-muted/50 px-4 py-3">
-              <p className="flex-1 text-sm font-bold text-foreground">Total</p>
-              <span className="money text-lg">{euro(networkStats.monthCommission)}</span>
-            </div>
-          </Card>
-        </section>
+          </div>
+        </div>
 
         {/* Mon équipe */}
-        <section>
-          <SectionTitle>Mon équipe</SectionTitle>
-          <ul className="flex flex-col gap-2">
+        <div>
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-primary">Mon équipe</p>
+          <div className="flex flex-col gap-2.5">
             {network.map((m) => (
-              <MemberNode key={m.id} member={m} />
+              <MemberRow key={m.id} member={m} />
             ))}
-          </ul>
-        </section>
+          </div>
+        </div>
+
+        {/* Arbre + Carte */}
+        <div className="grid grid-cols-2 gap-2.5">
+          <button
+            type="button"
+            onClick={() => toast.info('Arbre du réseau — bientôt')}
+            className="flex flex-col gap-2.5 rounded-2xl border border-border bg-surface p-4 text-left shadow-card active:bg-muted"
+          >
+            <div className="flex size-10 items-center justify-center rounded-xl bg-blue-500/15">
+              <GitFork className="size-5 stroke-[1.5] text-blue-500" />
+            </div>
+            <p className="text-sm font-bold text-foreground">Arbre</p>
+            <p className="text-xs text-muted-foreground">Vue hiérarchique</p>
+          </button>
+          <button
+            type="button"
+            onClick={() => toast.info('Carte du réseau — bientôt')}
+            className="flex flex-col gap-2.5 rounded-2xl border border-border bg-surface p-4 text-left shadow-card active:bg-muted"
+          >
+            <div className="flex size-10 items-center justify-center rounded-xl bg-green-500/15">
+              <Map className="size-5 stroke-[1.5] text-green-600" />
+            </div>
+            <p className="text-sm font-bold text-foreground">Carte</p>
+            <p className="text-xs text-muted-foreground">Vue géographique</p>
+          </button>
+        </div>
+
+        {/* Outils réseau */}
+        <div>
+          <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-primary">Outils réseau</p>
+          <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-card divide-y divide-border">
+            {outils.map(({ icon: Icon, label, href }) => (
+              <button
+                key={label}
+                type="button"
+                onClick={() => href === '#' ? toast.info(`${label} — bientôt`) : (window.location.href = href)}
+                className="flex w-full items-center gap-3.5 px-4 py-3.5 text-left transition-colors active:bg-muted"
+              >
+                <Icon className="size-5 shrink-0 stroke-[1.5] text-muted-foreground" />
+                <span className="flex-1 text-sm font-bold text-foreground">{label}</span>
+                <ChevronRight className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+              </button>
+            ))}
+          </div>
+        </div>
+
       </div>
     </>
   )
 }
 
-function Stat({
-  icon: Icon,
-  value,
-  valueNode,
-  label,
-}: {
-  icon: typeof Users
-  value?: string
-  valueNode?: React.ReactNode
-  label: string
-}) {
-  return (
-    <Card className="flex flex-col gap-1.5 p-3">
-      <Icon className="size-4 stroke-[1.5] text-muted-foreground" />
-      {valueNode ?? (
-        <span className="font-display text-2xl font-semibold leading-none text-foreground">{value}</span>
-      )}
-      <span className="text-[11px] leading-tight text-muted-foreground">{label}</span>
-    </Card>
-  )
-}
-
-function MemberNode({ member }: { member: NetworkMember }) {
-  const [open, setOpen] = useState(false)
-  const hasChildren = (member.children?.length ?? 0) > 0
+function MemberRow({ member }: { member: NetworkMember }) {
+  const teamCount = member.children?.length ?? 0
+  const isActive = member.plan !== 'distributeur'
 
   return (
-    <li>
-      <Card className="overflow-hidden">
-        <button
-          type="button"
-          onClick={() => hasChildren && setOpen((o) => !o)}
-          className="flex w-full items-center gap-3 p-3.5 text-left"
-        >
-          <DiscAvatar firstName={member.firstName} lastName={member.lastName} disc={member.disc} />
-          <div className="min-w-0 flex-1">
-            <div className="flex flex-wrap items-center gap-2">
-              <p className="text-sm font-bold text-foreground">
-                {member.firstName} {member.lastName}
-              </p>
-              <span className="rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold text-fg-2">
-                {planLabels[member.plan]}
-              </span>
-              {member.isAtlineLicensee && (
-                <span className="inline-flex items-center gap-1 rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary">
-                  <BadgeCheck className="size-3" />
-                  Atline Licensee
-                </span>
-              )}
-            </div>
-            <p className="text-xs text-muted-foreground">{member.teamVolume} pts de volume</p>
-          </div>
-          {hasChildren && (
-            <ChevronDown className={cn('size-5 text-muted-foreground transition-transform', open && 'rotate-180')} />
-          )}
-        </button>
-
-        {hasChildren && open && (
-          <ul className="border-t border-border bg-muted/30 px-3.5 py-2">
-            {member.children!.map((child) => (
-              <li key={child.id} className="flex items-center gap-3 py-2">
-                <DiscAvatar firstName={child.firstName} lastName={child.lastName} disc={child.disc} size="sm" />
-                <div className="min-w-0 flex-1">
-                  <div className="flex flex-wrap items-center gap-1.5">
-                    <p className="text-sm font-semibold text-foreground">
-                      {child.firstName} {child.lastName}
-                    </p>
-                    {child.isAtlineLicensee && (
-                      <span className="inline-flex items-center gap-0.5 rounded-full bg-primary/10 px-1.5 py-0.5 text-[9px] font-bold text-primary">
-                        <BadgeCheck className="size-2.5" />
-                        Licensee
-                      </span>
-                    )}
-                  </div>
-                  <p className="text-xs text-muted-foreground">
-                    {planLabels[child.plan]} · {child.teamVolume} pts
-                  </p>
-                </div>
-              </li>
-            ))}
-          </ul>
-        )}
-      </Card>
-    </li>
+    <button
+      type="button"
+      onClick={() => toast.info(`${member.firstName} ${member.lastName}`)}
+      className="flex w-full items-center gap-3 rounded-2xl border border-border bg-surface p-3.5 text-left shadow-card transition-colors active:bg-muted"
+    >
+      <DiscAvatar firstName={member.firstName} lastName={member.lastName} disc={member.disc} />
+      <div className="flex-1 min-w-0">
+        <p className="text-sm font-bold text-foreground">
+          {member.firstName} {member.lastName}
+        </p>
+        <p className="text-xs text-muted-foreground mt-0.5">
+          {planLabels[member.plan]} · {teamCount} dans l'équipe
+        </p>
+      </div>
+      <span className={cn(
+        'rounded-full px-2.5 py-1 text-[11px] font-bold',
+        isActive ? 'bg-green-500/15 text-green-600' : 'bg-muted text-muted-foreground'
+      )}>
+        {isActive ? 'Actif' : 'Inactif'}
+      </span>
+    </button>
   )
 }
