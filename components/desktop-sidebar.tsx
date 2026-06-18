@@ -49,7 +49,7 @@ export function DesktopSidebar({ collapsed, onToggle }: Props) {
       )}
     >
       {/* BusinessSwitcher + toggle collapse */}
-      <div className="flex items-center gap-2 px-3 py-3 shrink-0">
+      <div className={cn('flex items-center gap-2 py-3 shrink-0', collapsed ? 'justify-center px-0' : 'px-3')}>
         {collapsed ? (
           /* Replié : cercle = bouton d'expansion */
           <button
