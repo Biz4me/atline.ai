@@ -45,9 +45,9 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
   const [contact, setContact] = useState<typeof ariaContacts[0] | null>(null)
   const ref = useRef<HTMLDivElement>(null)
 
-  const filtered = ariaContacts.filter((c) =>
-    c.name.toLowerCase().includes(search.toLowerCase())
-  )
+  const filtered = ariaContacts
+    .filter((c) => c.name.toLowerCase().includes(search.toLowerCase()))
+    .sort((a, b) => a.name.localeCompare(b.name, 'fr'))
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -130,7 +130,7 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
               <div ref={ref} className="relative">
                 <div className={cn(
                   'flex items-center gap-2 rounded-xl border bg-muted px-3 py-2 transition-colors',
-                  open ? 'border-primary/40 ring-2 ring-primary/20' : 'border-border'
+                  open ? 'border-[#14B8A6]/40 ring-2 ring-[#14B8A6]/20' : 'border-border'
                 )}>
                   <Search className="size-3.5 shrink-0 text-muted-foreground stroke-[1.5]" />
                   <input
@@ -139,9 +139,9 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
                     onChange={(e) => {
                       setSearch(e.target.value)
                       setContact(null)
-                      setOpen(e.target.value.length > 0)
+                      setOpen(true)
                     }}
-                    onFocus={() => { if (search.length > 0 && !contact) setOpen(true) }}
+                    onFocus={() => { if (!contact) setOpen(true) }}
                     placeholder="Rechercher un contact..."
                     className="flex-1 bg-transparent text-xs text-foreground placeholder:text-muted-foreground outline-none"
                   />
