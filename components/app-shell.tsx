@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, type ReactNode } from 'react'
+import { useState, type ReactNode } from 'react'
 import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { DesktopSidebar } from '@/components/desktop-sidebar'
@@ -14,13 +14,12 @@ export function AppShell({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const hasSidebar = SECTIONS_WITH_SIDEBAR.some(s => pathname.startsWith(s))
   const atlasHidden = pathname === '/atlas' || pathname.startsWith('/atlas/')
-  const [collapsed, setCollapsed] = useState(false)
-  const [atlasCollapsed, setAtlasCollapsed] = useState(false)
-
-  useEffect(() => {
-    setCollapsed(localStorage.getItem('sidebar-collapsed') === '1')
-    setAtlasCollapsed(localStorage.getItem('atlas-sidebar-collapsed') === '1')
-  }, [])
+  const [collapsed, setCollapsed] = useState(() =>
+    typeof window !== 'undefined' ? localStorage.getItem('sidebar-collapsed') === '1' : false
+  )
+  const [atlasCollapsed, setAtlasCollapsed] = useState(() =>
+    typeof window !== 'undefined' ? localStorage.getItem('atlas-sidebar-collapsed') === '1' : false
+  )
 
   const toggle = () => {
     setCollapsed((v) => {
