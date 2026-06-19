@@ -32,15 +32,18 @@ export function DesktopTopBar() {
             <Link
               key={href}
               href={href}
+              title={label}
               className={cn(
-                'flex flex-col items-center gap-0.5 px-5 py-2 rounded-lg transition-colors',
+                'relative flex items-center justify-center size-10 rounded-lg transition-colors',
                 active
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               )}
             >
               <Icon className={cn('size-5', active ? 'stroke-[2]' : 'stroke-[1.5]')} />
-              <span className={cn('text-[10px] font-medium', active && 'font-bold')}>{label}</span>
+              {active && (
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full bg-primary" />
+              )}
             </Link>
           )
         })}

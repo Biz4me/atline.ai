@@ -1,13 +1,18 @@
 'use client'
 
 import { useState, useEffect, type ReactNode } from 'react'
+import { usePathname } from 'next/navigation'
 import { cn } from '@/lib/utils'
 import { DesktopSidebar } from '@/components/desktop-sidebar'
 import { AtlasSidebar } from '@/components/atlas-sidebar'
 import { DesktopTopBar } from '@/components/desktop-top-bar'
 import { BottomNav } from '@/components/bottom-nav'
 
+const SECTIONS_WITH_SIDEBAR = ['/home', '/contacts', '/formation', '/nova', '/network']
+
 export function AppShell({ children }: { children: ReactNode }) {
+  const pathname = usePathname()
+  const hasSidebar = SECTIONS_WITH_SIDEBAR.some(s => pathname.startsWith(s))
   const [collapsed, setCollapsed] = useState(false)
   const [atlasCollapsed, setAtlasCollapsed] = useState(false)
 
@@ -41,7 +46,7 @@ export function AppShell({ children }: { children: ReactNode }) {
         className={cn(
           'app-shell pb-[110px] lg:pb-0 lg:max-w-none lg:mx-0 lg:pt-14',
           'transition-[padding-left,padding-right] duration-200 ease-out',
-          collapsed ? 'lg:pl-16' : 'lg:pl-60',
+          !hasSidebar ? 'lg:pl-0' : collapsed ? 'lg:pl-14' : 'lg:pl-56',
           atlasCollapsed ? 'lg:pr-0' : 'lg:pr-[320px]',
         )}
       >
