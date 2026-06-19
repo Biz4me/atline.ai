@@ -494,6 +494,41 @@ export default function HomePage() {
           {/* ── Colonne droite ── */}
           <div className="flex flex-col gap-5">
 
+            {/* Sessions avec Atlas */}
+            <Card className="p-0 overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
+                <div className="flex items-center gap-2">
+                  <Sparkles className="size-4 stroke-[1.5] text-primary" />
+                  <span className="text-sm font-bold text-foreground">Sessions avec Atlas</span>
+                </div>
+                <Link href="/atlas" className="text-xs font-semibold text-primary">Tout voir →</Link>
+              </div>
+              <div className="flex flex-col gap-0.5 p-2">
+                {[
+                  { icon: Sparkles, label: "Stratégie — relances prospects c...", time: "Auj. · 09:12", score: null },
+                  { icon: Sparkles, label: "Débrief simulation — Closing", time: "Hier · 18:40", score: 88 },
+                  { icon: Sparkles, label: "Préparation call équipe", time: "Hier · 08:30", score: null },
+                ].map((s, i) => {
+                  const Icon = s.icon
+                  return (
+                    <Link key={i} href="/atlas"
+                      className="flex items-center gap-3 rounded-xl px-3 py-2.5 hover:bg-muted transition-colors group">
+                      <div className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-muted group-hover:bg-background transition-colors">
+                        <Icon className="size-3.5 text-muted-foreground stroke-[1.5]" />
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-medium text-foreground truncate">{s.label}</p>
+                        <p className="text-[11px] text-muted-foreground">{s.time}</p>
+                      </div>
+                      {s.score && (
+                        <span className="text-xs font-bold text-[#22c55e] shrink-0">{s.score}</span>
+                      )}
+                    </Link>
+                  )
+                })}
+              </div>
+            </Card>
+
             {/* Formation */}
             <Card className="p-0 overflow-hidden">
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
