@@ -189,11 +189,17 @@ const feedItems: FeedItem[] = [
 // ── Contacts ARIA (simulés) ───────────────────────────────────────────────────
 
 const JOURNAL = [
-  { label: 'Simulation ARIA — score 82/100', time: "Aujourd'hui · 10h14" },
-  { label: 'Contact ajouté — Marie Dupont (prospect)', time: 'Hier · 16h32' },
-  { label: 'Formation Module 2 terminé', time: 'Hier · 09h05' },
-  { label: 'Simulation ARIA — score 71/100', time: 'Lundi · 14h20' },
+  { label: 'Simulation ARIA — score 82/100', time: "Aujourd'hui · 10h14", agent: 'aria' },
+  { label: 'Contact ajouté — Marie Dupont (prospect)', time: 'Hier · 16h32', agent: null },
+  { label: 'Formation Module 2 terminé', time: 'Hier · 09h05', agent: null },
+  { label: 'Simulation ARIA — score 71/100', time: 'Lundi · 14h20', agent: 'aria' },
 ]
+
+const JOURNAL_DOT: Record<string, string> = {
+  aria:  '#14B8A6',
+  atlas: '#F97316',
+  nova:  '#8B5CF6',
+}
 
 // ── Page ─────────────────────────────────────────────────────────────────────
 
@@ -466,10 +472,10 @@ export default function HomePage() {
                 {JOURNAL.map((entry, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <div className="flex flex-col items-center shrink-0 pt-1">
-                      <div className={cn(
-                        'size-2 rounded-full shrink-0',
-                        i === 0 ? 'bg-primary' : 'bg-border'
-                      )} />
+                      <div
+                        className="size-2 rounded-full shrink-0"
+                        style={{ backgroundColor: entry.agent ? JOURNAL_DOT[entry.agent] : 'var(--border)' }}
+                      />
                       {i < JOURNAL.length - 1 && (
                         <div className="w-px flex-1 bg-border mt-1.5 min-h-[24px]" />
                       )}
