@@ -27,10 +27,10 @@ interface SidebarSection {
 
 const PIPELINE_STAGES = [
   { id: 'invitation',   label: 'Invitation',   color: '#3b82f6' },
-  { id: 'présentation', label: 'Présentation', color: '#F97316' },
-  { id: 'suivi',        label: 'Suivi',        color: '#f59e0b' },
+  { id: 'présentation', label: 'Présentation', color: '#f59e0b' },
+  { id: 'suivi',        label: 'Suivi',        color: '#dc2626' },
   { id: 'closing',      label: 'Closing',      color: '#22c55e' },
-  { id: 'démarré',      label: "Démarré",      color: '#8B5CF6' },
+  { id: 'démarré',      label: "Démarré",      color: '#14B8A6' },
 ] as const
 
 function CrmSidebarContent({ collapsed }: { collapsed: boolean }) {

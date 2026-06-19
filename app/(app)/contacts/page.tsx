@@ -614,10 +614,10 @@ function ContactsContent() {
                           <span className={cn(
                             'rounded-full px-2.5 py-0.5 text-[11px] font-medium',
                             c.stade === 'invitation'   && 'bg-[#3b82f6]/10 text-[#3b82f6]',
-                            c.stade === 'présentation' && 'bg-primary/10 text-primary',
-                            c.stade === 'suivi'        && 'bg-[#f59e0b]/10 text-[#f59e0b]',
+                            c.stade === 'présentation' && 'bg-[#f59e0b]/10 text-[#f59e0b]',
+                            c.stade === 'suivi'        && 'bg-[#dc2626]/10 text-[#dc2626]',
                             c.stade === 'closing'      && 'bg-[#22c55e]/10 text-[#22c55e]',
-                            c.stade === 'démarré'      && 'bg-[#8B5CF6]/10 text-[#8B5CF6]',
+                            c.stade === 'démarré'      && 'bg-[#14B8A6]/10 text-[#14B8A6]',
                           )}>
                             {c.stade.charAt(0).toUpperCase() + c.stade.slice(1)}
                           </span>
