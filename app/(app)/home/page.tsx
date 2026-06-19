@@ -310,7 +310,7 @@ export default function HomePage() {
               <div className="flex items-start gap-3 rounded-xl bg-muted/60 p-3">
                 <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-success text-white font-display text-base font-bold">82</span>
                 <div>
-                  <p className="text-[11px] font-semibold text-muted-foreground uppercase tracking-widest mb-0.5">Dernière session</p>
+                  <p className="text-[11px] text-muted-foreground uppercase tracking-widest mb-0.5">Dernière session</p>
                   <p className="text-xs text-foreground leading-relaxed italic">« Bonne accroche — travaille ta relance sur l'objection prix. »</p>
                 </div>
               </div>
@@ -359,7 +359,7 @@ export default function HomePage() {
                     </p>
                     <p className={cn(
                       'text-xs mt-0.5',
-                      allDone ? 'text-[#22c55e] font-semibold' : 'text-muted-foreground'
+                      allDone ? 'text-[#22c55e] font-medium' : 'text-muted-foreground'
                     )}>
                       {allDone ? 'Toutes les actions terminées ✓' : `${dailyTasks.filter((t) => !checkedTasks.has(t.id)).length} actions restantes`}
                     </p>
@@ -378,7 +378,7 @@ export default function HomePage() {
                     <Check className="size-5 text-[#22c55e] stroke-[2.5]" />
                   </span>
                   <div>
-                    <p className="text-sm font-semibold text-foreground">Plan du jour bouclé</p>
+                    <p className="text-sm font-bold text-foreground">Plan du jour bouclé</p>
                     <button type="button" onClick={() => setCheckedTasks(new Set())}
                       className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-0.5">
                       Tout décocher
@@ -454,7 +454,7 @@ export default function HomePage() {
                     </div>
                     <Link
                       href={item.cta}
-                      className="shrink-0 rounded-xl border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-foreground hover:bg-muted transition-colors"
+                      className="shrink-0 rounded-xl border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors"
                     >
                       {item.ctaLabel}
                     </Link>
@@ -577,7 +577,7 @@ export default function HomePage() {
                   ))}
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-foreground">12 membres actifs</p>
+                  <p className="text-sm font-bold text-foreground">12 membres actifs</p>
                   <p className="text-xs text-muted-foreground">2 nouveaux cette semaine</p>
                 </div>
               </div>

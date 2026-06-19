@@ -103,6 +103,20 @@ pm2 logs atline-app --lines 20
 - **Typographie :** `text-sm font-bold` pour titres, `text-xs text-muted-foreground` pour labels
 - Toujours utiliser les mêmes composants, couleurs et tailles que le mobile existant
 
+### Typographie — règle stricte (desktop)
+
+**4 niveaux, 2 graisses autorisées (`font-bold` et `font-medium`). Interdire `font-semibold` et `font-extrabold` sur les composants desktop.**
+
+| Niveau | Tailwind | Usage |
+|--------|---------|-------|
+| Titre | `text-sm font-bold` | Headers de cartes, titres de sections |
+| Corps | `text-sm font-medium` | Contenu principal, labels de nav |
+| Secondaire | `text-xs font-medium` | Boutons, liens, descriptions |
+| Méta | `text-[11px] text-muted-foreground` | Timestamps, sous-titres, info tertiaire |
+| Micro | `text-[10px] font-bold` | Scores, initiales avatars — exceptionnel uniquement |
+
+---
+
 ### Palette de couleurs — règle stricte
 
 **Ces 7 couleurs sont les SEULES autorisées dans toute l'interface.** Ne jamais introduire d'autres couleurs.

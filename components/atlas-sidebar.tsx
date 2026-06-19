@@ -96,7 +96,7 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
             {isOpen ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
           </button>
           {isOpen && (
-            <span className="ml-2 text-sm font-semibold text-foreground">Espace</span>
+            <span className="ml-2 text-sm font-bold text-foreground">Espace</span>
           )}
         </div>
 
@@ -170,7 +170,7 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
                     {contact.name.split(' ').map((n) => n[0]).join('')}
                   </span>
                   <div className="flex-1 min-w-0">
-                    <p className="text-xs font-semibold text-foreground">{contact.name}</p>
+                    <p className="text-xs font-medium text-foreground">{contact.name}</p>
                     <p className="text-[11px] text-muted-foreground">{contact.stage}</p>
                   </div>
                   <span className="rounded-full bg-primary/10 px-2 py-0.5 text-[10px] font-bold text-primary shrink-0">
@@ -196,7 +196,7 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
               <div className="flex items-start gap-2.5 rounded-xl bg-muted/60 p-2.5">
                 <span className="flex size-8 shrink-0 items-center justify-center rounded-lg bg-[#22c55e]/10 text-[#22c55e] text-xs font-bold">82</span>
                 <div className="min-w-0">
-                  <p className="text-[10px] font-semibold uppercase tracking-widest text-muted-foreground mb-0.5">Dernière · Sophie Laurent</p>
+                  <p className="text-[10px] font-medium uppercase tracking-widest text-muted-foreground mb-0.5">Dernière · Sophie Laurent</p>
                   <p className="text-[11px] text-foreground leading-relaxed italic">
                     &laquo; Bonne accroche — travaille ta relance sur l&apos;objection prix. &raquo;
                   </p>

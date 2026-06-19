@@ -104,7 +104,7 @@ export function DesktopSidebar({ collapsed, onToggle }: Props) {
         collapsed && 'justify-center px-0',
       )}>
         {!collapsed && (
-          <span className="flex-1 text-sm font-semibold text-foreground truncate">
+          <span className="flex-1 text-sm font-bold text-foreground truncate">
             {section.title}
           </span>
         )}
@@ -155,7 +155,7 @@ function NavItem({
       className={cn(
         'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors whitespace-nowrap',
         active
-          ? 'font-semibold'
+          ? 'font-bold'
           : 'text-muted-foreground hover:bg-muted hover:text-foreground',
         collapsed && 'justify-center px-0',
       )}
