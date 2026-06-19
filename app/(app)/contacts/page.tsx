@@ -18,7 +18,7 @@ import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
 type Segment = 'tous' | 'prospects' | 'clients' | 'partenaires'
-type SortKey = 'name' | 'disc' | 'stage' | 'city' | 'lastInteraction'
+type SortKey = 'name' | 'stade' | 'stage' | 'city' | 'lastInteraction'
 type SortDir = 'asc' | 'desc'
 
 const segmentConfig: Record<Segment, { label: string; stages: ContactStage[] }> = {
@@ -150,7 +150,7 @@ function ContactsContent() {
         let va = ''
         let vb = ''
         if (sortKey === 'name')            { va = `${a.firstName} ${a.lastName}`; vb = `${b.firstName} ${b.lastName}` }
-        else if (sortKey === 'disc')       { va = a.disc ?? ''; vb = b.disc ?? '' }
+        else if (sortKey === 'stade')      { va = a.stade ?? ''; vb = b.stade ?? '' }
         else if (sortKey === 'stage')      { va = a.stage; vb = b.stage }
         else if (sortKey === 'city')       { va = a.city ?? ''; vb = b.city ?? '' }
         else if (sortKey === 'lastInteraction') { va = a.lastInteraction ?? ''; vb = b.lastInteraction ?? '' }
@@ -409,7 +409,7 @@ function ContactsContent() {
                       <input type="checkbox" className="rounded border-border" />
                     </th>
                     <Th label="Contact"            sortKey="name"            {...thProps} className="min-w-[200px]" />
-                    <Th label="Personnalité"       sortKey="disc"            {...thProps} />
+                    <Th label="Stade"              sortKey="stade"           {...thProps} />
                     <Th label="Température"        sortKey="stage"           {...thProps} />
                     <Th label="Ville"              sortKey="city"            {...thProps} />
                     <Th label="Dernière activité"  sortKey="lastInteraction" {...thProps} />
@@ -452,14 +452,18 @@ function ContactsContent() {
                         </div>
                       </td>
 
-                      {/* Personnalité */}
+                      {/* Stade pipeline */}
                       <td className="px-4 py-3.5">
-                        {c.disc ? (
-                          <span
-                            className="flex size-6 items-center justify-center rounded-full text-[11px] font-bold text-white"
-                            style={{ backgroundColor: discHex[c.disc] }}
-                          >
-                            {c.disc}
+                        {c.stade ? (
+                          <span className={cn(
+                            'rounded-full px-2.5 py-0.5 text-[11px] font-medium',
+                            c.stade === 'invitation'   && 'bg-[#3b82f6]/10 text-[#3b82f6]',
+                            c.stade === 'présentation' && 'bg-primary/10 text-primary',
+                            c.stade === 'suivi'        && 'bg-[#f59e0b]/10 text-[#f59e0b]',
+                            c.stade === 'closing'      && 'bg-[#22c55e]/10 text-[#22c55e]',
+                            c.stade === 'démarré'      && 'bg-[#8B5CF6]/10 text-[#8B5CF6]',
+                          )}>
+                            {c.stade.charAt(0).toUpperCase() + c.stade.slice(1)}
                           </span>
                         ) : (
                           <span className="text-xs text-muted-foreground">—</span>

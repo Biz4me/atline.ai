@@ -11,6 +11,13 @@ export type ContactStage =
   | 'client'
   | 'partenaire'
 
+export type ContactPipelineStage =
+  | 'invitation'
+  | 'présentation'
+  | 'suivi'
+  | 'closing'
+  | 'démarré'
+
 export type Platform = 'instagram' | 'linkedin' | 'facebook' | 'whatsapp'
 
 export type Plan = 'distributeur' | 'pro' | 'leader'
@@ -28,6 +35,7 @@ export interface Contact {
   firstName: string
   lastName: string
   stage: ContactStage
+  stade?: ContactPipelineStage
   disc: DiscType | null
   source: string
   lastInteraction: string
