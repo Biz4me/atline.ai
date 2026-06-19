@@ -96,10 +96,7 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
             {isOpen ? <ChevronRight className="size-4" /> : <ChevronLeft className="size-4" />}
           </button>
           {isOpen && (
-            <div className="flex items-center gap-2 ml-2">
-              <Sparkles className="size-4 text-primary stroke-[1.5]" />
-              <span className="text-sm font-semibold text-foreground">Atlas</span>
-            </div>
+            <span className="ml-2 text-sm font-semibold text-foreground">Espace</span>
           )}
         </div>
 
