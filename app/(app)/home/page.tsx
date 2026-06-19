@@ -345,12 +345,11 @@ export default function HomePage() {
       <div className="hidden lg:block px-8 pt-8 pb-10 max-w-6xl mx-auto">
 
         {/* ── KPI Strip ── */}
-        <div className="grid grid-cols-4 gap-3 mb-6">
+        <div className="grid grid-cols-3 gap-3 mb-6">
           {[
-            { label: 'Contacts actifs',  value: '12',  sub: '+2 cette semaine' },
-            { label: 'Score ARIA',       value: '82',  sub: 'Moyenne 30 jours'  },
-            { label: 'Formation',        value: '60%', sub: 'Module 3 en cours' },
-            { label: 'Partenaires actifs', value: '4',   sub: 'sur 7 partenaires'  },
+            { label: 'Contacts actifs',    value: '12', sub: '+2 cette semaine'  },
+            { label: 'Score ARIA',         value: '82', sub: 'Moyenne 30 jours'  },
+            { label: 'Partenaires actifs', value: '4',  sub: 'sur 7 partenaires' },
           ].map((kpi) => (
             <Card key={kpi.label} className="px-4 py-3">
               <p className="text-xs font-medium text-muted-foreground">{kpi.label}</p>
@@ -483,33 +482,6 @@ export default function HomePage() {
               </div>
             </Card>
 
-            {/* Zone 3 — Journal de bord */}
-            <Card className="p-0 overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
-                <p className="text-sm font-bold text-foreground">Journal de bord</p>
-                <Link href="/notifications" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Voir tout →</Link>
-              </div>
-              <div className="px-5 py-4 flex flex-col gap-4">
-                {JOURNAL.slice(0, 3).map((entry, i) => (
-                  <div key={i} className="flex items-start gap-3">
-                    <div className="flex flex-col items-center shrink-0 pt-1">
-                      <div
-                        className="size-2 rounded-full shrink-0"
-                        style={{ backgroundColor: entry.agent ? JOURNAL_DOT[entry.agent] : 'var(--border)' }}
-                      />
-                      {i < 2 && (
-                        <div className="w-px flex-1 bg-border mt-1.5 min-h-[24px]" />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0 pb-1">
-                      <p className="text-sm text-foreground leading-snug">{entry.label}</p>
-                      <p className="text-xs text-muted-foreground mt-0.5">{entry.time}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </Card>
-
           </div>
 
           {/* ── Colonne droite ── */}
@@ -574,32 +546,6 @@ export default function HomePage() {
                       <p className="text-[11px] text-muted-foreground mt-0.5">{s.label}</p>
                     </div>
                   ))}
-                </div>
-              </div>
-            </Card>
-
-            {/* Communauté */}
-            <Card className="p-0 overflow-hidden">
-              <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
-                <span className="text-sm font-bold text-foreground">Communauté</span>
-                <Link href="/communaute" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Voir →</Link>
-              </div>
-              <div className="p-4 flex items-center gap-3">
-                <div className="flex -space-x-2">
-                  {[
-                    { initials: 'SL', bg: 'bg-muted' },
-                    { initials: 'JM', bg: 'bg-muted' },
-                    { initials: 'KB', bg: 'bg-muted' },
-                    { initials: 'NB', bg: 'bg-muted' },
-                  ].map((a) => (
-                    <span key={a.initials} className={cn('flex size-8 items-center justify-center rounded-full border-2 border-background text-[10px] font-bold text-muted-foreground', a.bg)}>
-                      {a.initials}
-                    </span>
-                  ))}
-                </div>
-                <div>
-                  <p className="text-sm font-bold text-foreground">12 membres actifs</p>
-                  <p className="text-xs text-muted-foreground">2 nouveaux cette semaine</p>
                 </div>
               </div>
             </Card>
