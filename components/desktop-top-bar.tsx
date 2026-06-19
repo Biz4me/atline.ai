@@ -2,16 +2,15 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Compass, Users, BookOpen, Zap, GitFork, MessageSquare, CalendarDays, Sparkles } from 'lucide-react'
+import { Waypoints, Users, BookOpen, Zap, MessageSquare, CalendarDays, Sparkles } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { BusinessSwitcher } from '@/components/business-switcher'
 
 const NAV_TABS = [
-  { href: '/home',       icon: Compass,      label: 'Parcours'                },
-  { href: '/contacts',   icon: Users,        label: 'CRM'                     },
-  { href: '/formation',  icon: BookOpen,     label: 'Formation'               },
-  { href: '/nova',       icon: Zap,          label: 'Nova',  color: '#8B5CF6' },
-  { href: '/network',    icon: GitFork,      label: 'Réseau'                  },
+  { href: '/home',      icon: Waypoints, label: 'Parcours'                },
+  { href: '/contacts',  icon: Users,     label: 'CRM'                     },
+  { href: '/formation', icon: BookOpen,  label: 'Formation'               },
+  { href: '/nova',      icon: Zap,       label: 'Nova', color: '#8B5CF6'  },
 ]
 
 export function DesktopTopBar() {
@@ -25,7 +24,7 @@ export function DesktopTopBar() {
       </div>
 
       {/* Center — section tabs */}
-      <div className="flex flex-1 items-center justify-center gap-1">
+      <div className="flex h-full items-stretch justify-center">
         {NAV_TABS.map(({ href, icon: Icon, label, color: agentColor }) => {
           const active = pathname === href || pathname.startsWith(href + '/')
           return (
@@ -34,14 +33,14 @@ export function DesktopTopBar() {
               href={href}
               title={label}
               className={cn(
-                'relative flex items-center justify-center size-10 rounded-lg transition-colors',
-                active && !agentColor ? 'text-primary' : !active ? 'text-muted-foreground hover:text-foreground hover:bg-muted' : ''
+                'relative flex items-center justify-center px-5 transition-colors',
+                active && !agentColor ? 'text-primary' : !active ? 'text-muted-foreground hover:text-foreground' : ''
               )}
               style={active && agentColor ? { color: agentColor } : undefined}
             >
               <Icon className={cn('size-5', active ? 'stroke-[2]' : 'stroke-[1.5]')} />
               {active && (
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-4 h-0.5 rounded-full bg-primary" />
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-primary" />
               )}
             </Link>
           )
