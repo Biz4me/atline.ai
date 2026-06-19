@@ -37,9 +37,9 @@ export function DesktopTopBar() {
                 active ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
               )}
             >
-              <Icon className={cn('size-5', active ? 'stroke-[2]' : 'stroke-[1.5]')} />
+              <Icon className={cn('size-[22px]', active ? 'stroke-[2]' : 'stroke-[1.5]')} />
               {active && (
-                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-5 h-0.5 bg-primary" />
+                <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-8 h-[3px] bg-primary" />
               )}
             </Link>
           )
