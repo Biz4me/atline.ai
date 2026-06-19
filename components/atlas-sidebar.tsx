@@ -121,7 +121,7 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
               <div className="flex items-center gap-1.5">
                 <p className="text-sm font-bold text-foreground">Simulateur ARIA</p>
               </div>
-              <Link href="/aria" className="text-xs font-semibold text-primary">Voir tout →</Link>
+              <Link href="/aria" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Voir tout →</Link>
             </div>
             <div className="p-4 flex flex-col gap-3">
 
@@ -217,7 +217,7 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
           <div className="rounded-xl border border-border bg-surface overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <p className="text-sm font-bold text-foreground">Prochains rendez-vous</p>
-              <Link href="/agenda" className="text-xs font-semibold text-primary">Agenda →</Link>
+              <Link href="/agenda" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Agenda →</Link>
             </div>
             <div className="px-4 py-3 flex flex-col gap-3">
               {RDV.map((r, i) => (

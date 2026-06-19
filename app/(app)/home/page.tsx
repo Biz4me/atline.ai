@@ -263,7 +263,7 @@ export default function HomePage() {
                 <CalendarDays className="size-4 stroke-[1.5] text-muted-foreground" />
                 <span className="text-sm font-bold text-foreground">Agenda du jour</span>
               </div>
-              <Link href="/nova" className="text-xs font-semibold text-primary">Voir tout →</Link>
+              <Link href="/nova" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Voir tout →</Link>
             </div>
             <div className="divide-y divide-border">
               {agenda.map((item) => (
@@ -434,7 +434,7 @@ export default function HomePage() {
             <Card className="p-0 overflow-hidden">
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
                 <p className="text-sm font-bold text-foreground">Mon réseau bouge</p>
-                <Link href="/network" className="text-xs font-semibold text-primary">Voir →</Link>
+                <Link href="/network" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Voir →</Link>
               </div>
               <div className="divide-y divide-border">
                 {(feedItems.filter((f) => f.kind === 'network') as FeedNetwork[]).map((item) => (
@@ -497,7 +497,7 @@ export default function HomePage() {
                 <div className="flex items-center gap-2">
                   <span className="text-sm font-bold text-foreground">Sessions avec Atlas</span>
                 </div>
-                <Link href="/atlas" className="text-xs font-semibold text-primary">Tout voir →</Link>
+                <Link href="/atlas" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Tout voir →</Link>
               </div>
               <div className="flex flex-col gap-0.5 p-2">
                 {[
@@ -529,7 +529,7 @@ export default function HomePage() {
             <Card className="p-0 overflow-hidden">
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
                 <span className="text-sm font-bold text-foreground">Formation</span>
-                <Link href="/formation" className="text-xs font-semibold text-primary">Continuer →</Link>
+                <Link href="/formation" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Continuer →</Link>
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
@@ -558,7 +558,7 @@ export default function HomePage() {
             <Card className="p-0 overflow-hidden">
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
                 <span className="text-sm font-bold text-foreground">Communauté</span>
-                <Link href="/communaute" className="text-xs font-semibold text-primary">Voir →</Link>
+                <Link href="/communaute" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Voir →</Link>
               </div>
               <div className="p-4 flex items-center gap-3">
                 <div className="flex -space-x-2">
