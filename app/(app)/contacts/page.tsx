@@ -385,12 +385,15 @@ function ContactsContent() {
       </div>
 
       {/* ══ DESKTOP ═════════════════════════════════════════════ */}
-      <div className="hidden lg:flex flex-col h-[calc(100dvh-56px)] overflow-hidden bg-muted/40 px-4 pt-4 pb-4 gap-3">
+      <div className="hidden lg:flex flex-col h-[calc(100dvh-56px)] overflow-hidden bg-muted/40 p-4">
 
-        {/* Sub-header — flottant sur le fond gris */}
-        <div className="flex items-center justify-between shrink-0 px-1">
+        {/* Card — même composant que la Home */}
+        <div className="flex flex-col flex-1 overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
+
+        {/* Sub-header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
           <div className="flex items-center gap-3">
-            <h1 className="text-lg font-bold text-foreground">Mes contacts</h1>
+            <h1 className="text-sm font-bold text-foreground">Mes contacts</h1>
             <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
               {list.length}
             </span>
@@ -401,11 +404,11 @@ function ContactsContent() {
               <button
                 type="button"
                 onClick={() => setExportImportOpen((o) => !o)}
-                className="flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="flex items-center gap-2 rounded-xl border border-border bg-background px-3.5 py-2 text-xs font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               >
-                <Download className="size-4 stroke-[1.5]" />
+                <Download className="size-3.5 stroke-[1.5]" />
                 Export / Import
-                <ChevronDown className={cn('size-3.5 stroke-2 transition-transform', exportImportOpen && 'rotate-180')} />
+                <ChevronDown className={cn('size-3 stroke-2 transition-transform', exportImportOpen && 'rotate-180')} />
               </button>
               {exportImportOpen && (
                 <div className="absolute right-0 top-full mt-1.5 z-20 min-w-[200px] rounded-xl border border-border bg-surface shadow-lg overflow-hidden py-1">
@@ -432,19 +435,16 @@ function ContactsContent() {
             <button
               type="button"
               onClick={() => setAddOpen(true)}
-              className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="flex items-center gap-2 rounded-xl bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground hover:bg-primary/90 transition-colors"
             >
-              <Plus className="size-4 stroke-2" />
+              <Plus className="size-3.5 stroke-2" />
               Ajouter un contact
             </button>
           </div>
         </div>
 
-        {/* Toolbar + table + pagination — directement sur le fond gris */}
-        <div className="flex flex-col flex-1 overflow-hidden">
-
         {/* Toolbar */}
-        <div className="flex items-center gap-3 px-1 pb-3 shrink-0">
+        <div className="flex items-center gap-3 border-b border-border px-6 py-3 shrink-0">
           {/* Recherche */}
           <div className="relative w-64 shrink-0">
             <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
@@ -518,8 +518,8 @@ function ContactsContent() {
           </div>
         </div>
 
-        {/* Main : table + pagination — même Card que la Home */}
-        <div className="flex flex-col flex-1 overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
+        {/* Main : table + pagination */}
+        <div className="flex flex-col flex-1 overflow-hidden">
 
           {/* Table — scroll sans barre visible */}
           <div className="flex-1 overflow-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
@@ -540,7 +540,7 @@ function ContactsContent() {
               </div>
             ) : (
               <table className="w-full border-collapse">
-                <thead className="sticky top-0 z-10 bg-background border-b border-border">
+                <thead className="sticky top-0 z-10 bg-surface border-b border-border">
                   <tr>
                     <Th label="Contact"            sortKey="name"            {...thProps} className="min-w-[200px]" />
                     <ThFilter
