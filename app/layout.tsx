@@ -38,8 +38,8 @@ export default function RootLayout({
       <head>
         <link rel="preconnect" href="https://api.fontshare.com" />
         <link rel="stylesheet" href={cabinetGroteskHref} />
-        {/* Blocking script — reads localStorage BEFORE React hydrates to avoid sidebar flash */}
-        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var h=document.documentElement;if(localStorage.getItem('sidebar-collapsed')==='1')h.setAttribute('data-sc','1');if(localStorage.getItem('atlas-sidebar-collapsed')==='1')h.setAttribute('data-ac','1');}catch(e){}})();` }} />
+        {/* Blocking script — runs before first paint, sets sc/ac classes + disables transitions during hydration */}
+        <script dangerouslySetInnerHTML={{ __html: `(function(){try{var h=document.documentElement;h.classList.add('no-transitions');if(localStorage.getItem('sidebar-collapsed')==='1')h.classList.add('sc');if(localStorage.getItem('atlas-sidebar-collapsed')==='1')h.classList.add('ac');}catch(e){}})();` }} />
       </head>
       <body className="font-sans antialiased">
         {children}
