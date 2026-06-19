@@ -95,12 +95,6 @@ const timelineIcons = {
   meeting: CalendarPlus,
 }
 
-/* ── Prospect stages ─────────────────────────────────────────── */
-const prospectStages = ['nouveau', 'contacte', 'qualifie', 'chaud'] as const
-const prospectStageLabel: Record<string, string> = {
-  nouveau: 'Nouveau', contacte: 'Contacté', qualifie: 'Qualifié', chaud: 'Chaud',
-}
-
 /* ── Edit Sheet ───────────────────────────────────────────────── */
 const discOptions = [
   { key: 'D', label: 'Rouge', color: '#DC2626' },
@@ -223,7 +217,7 @@ function EditSheet({
   )
 }
 
-/* ── Section header ───────────────────────────────────────────── */
+/* ── Section card ─────────────────────────────────────────────── */
 function SectionCard({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
   return (
     <Card className="flex flex-col overflow-hidden shrink-0">
@@ -231,9 +225,7 @@ function SectionCard({ title, action, children }: { title: string; action?: Reac
         <p className="text-xs font-bold text-foreground">{title}</p>
         {action}
       </div>
-      <div className="px-5 py-4">
-        {children}
-      </div>
+      <div className="px-5 py-4">{children}</div>
     </Card>
   )
 }
@@ -259,7 +251,6 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
     { icon: CalendarPlus, label: 'RDV',     href: undefined, action: () => toast.success('Planifier un RDV') },
   ]
 
-  /* ── Mock data (sera remplacé par vraies API) ── */
   const mockAppointments = [
     { id: '1', title: "Présentation de l'opportunité", date: '24 juin 2026 · 14h00', type: 'VISIO', done: false },
     { id: '2', title: 'Suivi post-présentation', date: '18 juin 2026 · 10h30', type: 'CALL', done: true, outcome: 'POSITIF' },
@@ -271,8 +262,10 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
   const mockSimSessions = [
     { id: '1', phase: 'INVITATION', score: 8, date: 'Hier · 18:30', character: 'Sophie 34' },
   ]
+
   const isPartenaire = contact.stage === 'partenaire'
   const isClient = contact.stage === 'client'
+
   const mockPartnerExtra = {
     status: 'ENROUTE', onAtline: true, simSessions: 4, courseDone: 2, prospects: 12,
     volume: 340, scoreAtline: 72,
@@ -321,23 +314,28 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
           </button>
         </div>
 
-        {/* Grid */}
-        <div className="grid grid-cols-[280px_1fr] gap-4 flex-1 min-h-0 overflow-hidden">
+        {/* Grid 2 colonnes */}
+        <div className="grid grid-cols-[300px_1fr] gap-4 flex-1 min-h-0 overflow-hidden">
 
-          {/* ── Colonne gauche ── */}
+          {/* ── GAUCHE : identité ── */}
           <Card className="flex flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
             {/* Avatar */}
-            <div className="flex flex-col items-center gap-2 px-5 pt-6 pb-4 text-center border-b border-border shrink-0">
+            <div className="flex flex-col items-center gap-2 px-5 pt-6 pb-5 shrink-0">
               <div className="flex size-16 items-center justify-center rounded-full text-xl font-bold text-white bg-muted"
                 style={avatarBg ? { backgroundColor: avatarBg } : undefined}>
                 {initials}
               </div>
-              {contact.city && <p className="text-[11px] text-muted-foreground">{contact.city}</p>}
+              {contact.city && (
+                <div className="flex items-center gap-1 text-[11px] text-muted-foreground">
+                  <MapPin className="size-3 stroke-[1.5]" />
+                  {contact.city}
+                </div>
+              )}
             </div>
 
-            {/* Action tiles */}
-            <div className="grid grid-cols-3 gap-2 px-4 py-4 shrink-0 border-b border-border">
+            {/* Actions rapides */}
+            <div className="grid grid-cols-3 gap-2 px-4 pb-4 shrink-0">
               {actionTiles.map((tile) => {
                 const Icon = tile.icon
                 const cls = 'flex flex-col items-center gap-1.5 rounded-xl border border-border bg-background py-3 text-center transition-colors hover:bg-muted/40'
@@ -357,9 +355,9 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
             </div>
 
             {/* Simuler + Atlas */}
-            <div className="grid grid-cols-2 gap-2 px-4 py-4 shrink-0 border-b border-border">
+            <div className="grid grid-cols-2 gap-2 px-4 pb-4 shrink-0">
               <Link href={`/aria?contact=${contact.id}`}
-                className="flex items-center justify-center gap-1.5 rounded-xl bg-primary/10 py-2.5 text-xs font-bold text-primary transition-colors hover:bg-primary/15">
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-[#14B8A6]/10 py-2.5 text-xs font-bold text-[#14B8A6] transition-colors hover:bg-[#14B8A6]/15">
                 <Mic className="size-3.5 stroke-[1.5]" />
                 Simuler
               </Link>
@@ -370,145 +368,99 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
               </button>
             </div>
 
-            {/* Infos rapides */}
-            <div className="flex flex-col divide-y divide-border px-1">
-              {contact.phone && (
-                <div className="flex items-center gap-3 px-3 py-3">
-                  <Phone className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
-                  <a href={`tel:${contact.phone}`} className="text-xs font-medium text-primary truncate">{contact.phone}</a>
+            {/* Coordonnées */}
+            <div className="border-t border-border">
+              <p className="px-5 pt-4 pb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Coordonnées</p>
+              <div className="flex flex-col divide-y divide-border px-1 pb-2">
+                {contact.phone && (
+                  <div className="flex items-center gap-3 px-4 py-2.5">
+                    <Phone className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
+                    <a href={`tel:${contact.phone}`} className="text-xs font-medium text-primary truncate">{contact.phone}</a>
+                  </div>
+                )}
+                {contact.email && (
+                  <div className="flex items-center gap-3 px-4 py-2.5">
+                    <Mail className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
+                    <span className="text-xs text-muted-foreground truncate">{contact.email}</span>
+                  </div>
+                )}
+                {contact.source && (
+                  <div className="flex items-center gap-3 px-4 py-2.5">
+                    <Link2 className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
+                    <span className={cn('text-xs font-medium truncate', sourceColor(contact.source))}>{contact.source}</span>
+                  </div>
+                )}
+                <div className="flex items-center gap-3 px-4 py-2.5">
+                  <Clock className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
+                  <span className="text-[11px] text-muted-foreground">
+                    Dernier · <span className="font-medium text-foreground">{contact.lastInteraction}</span>
+                  </span>
                 </div>
-              )}
-              {contact.email && (
-                <div className="flex items-center gap-3 px-3 py-3">
-                  <Mail className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground truncate">{contact.email}</span>
-                </div>
-              )}
-              {contact.source && (
-                <div className="flex items-center gap-3 px-3 py-3">
-                  <Link2 className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
-                  <span className={cn('text-xs font-medium truncate', sourceColor(contact.source))}>{contact.source}</span>
-                </div>
-              )}
-              <div className="flex items-center gap-3 px-3 py-3">
-                <Clock className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
-                <span className="text-[11px] text-muted-foreground">
-                  Dernier contact · <span className="font-medium text-foreground">{contact.lastInteraction}</span>
-                </span>
               </div>
             </div>
-          </Card>
 
-          {/* ── Colonne droite — toutes sections ── */}
-          <div className="flex flex-col gap-4 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+            {/* DISC */}
+            <div className="border-t border-border">
+              <p className="px-5 pt-4 pb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Personnalité</p>
+              <div className="px-4 pb-4">
+                {contact.disc ? (
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center gap-3">
+                      <span className="flex size-9 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white"
+                        style={{ backgroundColor: personalityBg[contact.disc] }}>
+                        {personalityName[contact.disc][0]}
+                      </span>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-xs font-bold text-foreground">{personalityName[contact.disc]}</p>
+                        <p className="text-[11px] text-muted-foreground leading-relaxed">{personalityDesc[contact.disc]}</p>
+                      </div>
+                    </div>
+                    <div className="rounded-xl bg-muted/50 px-3 py-2.5">
+                      <p className="text-[10px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Comment approcher</p>
+                      <p className="text-[11px] text-foreground leading-relaxed">{personalityApproach[contact.disc]}</p>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex items-center gap-3 rounded-xl border border-dashed border-border p-3">
+                    <HelpCircle className="size-4 shrink-0 text-muted-foreground stroke-[1.5]" />
+                    <Link href={`/disc-quiz/${contact.id}`} className="flex-1 text-xs text-muted-foreground hover:text-foreground transition-colors">
+                      Définir le profil DISC →
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </div>
 
-            {/* 1. Profil complet */}
-            <SectionCard title="Profil" action={
-              <button type="button" onClick={() => setEditOpen(true)} className="text-xs font-medium text-primary">Modifier →</button>
-            }>
-              <div className="flex flex-col gap-4">
-                {/* Kind + Stage */}
-                <div className="flex items-center gap-3 flex-wrap">
-                  <span className={cn('rounded-full px-3 py-1 text-xs font-bold', stagePill[contact.stage] ?? 'bg-muted text-muted-foreground')}>
-                    {statut}
-                  </span>
-                  <span className={cn('rounded-full px-3 py-1 text-xs font-bold', stagePill[contact.stage] ?? 'bg-muted text-muted-foreground')}>
-                    {stageLabel[contact.stage]}
-                  </span>
-                </div>
-                {/* Score */}
+            {/* Score + Tags */}
+            <div className="border-t border-border">
+              <p className="px-5 pt-4 pb-2 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Profil</p>
+              <div className="px-4 pb-5 flex flex-col gap-3">
                 <div>
                   <div className="flex items-center justify-between mb-1.5">
-                    <p className="text-[11px] font-medium text-muted-foreground">Score de chaleur</p>
+                    <p className="text-[11px] text-muted-foreground">Score de chaleur</p>
                     <p className="text-xs font-bold text-foreground">72 / 100</p>
                   </div>
                   <div className="h-1.5 rounded-full bg-muted overflow-hidden">
                     <div className="h-full rounded-full bg-primary" style={{ width: '72%' }} />
                   </div>
                 </div>
-                {/* Tags */}
                 <div className="flex flex-wrap gap-1.5">
                   {['Motivé', 'Réseau social', 'Parent'].map((tag) => (
-                    <span key={tag} className="rounded-lg bg-muted px-2.5 py-1 text-[11px] font-medium text-muted-foreground">{tag}</span>
+                    <span key={tag} className="rounded-lg bg-muted px-2 py-1 text-[11px] font-medium text-muted-foreground">{tag}</span>
                   ))}
-                  <button type="button" className="rounded-lg border border-dashed border-border px-2.5 py-1 text-[11px] font-medium text-muted-foreground hover:bg-muted transition-colors">
+                  <button type="button" className="rounded-lg border border-dashed border-border px-2 py-1 text-[11px] font-medium text-muted-foreground hover:bg-muted transition-colors">
                     + Tag
                   </button>
                 </div>
               </div>
-            </SectionCard>
+            </div>
 
-            {/* 2. Personnalité DISC */}
-            <SectionCard title="Personnalité DISC" action={
-              <button type="button" onClick={() => setEditOpen(true)} className="text-xs font-medium text-primary">Modifier →</button>
-            }>
-              {contact.disc ? (
-                <div className="flex flex-col gap-3">
-                  <div className="flex items-center gap-3">
-                    <span className="flex size-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white"
-                      style={{ backgroundColor: personalityBg[contact.disc] }}>
-                      {personalityName[contact.disc][0]}
-                    </span>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-bold text-foreground">{personalityName[contact.disc]}</p>
-                      <p className="text-xs text-muted-foreground leading-relaxed">{personalityDesc[contact.disc]}</p>
-                    </div>
-                  </div>
-                  <div className="rounded-xl bg-muted/50 px-4 py-3">
-                    <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground mb-1">Comment l'approcher</p>
-                    <p className="text-xs text-foreground leading-relaxed">{personalityApproach[contact.disc]}</p>
-                  </div>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/50 p-4">
-                  <HelpCircle className="size-5 shrink-0 text-muted-foreground stroke-[1.5]" />
-                  <span className="flex-1 text-sm text-muted-foreground">Profil de personnalité non défini</span>
-                  <Link href={`/disc-quiz/${contact.id}`} className="shrink-0 rounded-xl border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors">
-                    Définir le profil
-                  </Link>
-                </div>
-              )}
-            </SectionCard>
+          </Card>
 
-            {/* 3. Coordonnées */}
-            <SectionCard title="Coordonnées" action={
-              <button type="button" onClick={() => setEditOpen(true)} className="text-xs font-medium text-primary">Modifier →</button>
-            }>
-              <div className="flex flex-col divide-y divide-border rounded-xl border border-border bg-background overflow-hidden">
-                {contact.phone && (
-                  <div className="flex items-center gap-3 px-4 py-3">
-                    <Phone className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-                    <a href={`tel:${contact.phone}`} className="text-sm font-medium text-primary">{contact.phone}</a>
-                  </div>
-                )}
-                {contact.email && (
-                  <div className="flex items-center gap-3 px-4 py-3">
-                    <Mail className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">{contact.email}</span>
-                  </div>
-                )}
-                {contact.city && (
-                  <div className="flex items-center gap-3 px-4 py-3">
-                    <MapPin className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">{contact.city}</span>
-                  </div>
-                )}
-                {contact.source && (
-                  <div className="flex items-center gap-3 px-4 py-3">
-                    <Link2 className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-                    <span className={cn('text-sm font-medium', sourceColor(contact.source))}>Rencontré sur {contact.source}</span>
-                  </div>
-                )}
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <Clock className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">
-                    Dernier contact · <span className="font-medium text-foreground">{contact.lastInteraction}</span>
-                  </span>
-                </div>
-              </div>
-            </SectionCard>
+          {/* ── DROITE : activité ── */}
+          <div className="flex flex-col gap-4 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
 
-            {/* 4. Notes */}
+            {/* 1. Notes */}
             <Card className="flex flex-col overflow-hidden shrink-0">
               <div className="flex items-center justify-between px-5 py-3 border-b border-border">
                 <p className="text-xs font-bold text-foreground">Notes</p>
@@ -524,11 +476,11 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
                   </button>
                 )}
               </div>
-              <div className="px-5 py-4 min-h-[80px]">
+              <div className="px-5 py-4 min-h-[72px]">
                 {notesEditing ? (
                   <textarea value={notesValue} onChange={(e) => setNotesValue(e.target.value)}
                     placeholder="Ajoute un contexte pour mieux suivre ce contact..."
-                    rows={4}
+                    rows={3}
                     className="w-full resize-none bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground leading-relaxed" autoFocus />
                 ) : notesValue ? (
                   <p className="text-sm leading-relaxed text-muted-foreground">{notesValue}</p>
@@ -540,7 +492,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </Card>
 
-            {/* 5. Rendez-vous */}
+            {/* 2. Rendez-vous */}
             <SectionCard title="Rendez-vous" action={
               <button type="button" onClick={() => toast.success('Planifier un RDV')}
                 className="rounded-lg bg-primary px-3 py-1 text-xs font-bold text-primary-foreground">
@@ -568,7 +520,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
               )}
             </SectionCard>
 
-            {/* 6. Messagerie */}
+            {/* 3. Messagerie */}
             <SectionCard title="Messagerie" action={
               <Link href={`/messages/${contact.id}`} className="text-xs font-medium text-primary">Voir tout →</Link>
             }>
@@ -589,7 +541,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </SectionCard>
 
-            {/* 7. Sessions Atlas */}
+            {/* 4. Sessions Atlas */}
             <SectionCard title="Sessions Atlas" action={
               <Link href="/atlas" className="text-xs font-medium text-primary">Nouvelle session →</Link>
             }>
@@ -607,9 +559,9 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </SectionCard>
 
-            {/* 8. Simulations ARIA */}
+            {/* 5. Simulations ARIA */}
             <SectionCard title="Simulations ARIA" action={
-              <Link href={`/aria?contact=${contact.id}`} className="text-xs font-medium text-primary">Simuler →</Link>
+              <Link href={`/aria?contact=${contact.id}`} className="text-xs font-medium text-[#14B8A6]">Simuler →</Link>
             }>
               {mockSimSessions.length === 0 ? (
                 <p className="text-sm text-muted-foreground">Aucune simulation réalisée avec ce contact.</p>
@@ -617,7 +569,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
                 <div className="flex flex-col gap-2">
                   {mockSimSessions.map((sim) => (
                     <div key={sim.id} className="flex items-center gap-3 rounded-xl border border-border bg-background px-4 py-3">
-                      <Mic className="size-4 shrink-0 stroke-[1.5] text-primary" />
+                      <Mic className="size-4 shrink-0 stroke-[1.5] text-[#14B8A6]" />
                       <div className="flex-1 min-w-0">
                         <p className="text-sm font-medium text-foreground">Phase {sim.phase} · {sim.character}</p>
                         <p className="text-[11px] text-muted-foreground mt-0.5">{sim.date}</p>
@@ -629,10 +581,10 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
               )}
             </SectionCard>
 
-            {/* 9. Données Partenaire (si partenaire) */}
+            {/* 6. Activité partenaire (si partenaire) */}
             {isPartenaire && (
               <SectionCard title="Activité partenaire">
-                <div className="grid grid-cols-3 gap-3 mb-4">
+                <div className="grid grid-cols-3 gap-3 mb-3">
                   {[
                     { icon: TrendingUp, label: 'Score Atline', value: String(mockPartnerExtra.scoreAtline) },
                     { icon: Users,      label: 'Prospects',   value: String(mockPartnerExtra.prospects) },
@@ -667,7 +619,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
               </SectionCard>
             )}
 
-            {/* 10. Données Client (si client) */}
+            {/* 7. Données client (si client) */}
             {isClient && (
               <SectionCard title="Données client">
                 <div className="flex flex-col divide-y divide-border rounded-xl border border-border bg-background overflow-hidden">
@@ -702,7 +654,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
               </SectionCard>
             )}
 
-            {/* 11. Historique complet */}
+            {/* 8. Historique */}
             <SectionCard title="Historique">
               {contact.timeline.length === 0 ? (
                 <p className="text-sm text-muted-foreground">Aucune interaction pour le moment.</p>
