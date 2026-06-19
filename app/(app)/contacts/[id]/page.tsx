@@ -275,6 +275,8 @@ export default function ContactDetailPage({
   if (!contact) notFound()
 
   const [editOpen, setEditOpen] = useState(false)
+  const [notesEditing, setNotesEditing] = useState(false)
+  const [notesValue, setNotesValue] = useState(contact.notes ?? '')
 
   const initials = `${contact.firstName[0]}${contact.lastName[0]}`
   const avatarBg = contact.disc ? personalityBg[contact.disc] : undefined
@@ -556,60 +558,71 @@ export default function ContactDetailPage({
             </div>
           </Card>
 
-          {/* Right column — 3 cards */}
-          <div className="flex flex-col gap-4 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+          {/* Right — grille 2×2 */}
+          <div className="grid grid-cols-2 grid-rows-2 gap-4 min-h-0 overflow-hidden">
 
-            {/* Card Personnalité */}
-            <Card className="px-6 py-5 flex flex-col gap-4">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-primary">Personnalité</p>
-              {contact.disc ? (
-                <div className="flex items-center gap-4 rounded-xl border border-border bg-background px-4 py-3">
-                  <span
-                    className="flex size-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white"
-                    style={{ backgroundColor: personalityBg[contact.disc] }}
-                  >
-                    {personalityName[contact.disc][0]}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-foreground">{personalityName[contact.disc]}</p>
-                    <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{personalityDesc[contact.disc]}</p>
+            {/* 1 — Personnalité */}
+            <Card className="flex flex-col overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0">
+                <p className="text-xs font-bold text-foreground">Personnalité</p>
+                <button type="button" onClick={() => setEditOpen(true)} className="text-xs font-medium text-primary">
+                  Modifier →
+                </button>
+              </div>
+              <div className="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-5 py-4">
+                {contact.disc ? (
+                  <div className="flex items-center gap-3">
+                    <span
+                      className="flex size-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white"
+                      style={{ backgroundColor: personalityBg[contact.disc] }}
+                    >
+                      {personalityName[contact.disc][0]}
+                    </span>
+                    <div className="min-w-0">
+                      <p className="text-sm font-bold text-foreground">{personalityName[contact.disc]}</p>
+                      <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{personalityDesc[contact.disc]}</p>
+                    </div>
                   </div>
-                  <button type="button" onClick={() => setEditOpen(true)} className="shrink-0 text-xs font-medium text-primary">
-                    Modifier →
-                  </button>
-                </div>
-              ) : (
-                <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/50 p-4">
-                  <HelpCircle className="size-5 shrink-0 text-muted-foreground stroke-[1.5]" />
-                  <span className="flex-1 text-sm text-muted-foreground">Profil de personnalité non défini</span>
-                  <Link href={`/disc-quiz/${contact.id}`} className="shrink-0 rounded-xl border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors">
-                    Définir le profil
-                  </Link>
-                </div>
-              )}
-              <div className="flex flex-col divide-y divide-border rounded-xl border border-border bg-background overflow-hidden">
+                ) : (
+                  <div className="flex flex-col items-center gap-3 py-4 text-center">
+                    <HelpCircle className="size-8 text-muted-foreground stroke-[1.5]" />
+                    <p className="text-xs text-muted-foreground">Profil non défini</p>
+                    <Link href={`/disc-quiz/${contact.id}`} className="rounded-xl border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors">
+                      Définir le profil
+                    </Link>
+                  </div>
+                )}
+              </div>
+            </Card>
+
+            {/* 2 — Coordonnées */}
+            <Card className="flex flex-col overflow-hidden">
+              <div className="px-5 py-3 border-b border-border shrink-0">
+                <p className="text-xs font-bold text-foreground">Coordonnées</p>
+              </div>
+              <div className="flex flex-col divide-y divide-border flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
                 {contact.phone && (
-                  <div className="flex items-center gap-3 px-4 py-3">
-                    <Phone className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                  <div className="flex items-center gap-3 px-5 py-3">
+                    <Phone className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
                     <a href={`tel:${contact.phone}`} className="text-sm font-medium text-primary">{contact.phone}</a>
                   </div>
                 )}
                 {contact.email && (
-                  <div className="flex items-center gap-3 px-4 py-3">
-                    <Mail className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-                    <span className="text-sm text-muted-foreground">{contact.email}</span>
+                  <div className="flex items-center gap-3 px-5 py-3">
+                    <Mail className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground truncate">{contact.email}</span>
                   </div>
                 )}
                 {contact.source && (
-                  <div className="flex items-center gap-3 px-4 py-3">
-                    <Link2 className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                  <div className="flex items-center gap-3 px-5 py-3">
+                    <Link2 className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
                     <span className={cn('text-sm font-medium', sourceColor(contact.source))}>
-                      Rencontré sur {contact.source}
+                      {contact.source}
                     </span>
                   </div>
                 )}
-                <div className="flex items-center gap-3 px-4 py-3">
-                  <Clock className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                <div className="flex items-center gap-3 px-5 py-3">
+                  <Clock className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
                   <span className="text-sm text-muted-foreground">
                     Dernier contact · <span className="font-medium text-foreground">{contact.lastInteraction}</span>
                   </span>
@@ -617,44 +630,85 @@ export default function ContactDetailPage({
               </div>
             </Card>
 
-            {/* Card Notes */}
-            <Card className="px-6 py-5 flex flex-col gap-4">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Notes</p>
-              {contact.notes ? (
-                <p className="text-sm leading-relaxed text-muted-foreground">{contact.notes}</p>
-              ) : (
-                <p className="text-sm text-muted-foreground">Aucune note. Ajoute un contexte pour mieux le suivre.</p>
-              )}
+            {/* 3 — Historique */}
+            <Card className="flex flex-col overflow-hidden">
+              <div className="px-5 py-3 border-b border-border shrink-0">
+                <p className="text-xs font-bold text-foreground">Historique</p>
+              </div>
+              <div className="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-5 py-4">
+                {contact.timeline.length === 0 ? (
+                  <p className="text-xs text-muted-foreground">Aucune interaction pour le moment.</p>
+                ) : (
+                  <ol className="flex flex-col">
+                    {contact.timeline.map((ev, i) => {
+                      const Icon = timelineIcons[ev.type]
+                      return (
+                        <li key={ev.id} className="flex gap-3">
+                          <div className="flex flex-col items-center">
+                            <span className="flex size-7 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                              <Icon className="size-3 stroke-[1.5]" />
+                            </span>
+                            {i < contact.timeline.length - 1 && (
+                              <div className="w-px flex-1 bg-border mt-1 mb-1" />
+                            )}
+                          </div>
+                          <div className="flex-1 pb-3 pt-0.5">
+                            <p className="text-xs font-medium text-foreground">{ev.label}</p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">{ev.date}</p>
+                          </div>
+                        </li>
+                      )
+                    })}
+                  </ol>
+                )}
+              </div>
             </Card>
 
-            {/* Card Historique */}
-            <Card className="px-6 py-5 flex flex-col gap-4">
-              <p className="text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Historique</p>
-              {contact.timeline.length === 0 ? (
-                <p className="text-sm text-muted-foreground">Aucune interaction pour le moment.</p>
-              ) : (
-                <ol className="flex flex-col">
-                  {contact.timeline.map((ev, i) => {
-                    const Icon = timelineIcons[ev.type]
-                    return (
-                      <li key={ev.id} className="flex gap-4">
-                        <div className="flex flex-col items-center">
-                          <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
-                            <Icon className="size-3.5 stroke-[1.5]" />
-                          </span>
-                          {i < contact.timeline.length - 1 && (
-                            <div className="w-px flex-1 bg-border mt-1 mb-1" />
-                          )}
-                        </div>
-                        <div className="flex-1 pb-4 pt-1">
-                          <p className="text-sm font-medium text-foreground">{ev.label}</p>
-                          <p className="text-[11px] text-muted-foreground mt-0.5">{ev.date}</p>
-                        </div>
-                      </li>
-                    )
-                  })}
-                </ol>
-              )}
+            {/* 4 — Notes */}
+            <Card className="flex flex-col overflow-hidden">
+              <div className="flex items-center justify-between px-5 py-3 border-b border-border shrink-0">
+                <p className="text-xs font-bold text-foreground">Notes</p>
+                {notesEditing ? (
+                  <div className="flex items-center gap-2">
+                    <button type="button" onClick={() => setNotesEditing(false)} className="text-xs font-medium text-muted-foreground">
+                      Annuler
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => { toast.success('Note enregistrée'); setNotesEditing(false) }}
+                      className="rounded-lg bg-primary px-3 py-1 text-xs font-bold text-primary-foreground"
+                    >
+                      Enregistrer
+                    </button>
+                  </div>
+                ) : (
+                  <button type="button" onClick={() => setNotesEditing(true)} className="text-xs font-medium text-primary">
+                    <Pencil className="size-3 inline mr-1" />
+                    Modifier
+                  </button>
+                )}
+              </div>
+              <div className="flex-1 overflow-hidden px-5 py-4">
+                {notesEditing ? (
+                  <textarea
+                    value={notesValue}
+                    onChange={(e) => setNotesValue(e.target.value)}
+                    placeholder="Ajoute un contexte pour mieux suivre ce contact..."
+                    className="h-full w-full resize-none bg-transparent text-sm text-foreground outline-none placeholder:text-muted-foreground leading-relaxed"
+                    autoFocus
+                  />
+                ) : notesValue ? (
+                  <p className="text-sm leading-relaxed text-muted-foreground">{notesValue}</p>
+                ) : (
+                  <button
+                    type="button"
+                    onClick={() => setNotesEditing(true)}
+                    className="text-sm text-muted-foreground hover:text-foreground transition-colors"
+                  >
+                    + Ajouter une note
+                  </button>
+                )}
+              </div>
             </Card>
           </div>
         </div>
