@@ -199,19 +199,3 @@
   }
 }
 
-/* ── Sidebar layout — CSS-driven to prevent hydration flash ─────────────── */
-/* Transitions disabled while html.no-transitions is present (hydration phase) */
-html.no-transitions * { transition: none !important; }
-
-@media (min-width: 1024px) {
-  /* Padding driven by html classes set synchronously by the blocking script */
-  .app-shell-layout {
-    padding-left: 14rem;     /* sidebar expanded (= lg:pl-56) */
-    padding-right: 22.5rem;  /* atlas expanded  (= lg:pr-[360px]) */
-    transition: padding-left 200ms ease-out, padding-right 200ms ease-out;
-  }
-  html.sc .app-shell-layout { padding-left: 3.5rem; }   /* sidebar collapsed */
-  html.ac .app-shell-layout { padding-right: 3.5rem; }  /* atlas collapsed   */
-  .app-shell-layout.no-sidebar  { padding-left: 0 !important; }
-  .app-shell-layout.atlas-hidden { padding-right: 0 !important; }
-}
