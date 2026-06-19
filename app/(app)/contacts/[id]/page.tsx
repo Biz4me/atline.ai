@@ -537,7 +537,7 @@ export default function ContactDetailPage({
             </div>
 
             {/* Simuler + Atlas */}
-            <div className="grid grid-cols-2 gap-2 px-4 py-4 shrink-0 border-b border-border">
+            <div className="grid grid-cols-2 gap-2 px-4 py-4 shrink-0">
               <Link
                 href={`/aria?contact=${contact.id}`}
                 className="flex items-center justify-center gap-1.5 rounded-xl bg-primary/10 py-2.5 text-xs font-bold text-primary transition-colors hover:bg-primary/15"
@@ -553,36 +553,6 @@ export default function ContactDetailPage({
                 <span className="font-bold text-sm leading-none">A</span>
                 Atlas
               </button>
-            </div>
-
-            {/* Coordonnées */}
-            <div className="flex flex-col divide-y divide-border px-1">
-              {contact.phone && (
-                <div className="flex items-center gap-3 px-3 py-3">
-                  <Phone className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
-                  <a href={`tel:${contact.phone}`} className="text-xs font-medium text-primary truncate">{contact.phone}</a>
-                </div>
-              )}
-              {contact.email && (
-                <div className="flex items-center gap-3 px-3 py-3">
-                  <Mail className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
-                  <span className="text-xs text-muted-foreground truncate">{contact.email}</span>
-                </div>
-              )}
-              {contact.source && (
-                <div className="flex items-center gap-3 px-3 py-3">
-                  <Link2 className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
-                  <span className={cn('text-xs font-medium truncate', sourceColor(contact.source))}>
-                    {contact.source}
-                  </span>
-                </div>
-              )}
-              <div className="flex items-center gap-3 px-3 py-3">
-                <Clock className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
-                <span className="text-[11px] text-muted-foreground">
-                  Dernier contact · <span className="font-medium text-foreground">{contact.lastInteraction}</span>
-                </span>
-              </div>
             </div>
           </Card>
 
