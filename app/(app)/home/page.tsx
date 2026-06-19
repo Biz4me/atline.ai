@@ -344,6 +344,22 @@ export default function HomePage() {
       {/* ══════════════ DESKTOP ══════════════ */}
       <div className="hidden lg:block px-8 pt-8 pb-10 max-w-6xl mx-auto">
 
+        {/* ── KPI Strip ── */}
+        <div className="grid grid-cols-4 gap-3 mb-6">
+          {[
+            { label: 'Contacts actifs',  value: '12',  sub: '+2 cette semaine' },
+            { label: 'Score ARIA',       value: '82',  sub: 'Moyenne 30 jours'  },
+            { label: 'Formation',        value: '60%', sub: 'Module 3 en cours' },
+            { label: 'Filleuls actifs',  value: '4',   sub: 'sur 7 filleuls'    },
+          ].map((kpi) => (
+            <Card key={kpi.label} className="px-4 py-3">
+              <p className="text-xs font-medium text-muted-foreground">{kpi.label}</p>
+              <p className="text-xl font-bold text-foreground mt-1 tabular-nums">{kpi.value}</p>
+              <p className="text-[11px] text-muted-foreground mt-0.5">{kpi.sub}</p>
+            </Card>
+          ))}
+        </div>
+
         <div className="grid grid-cols-[1fr_340px] gap-6 items-start">
 
           {/* ── Colonne gauche — 3 zones ── */}
@@ -434,10 +450,38 @@ export default function HomePage() {
               )}
             </Card>
 
+            {/* Zone 1b — Rapport Atlas */}
+            <Card className="p-4 flex items-start gap-3">
+              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
+                <span className="font-display text-base font-bold text-primary">A</span>
+              </span>
+              <div className="flex-1 min-w-0">
+                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-1.5">Rapport hebdo · 9—15 juin</p>
+                <p className="text-sm font-medium text-foreground leading-relaxed italic">
+                  &laquo; Tu es en progression — 3 relances effectuées, ton score ARIA monte. Priorité : closer Sophie cette semaine. &raquo;
+                </p>
+                <div className="flex gap-5 mt-2.5">
+                  {[
+                    { n: '3', label: 'relances' },
+                    { n: '2', label: 'simulations' },
+                    { n: '+1', label: 'filleul' },
+                  ].map((s) => (
+                    <div key={s.label}>
+                      <span className="text-sm font-bold text-foreground">{s.n}</span>
+                      <span className="text-xs text-muted-foreground ml-1">{s.label}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            </Card>
+
             {/* Zone 2 — Mon réseau bouge */}
             <Card className="p-0 overflow-hidden">
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
-                <p className="text-sm font-bold text-foreground">Mon réseau bouge</p>
+                <div>
+                  <p className="text-sm font-bold text-foreground">Mon réseau bouge</p>
+                  <p className="text-[11px] text-muted-foreground mt-0.5">3 filleuls actifs cette semaine</p>
+                </div>
                 <Link href="/network" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Voir →</Link>
               </div>
               <div className="divide-y divide-border">
@@ -468,16 +512,17 @@ export default function HomePage() {
             <Card className="p-0 overflow-hidden">
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
                 <p className="text-sm font-bold text-foreground">Journal de bord</p>
+                <Link href="/notifications" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">Voir tout →</Link>
               </div>
               <div className="px-5 py-4 flex flex-col gap-4">
-                {JOURNAL.map((entry, i) => (
+                {JOURNAL.slice(0, 3).map((entry, i) => (
                   <div key={i} className="flex items-start gap-3">
                     <div className="flex flex-col items-center shrink-0 pt-1">
                       <div
                         className="size-2 rounded-full shrink-0"
                         style={{ backgroundColor: entry.agent ? JOURNAL_DOT[entry.agent] : 'var(--border)' }}
                       />
-                      {i < JOURNAL.length - 1 && (
+                      {i < 2 && (
                         <div className="w-px flex-1 bg-border mt-1.5 min-h-[24px]" />
                       )}
                     </div>
