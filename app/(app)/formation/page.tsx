@@ -33,14 +33,14 @@ const modules: Module[] = [
   },
   {
     id: 'm2',
-    title: 'Maîtriser la méthode DISC',
-    category: 'Communication',
-    duration: '24 min',
+    title: 'Construire sa liste de noms',
+    category: 'Prospection',
+    duration: '30 min',
     lessons: 6,
     progress: 60,
     locked: false,
     color: 'bg-primary',
-    description: 'Adapte ton discours à chaque profil de personnalité.',
+    description: "Apprends à alimenter en continu ta liste de contacts et à repérer les bons profils.",
   },
   {
     id: 'm3',
@@ -88,7 +88,7 @@ const modules: Module[] = [
   },
 ]
 
-const categories = ['Tous', 'Fondamentaux', 'Communication', 'Prospection', 'Leadership', 'Marketing']
+const categories = ['Tous', 'Fondamentaux', 'Prospection', 'Leadership', 'Marketing']
 
 const books = [
   { id: 'b1', title: 'Va te faire foutre patron !', author: 'Robert Kiyosaki', read: true },

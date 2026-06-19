@@ -11,25 +11,28 @@ import type { Contact, ContactStage } from '@/lib/types'
 import {
   Search, Plus, MessageSquare, PhoneCall, CalendarPlus,
   Mic, Phone, Mail, Link2, Clock, UserRound,
+  Sparkles, Trash2, Eye, ArrowUpDown, ArrowUp, ArrowDown, X,
 } from 'lucide-react'
 import { AddContactSheet } from '@/components/add-contact-sheet'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
 type Segment = 'prospects' | 'clients' | 'partenaires'
+type SortKey = 'name' | 'disc' | 'stage' | 'city' | 'lastInteraction'
+type SortDir = 'asc' | 'desc'
 
 const segmentConfig: Record<Segment, { label: string; stages: ContactStage[] }> = {
-  prospects:   { label: 'Prospects',  stages: ['nouveau', 'chaud', 'prospect'] },
-  clients:     { label: 'Clients',    stages: ['client']                        },
+  prospects:   { label: 'Prospects',   stages: ['nouveau', 'chaud', 'prospect'] },
+  clients:     { label: 'Clients',     stages: ['client']                        },
   partenaires: { label: 'Partenaires', stages: ['partenaire']                   },
 }
 
 const stageFilters: Record<Segment, { id: string; label: string; stages?: ContactStage[] }[]> = {
   prospects: [
-    { id: 'tous',    label: 'Tous' },
-    { id: 'chaud',   label: 'Chaud',   stages: ['chaud']    },
-    { id: 'qualifie',label: 'Qualifié', stages: ['prospect'] },
-    { id: 'nouveau', label: 'Nouveau', stages: ['nouveau']  },
+    { id: 'tous',     label: 'Tous' },
+    { id: 'chaud',    label: 'Chaud',   stages: ['chaud']    },
+    { id: 'qualifie', label: 'Qualifié', stages: ['prospect'] },
+    { id: 'nouveau',  label: 'Nouveau', stages: ['nouveau']  },
   ],
   clients:     [{ id: 'tous', label: 'Tous' }],
   partenaires: [{ id: 'tous', label: 'Tous' }],
@@ -55,17 +58,58 @@ const discHex: Record<string, string> = {
   C: '#3b82f6',
 }
 
+/* ── Icône de tri ────────────────────────────────────────────── */
+function SortIcon({ active, dir }: { active: boolean; dir: SortDir }) {
+  if (!active) return <ArrowUpDown className="size-3 shrink-0 opacity-30" />
+  return dir === 'asc'
+    ? <ArrowUp className="size-3 shrink-0 text-primary" />
+    : <ArrowDown className="size-3 shrink-0 text-primary" />
+}
+
+/* ── En-tête de colonne triable ──────────────────────────────── */
+function Th({
+  label, sortKey, current, dir, onSort, className,
+}: {
+  label: string
+  sortKey: SortKey
+  current: SortKey | null
+  dir: SortDir
+  onSort: (k: SortKey) => void
+  className?: string
+}) {
+  const active = current === sortKey
+  return (
+    <th className={cn('px-4 py-3 text-left', className)}>
+      <button
+        type="button"
+        onClick={() => onSort(sortKey)}
+        className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+      >
+        {label}
+        <SortIcon active={active} dir={dir} />
+      </button>
+    </th>
+  )
+}
+
 /* ── Desktop — panneau contact ───────────────────────────────── */
-function DesktopContactPanel({ contact }: { contact: Contact }) {
+function DesktopContactPanel({ contact, onClose }: { contact: Contact; onClose: () => void }) {
   const initials = `${contact.firstName[0]}${contact.lastName[0]}`
   const avatarColor = contact.disc ? discHex[contact.disc] : undefined
 
   return (
     <div className="flex flex-col h-full overflow-y-auto">
       {/* Profil */}
-      <div className="flex flex-col items-center gap-3 px-6 py-8 border-b border-border">
+      <div className="flex flex-col items-center gap-3 px-6 py-6 border-b border-border relative">
+        <button
+          type="button"
+          onClick={onClose}
+          className="absolute right-4 top-4 flex size-7 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+        >
+          <X className="size-4" />
+        </button>
         <div
-          className="flex size-[72px] items-center justify-center rounded-full text-2xl font-bold text-white"
+          className="flex size-[64px] items-center justify-center rounded-full text-xl font-bold text-white"
           style={{ backgroundColor: avatarColor ?? 'var(--muted)' }}
         >
           {initials}
@@ -89,10 +133,10 @@ function DesktopContactPanel({ contact }: { contact: Contact }) {
         {([
           { icon: MessageSquare, label: 'Message', href: `/messages/${contact.id}` },
           { icon: PhoneCall,     label: 'Appel',   href: undefined                  },
-          { icon: CalendarPlus, label: 'RDV',      href: '/agenda'                  },
+          { icon: CalendarPlus,  label: 'RDV',     href: '/agenda'                  },
         ] as const).map((tile) => {
           const Icon = tile.icon
-          const cls = 'flex flex-col items-center gap-1.5 rounded-xl border border-border bg-surface py-3.5 transition-colors hover:bg-muted/50'
+          const cls = 'flex flex-col items-center gap-1.5 rounded-xl border border-border bg-surface py-3 transition-colors hover:bg-muted/50'
           if (tile.href) {
             return (
               <Link key={tile.label} href={tile.href} className={cls}>
@@ -102,9 +146,7 @@ function DesktopContactPanel({ contact }: { contact: Contact }) {
             )
           }
           return (
-            <button
-              key={tile.label}
-              type="button"
+            <button key={tile.label} type="button"
               onClick={() => toast.success(`Appel vers ${contact.firstName}`)}
               className={cls}
             >
@@ -115,23 +157,23 @@ function DesktopContactPanel({ contact }: { contact: Contact }) {
         })}
       </div>
 
-      {/* Actions IA */}
+      {/* Actions IA — Atlas avant ARIA */}
       <div className="grid grid-cols-2 gap-2 px-4 py-3 border-b border-border">
         <Link
-          href={`/aria?contact=${contact.id}`}
-          className="flex items-center justify-center gap-2 rounded-xl bg-primary/10 py-2.5 text-sm font-bold text-primary hover:bg-primary/15 transition-colors"
+          href={`/atlas?contact=${contact.id}`}
+          className="flex items-center justify-center gap-2 rounded-xl bg-primary/10 py-2.5 text-xs font-bold text-primary hover:bg-primary/15 transition-colors"
         >
-          <Mic className="size-4 stroke-[1.5]" />
+          <Sparkles className="size-3.5 stroke-[1.5]" />
+          Préparer
+        </Link>
+        <Link
+          href={`/aria?contact=${contact.id}`}
+          className="flex items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold text-white hover:opacity-90 transition-opacity"
+          style={{ backgroundColor: '#14B8A6' }}
+        >
+          <Mic className="size-3.5 stroke-[1.5]" />
           Simuler
         </Link>
-        <button
-          type="button"
-          onClick={() => toast.success("Atlas analyse ce contact…")}
-          className="flex items-center justify-center gap-2 rounded-xl bg-primary/10 py-2.5 text-sm font-bold text-primary hover:bg-primary/15 transition-colors"
-        >
-          <span className="font-display font-bold">A</span>
-          Atlas
-        </button>
       </div>
 
       {/* Coordonnées */}
@@ -207,11 +249,13 @@ function DesktopEmptyState() {
 /* ── Page principale ─────────────────────────────────────────── */
 function ContactsContent() {
   const { current } = useBusiness()
-  const [segment, setSegment]       = useState<Segment>('prospects')
+  const [segment, setSegment]         = useState<Segment>('prospects')
   const [stageFilter, setStageFilter] = useState('tous')
-  const [query, setQuery]           = useState('')
-  const [addOpen, setAddOpen]       = useState(false)
-  const [selectedId, setSelectedId] = useState<string | null>(null)
+  const [query, setQuery]             = useState('')
+  const [addOpen, setAddOpen]         = useState(false)
+  const [selectedId, setSelectedId]   = useState<string | null>(null)
+  const [sortKey, setSortKey]         = useState<SortKey | null>(null)
+  const [sortDir, setSortDir]         = useState<SortDir>('asc')
 
   const handleSegmentChange = (seg: Segment) => {
     setSegment(seg)
@@ -219,11 +263,21 @@ function ContactsContent() {
     setSelectedId(null)
   }
 
+  function toggleSort(key: SortKey) {
+    if (sortKey === key) {
+      setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))
+    } else {
+      setSortKey(key)
+      setSortDir('asc')
+    }
+  }
+
   const list = useMemo(() => {
-    const segStages  = segmentConfig[segment].stages
-    const filterDef  = stageFilters[segment].find((f) => f.id === stageFilter)
+    const segStages    = segmentConfig[segment].stages
+    const filterDef    = stageFilters[segment].find((f) => f.id === stageFilter)
     const activeStages = filterDef?.stages ?? segStages
-    return contacts
+
+    let result = contacts
       .filter((c) => c.businessId === current.id)
       .filter((c) => activeStages.includes(c.stage))
       .filter((c) =>
@@ -231,14 +285,32 @@ function ContactsContent() {
           ? `${c.firstName} ${c.lastName}`.toLowerCase().includes(query.toLowerCase())
           : true
       )
-  }, [segment, stageFilter, query, current.id])
+
+    if (sortKey) {
+      result = [...result].sort((a, b) => {
+        let va = ''
+        let vb = ''
+        if (sortKey === 'name')            { va = `${a.firstName} ${a.lastName}`; vb = `${b.firstName} ${b.lastName}` }
+        else if (sortKey === 'disc')       { va = a.disc ?? ''; vb = b.disc ?? '' }
+        else if (sortKey === 'stage')      { va = a.stage; vb = b.stage }
+        else if (sortKey === 'city')       { va = a.city ?? ''; vb = b.city ?? '' }
+        else if (sortKey === 'lastInteraction') { va = a.lastInteraction ?? ''; vb = b.lastInteraction ?? '' }
+        const cmp = va.localeCompare(vb, 'fr')
+        return sortDir === 'asc' ? cmp : -cmp
+      })
+    }
+
+    return result
+  }, [segment, stageFilter, query, current.id, sortKey, sortDir])
 
   const filters  = stageFilters[segment]
   const selected = list.find((c) => c.id === selectedId) ?? null
 
+  const thProps = { current: sortKey, dir: sortDir, onSort: toggleSort }
+
   return (
     <>
-      {/* ══ MOBILE ══════════════════════════════════════════ */}
+      {/* ══ MOBILE ══════════════════════════════════════════════ */}
       <div className="lg:hidden">
         <TopBar />
 
@@ -356,65 +428,72 @@ function ContactsContent() {
         </div>
       </div>
 
-      {/* ══ DESKTOP ═════════════════════════════════════════ */}
-      <div className="hidden lg:flex h-[calc(100dvh-56px)] overflow-hidden">
+      {/* ══ DESKTOP ═════════════════════════════════════════════ */}
+      <div className="hidden lg:flex flex-col h-[calc(100dvh-56px)] overflow-hidden">
 
-        {/* Panneau gauche — liste */}
-        <div className="flex w-[300px] shrink-0 flex-col border-r border-border overflow-hidden">
-
-          {/* En-tête */}
-          <div className="flex items-center justify-between px-4 py-4 border-b border-border">
-            <h1 className="text-sm font-bold text-foreground">CRM</h1>
-            <button
-              type="button"
-              onClick={() => setAddOpen(true)}
-              className="flex size-7 items-center justify-center rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors"
-            >
-              <Plus className="size-[14px] stroke-[2.5]" />
-            </button>
+        {/* Sub-header */}
+        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
+          <div className="flex items-center gap-3">
+            <h1 className="text-lg font-bold text-foreground">Mes contacts</h1>
+            <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
+              {list.length}
+            </span>
           </div>
+          <button
+            type="button"
+            onClick={() => setAddOpen(true)}
+            className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-colors"
+          >
+            <Plus className="size-4 stroke-2" />
+            Ajouter un contact
+          </button>
+        </div>
 
-          {/* Recherche */}
-          <div className="relative px-3 py-2 border-b border-border">
-            <Search className="absolute left-6 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
-            <input
-              type="search"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              placeholder="Rechercher…"
-              className="w-full rounded-lg border border-border bg-muted py-2 pl-8 pr-3 text-xs outline-none placeholder:text-muted-foreground focus:ring-1 focus:ring-ring/40"
-            />
-          </div>
+        {/* Toolbar */}
+        <div className="flex flex-col border-b border-border shrink-0">
+          <div className="flex items-center gap-4 px-6 py-3">
+            {/* Recherche */}
+            <div className="relative w-72">
+              <Search className="absolute left-3 top-1/2 size-3.5 -translate-y-1/2 text-muted-foreground" />
+              <input
+                type="search"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                placeholder="Rechercher un contact…"
+                className="w-full rounded-lg border border-border bg-muted py-2 pl-9 pr-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-1 focus:ring-ring/40"
+              />
+            </div>
 
-          {/* Segments */}
-          <div className="flex border-b border-border">
-            {(Object.keys(segmentConfig) as Segment[]).map((seg) => (
-              <button
-                key={seg}
-                type="button"
-                onClick={() => handleSegmentChange(seg)}
-                className={cn(
-                  'flex-1 py-2.5 text-xs font-medium transition-colors border-b-2',
-                  segment === seg
-                    ? 'border-primary text-primary'
-                    : 'border-transparent text-muted-foreground hover:text-foreground'
-                )}
-              >
-                {segmentConfig[seg].label}
-              </button>
-            ))}
+            {/* Segments */}
+            <div className="flex items-center gap-1">
+              {(Object.keys(segmentConfig) as Segment[]).map((seg) => (
+                <button
+                  key={seg}
+                  type="button"
+                  onClick={() => handleSegmentChange(seg)}
+                  className={cn(
+                    'rounded-lg px-4 py-2 text-sm font-medium transition-colors',
+                    segment === seg
+                      ? 'bg-primary/10 text-primary'
+                      : 'text-muted-foreground hover:bg-muted hover:text-foreground'
+                  )}
+                >
+                  {segmentConfig[seg].label}
+                </button>
+              ))}
+            </div>
           </div>
 
           {/* Chips filtres */}
           {filters.length > 1 && (
-            <div className="no-scrollbar flex gap-1.5 overflow-x-auto px-3 py-2 border-b border-border">
+            <div className="flex gap-2 px-6 pb-3">
               {filters.map((f) => (
                 <button
                   key={f.id}
                   type="button"
                   onClick={() => setStageFilter(f.id)}
                   className={cn(
-                    'shrink-0 rounded-full px-3 py-1 text-[11px] font-medium transition-colors',
+                    'rounded-full px-3 py-1 text-xs font-medium transition-colors',
                     stageFilter === f.id
                       ? 'bg-primary/10 text-primary'
                       : 'border border-border text-muted-foreground hover:text-foreground'
@@ -425,61 +504,164 @@ function ContactsContent() {
               ))}
             </div>
           )}
-
-          {/* Rows */}
-          <div className="flex-1 overflow-y-auto">
-            {list.length === 0 ? (
-              <div className="flex flex-col items-center gap-2 py-12 text-center px-4">
-                <p className="text-xs text-muted-foreground">Aucun contact</p>
-              </div>
-            ) : (
-              <ul>
-                {list.map((c) => (
-                  <li key={c.id}>
-                    <button
-                      type="button"
-                      onClick={() => setSelectedId(c.id === selectedId ? null : c.id)}
-                      className={cn(
-                        'flex w-full items-center gap-3 px-4 py-3 text-left transition-colors hover:bg-muted/50 border-l-2',
-                        selectedId === c.id
-                          ? 'bg-primary/5 border-primary'
-                          : 'border-transparent'
-                      )}
-                    >
-                      <DiscAvatar
-                        firstName={c.firstName}
-                        lastName={c.lastName}
-                        disc={c.disc}
-                        size="sm"
-                      />
-                      <div className="min-w-0 flex-1">
-                        <p className="text-sm font-medium text-foreground truncate">
-                          {c.firstName} {c.lastName}
-                        </p>
-                        <p className="text-[11px] text-muted-foreground truncate">
-                          {c.city ? `${c.city} · ` : ''}{c.source}
-                        </p>
-                      </div>
-                      <div className="flex shrink-0 flex-col items-end gap-1">
-                        <StagePill stage={c.stage} />
-                        <span className="text-[10px] text-muted-foreground">
-                          {c.lastInteraction}
-                        </span>
-                      </div>
-                    </button>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
         </div>
 
-        {/* Panneau droit — détail */}
-        <div className="flex-1 overflow-hidden">
-          {selected
-            ? <DesktopContactPanel contact={selected} />
-            : <DesktopEmptyState />
-          }
+        {/* Main : table + panel */}
+        <div className="flex flex-1 overflow-hidden">
+
+          {/* Table */}
+          <div className="flex-1 overflow-auto">
+            {list.length === 0 ? (
+              <div className="flex flex-col items-center gap-3 py-20 text-center">
+                <div className="flex size-12 items-center justify-center rounded-2xl bg-muted">
+                  <UserRound className="size-6 stroke-[1.5] text-muted-foreground" />
+                </div>
+                <p className="text-sm text-muted-foreground">Aucun contact dans cette catégorie</p>
+                <button
+                  type="button"
+                  onClick={() => setAddOpen(true)}
+                  className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground"
+                >
+                  <Plus className="size-4 stroke-2" />
+                  Ajouter un contact
+                </button>
+              </div>
+            ) : (
+              <table className="w-full border-collapse">
+                <thead className="sticky top-0 z-10 bg-background border-b border-border">
+                  <tr>
+                    <th className="w-10 px-4 py-3">
+                      <input type="checkbox" className="rounded border-border" />
+                    </th>
+                    <Th label="Contact"            sortKey="name"            {...thProps} className="min-w-[200px]" />
+                    <Th label="DISC"               sortKey="disc"            {...thProps} />
+                    <Th label="Stade"              sortKey="stage"           {...thProps} />
+                    <Th label="Ville"              sortKey="city"            {...thProps} />
+                    <Th label="Dernière activité"  sortKey="lastInteraction" {...thProps} />
+                    <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground">
+                      Actions
+                    </th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {list.map((c) => (
+                    <tr
+                      key={c.id}
+                      onClick={() => setSelectedId(c.id === selectedId ? null : c.id)}
+                      className={cn(
+                        'border-b border-border cursor-pointer transition-colors group/row',
+                        selectedId === c.id
+                          ? 'bg-primary/5'
+                          : 'hover:bg-muted/40'
+                      )}
+                    >
+                      {/* Checkbox */}
+                      <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
+                        <input type="checkbox" className="rounded border-border" />
+                      </td>
+
+                      {/* Contact */}
+                      <td className="px-4 py-3.5">
+                        <div className="flex items-center gap-3">
+                          <DiscAvatar
+                            firstName={c.firstName}
+                            lastName={c.lastName}
+                            disc={c.disc}
+                            size="sm"
+                          />
+                          <div className="min-w-0">
+                            <p className="text-sm font-medium text-foreground">
+                              {c.firstName} {c.lastName}
+                            </p>
+                            {c.source && (
+                              <p className={cn('text-xs', sourceColor(c.source))}>
+                                {c.source}
+                              </p>
+                            )}
+                          </div>
+                        </div>
+                      </td>
+
+                      {/* DISC */}
+                      <td className="px-4 py-3.5">
+                        {c.disc
+                          ? <DiscBadge disc={c.disc} />
+                          : <span className="text-xs text-muted-foreground">—</span>
+                        }
+                      </td>
+
+                      {/* Stade */}
+                      <td className="px-4 py-3.5">
+                        <StagePill stage={c.stage} />
+                      </td>
+
+                      {/* Ville */}
+                      <td className="px-4 py-3.5 text-sm text-muted-foreground">
+                        {c.city ?? '—'}
+                      </td>
+
+                      {/* Dernière activité */}
+                      <td className="px-4 py-3.5 text-sm text-muted-foreground">
+                        {c.lastInteraction ?? '—'}
+                      </td>
+
+                      {/* Actions */}
+                      <td className="px-4 py-3.5" onClick={(e) => e.stopPropagation()}>
+                        <div className="flex items-center justify-end gap-0.5 opacity-0 group-hover/row:opacity-100 transition-opacity">
+                          <Link
+                            href={`/contacts/${c.id}`}
+                            title="Voir la fiche"
+                            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted hover:text-foreground transition-colors"
+                          >
+                            <Eye className="size-4 stroke-[1.5]" />
+                          </Link>
+                          <Link
+                            href={`/atlas?contact=${c.id}`}
+                            title="Préparer avec Atlas"
+                            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-primary/10 hover:text-primary transition-colors"
+                          >
+                            <Sparkles className="size-4 stroke-[1.5]" />
+                          </Link>
+                          <Link
+                            href={`/aria?contact=${c.id}`}
+                            title="Simuler avec ARIA"
+                            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:text-[#14B8A6] hover:bg-[#14B8A6]/10 transition-colors"
+                          >
+                            <Mic className="size-4 stroke-[1.5]" />
+                          </Link>
+                          <button
+                            type="button"
+                            title="Supprimer"
+                            onClick={() => toast.error(`Supprimer ${c.firstName} ${c.lastName} ?`)}
+                            className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-destructive/10 hover:text-destructive transition-colors"
+                          >
+                            <Trash2 className="size-4 stroke-[1.5]" />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
+
+          {/* Panneau détail */}
+          {selected && (
+            <div className="w-[340px] shrink-0 border-l border-border overflow-hidden">
+              <DesktopContactPanel
+                contact={selected}
+                onClose={() => setSelectedId(null)}
+              />
+            </div>
+          )}
+
+          {/* État vide panel */}
+          {!selected && list.length > 0 && (
+            <div className="w-[340px] shrink-0 border-l border-border overflow-hidden">
+              <DesktopEmptyState />
+            </div>
+          )}
         </div>
       </div>
 
