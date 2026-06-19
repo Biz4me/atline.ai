@@ -450,31 +450,6 @@ export default function HomePage() {
               )}
             </Card>
 
-            {/* Zone 1b — Rapport Atlas */}
-            <Card className="p-4 flex items-start gap-3">
-              <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                <span className="font-display text-base font-bold text-primary">A</span>
-              </span>
-              <div className="flex-1 min-w-0">
-                <p className="text-[11px] font-medium text-muted-foreground uppercase tracking-widest mb-1.5">Rapport hebdo · 9—15 juin</p>
-                <p className="text-sm font-medium text-foreground leading-relaxed italic">
-                  &laquo; Tu es en progression — 3 relances effectuées, ton score ARIA monte. Priorité : closer Sophie cette semaine. &raquo;
-                </p>
-                <div className="flex gap-5 mt-2.5">
-                  {[
-                    { n: '3', label: 'relances' },
-                    { n: '2', label: 'simulations' },
-                    { n: '+1', label: 'partenaire' },
-                  ].map((s) => (
-                    <div key={s.label}>
-                      <span className="text-sm font-bold text-foreground">{s.n}</span>
-                      <span className="text-xs text-muted-foreground ml-1">{s.label}</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            </Card>
-
             {/* Zone 2 — Mon réseau bouge */}
             <Card className="p-0 overflow-hidden">
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">

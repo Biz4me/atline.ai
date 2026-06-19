@@ -6,7 +6,7 @@ import {
   Home, Mic, CalendarDays, Users, UserCheck, Handshake,
   BookOpen, Library, PenLine, Inbox, BarChart2, GitFork,
   ChevronLeft, ChevronRight,
-  Settings, User,
+  Settings, User, TrendingUp,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { LucideIcon } from 'lucide-react'
@@ -29,9 +29,10 @@ function getSidebarSection(pathname: string): SidebarSection | null {
     return {
       title: 'Mon parcours',
       items: [
-        { href: '/home',   label: 'Accueil',    icon: Home },
-        { href: '/aria',   label: 'Simulateur', icon: Mic, color: '#14B8A6' },
-        { href: '/agenda', label: 'Agenda',      icon: CalendarDays },
+        { href: '/home',    label: 'Accueil',    icon: Home },
+        { href: '/aria',    label: 'Simulateur', icon: Mic,        color: '#14B8A6' },
+        { href: '/agenda',  label: 'Agenda',     icon: CalendarDays },
+        { href: '/rapport', label: 'Rapport',    icon: TrendingUp },
       ],
     }
   }
