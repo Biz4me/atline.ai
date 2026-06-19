@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation'
 import { TopBar } from '@/components/top-bar'
 import { useBusiness } from '@/components/business-provider'
 import { DiscAvatar } from '@/components/disc-avatar'
-import { StagePill, DiscBadge } from '@/components/pills'
+import { StagePill } from '@/components/pills'
 import { contacts } from '@/lib/data'
 import type { Contact, ContactStage } from '@/lib/types'
 import {
@@ -345,9 +345,6 @@ function ContactsContent() {
                   )}
                 >
                   {segmentConfig[seg].label}
-                  {activeFilter && (
-                    <span className="text-[11px] font-bold opacity-70">· {activeFilter}</span>
-                  )}
                   {hasFilters && (
                     <ChevronDown className={cn(
                       'size-3.5 stroke-2 transition-transform',
@@ -412,8 +409,8 @@ function ContactsContent() {
                       <input type="checkbox" className="rounded border-border" />
                     </th>
                     <Th label="Contact"            sortKey="name"            {...thProps} className="min-w-[200px]" />
-                    <Th label="DISC"               sortKey="disc"            {...thProps} />
-                    <Th label="Stade"              sortKey="stage"           {...thProps} />
+                    <Th label="Personnalité"       sortKey="disc"            {...thProps} />
+                    <Th label="Température"        sortKey="stage"           {...thProps} />
                     <Th label="Ville"              sortKey="city"            {...thProps} />
                     <Th label="Dernière activité"  sortKey="lastInteraction" {...thProps} />
                     <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground">
@@ -455,15 +452,21 @@ function ContactsContent() {
                         </div>
                       </td>
 
-                      {/* DISC */}
+                      {/* Personnalité */}
                       <td className="px-4 py-3.5">
-                        {c.disc
-                          ? <DiscBadge disc={c.disc} />
-                          : <span className="text-xs text-muted-foreground">—</span>
-                        }
+                        {c.disc ? (
+                          <span
+                            className="flex size-6 items-center justify-center rounded-full text-[11px] font-bold text-white"
+                            style={{ backgroundColor: discHex[c.disc] }}
+                          >
+                            {c.disc}
+                          </span>
+                        ) : (
+                          <span className="text-xs text-muted-foreground">—</span>
+                        )}
                       </td>
 
-                      {/* Stade */}
+                      {/* Température */}
                       <td className="px-4 py-3.5">
                         <StagePill stage={c.stage} />
                       </td>
