@@ -20,7 +20,7 @@ export function DesktopTopBar() {
     <header className="hidden lg:flex fixed top-0 left-0 right-0 h-14 z-50 items-center border-b border-border bg-background/95 backdrop-blur px-4">
       {/* Left — company switcher aligned with left sidebar width */}
       <div className="w-60 flex-shrink-0">
-        <BusinessSwitcher />
+        <BusinessSwitcher variant="popover" />
       </div>
 
       {/* Center — section tabs */}
