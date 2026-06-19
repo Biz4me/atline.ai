@@ -3,13 +3,14 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  Home, Mic, Calendar, Users, UserCheck, Handshake,
+  Home, Mic, Calendar,
   BookOpen, Library, PenLine, Inbox, BarChart2, GitFork,
   ChevronLeft, ChevronRight,
   Settings, User, TrendingUp,
 } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import type { LucideIcon } from 'lucide-react'
+import { contacts } from '@/lib/data'
 
 interface SidebarItem {
   href: string
@@ -22,6 +23,65 @@ interface SidebarSection {
   title: string
   items: SidebarItem[]
   bottom?: SidebarItem[]
+}
+
+const PIPELINE_STAGES = [
+  { id: 'invitation',   label: 'Invitation',   color: '#3b82f6' },
+  { id: 'présentation', label: 'Présentation', color: '#F97316' },
+  { id: 'suivi',        label: 'Suivi',        color: '#f59e0b' },
+  { id: 'closing',      label: 'Closing',      color: '#22c55e' },
+  { id: 'démarré',      label: "Démarré",      color: '#8B5CF6' },
+] as const
+
+function CrmSidebarContent({ collapsed }: { collapsed: boolean }) {
+  const stageCounts = PIPELINE_STAGES.map((s) => ({
+    ...s,
+    count: contacts.filter((c) => c.stade === s.id).length,
+  }))
+  const total = contacts.length
+
+  if (collapsed) {
+    return (
+      <div className="flex flex-col items-center gap-3 pt-4">
+        {stageCounts.map((s) => (
+          <div key={s.id} className="relative flex size-6 items-center justify-center">
+            <div className="size-2 rounded-full" style={{ backgroundColor: s.color }} />
+            {s.count > 0 && (
+              <span className="absolute -right-1 -top-1 flex size-3.5 items-center justify-center rounded-full bg-muted text-[9px] font-bold text-foreground">
+                {s.count}
+              </span>
+            )}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  return (
+    <div className="flex flex-col pt-2 px-2">
+      <p className="px-3 pb-1.5 pt-1 text-[10px] font-bold tracking-widest uppercase text-muted-foreground/60">
+        Pipeline
+      </p>
+      {stageCounts.map((s) => (
+        <div key={s.id} className="flex items-center gap-3 rounded-xl px-3 py-2">
+          <div className="size-2 shrink-0 rounded-full" style={{ backgroundColor: s.color }} />
+          <span className="flex-1 text-sm font-medium text-muted-foreground">{s.label}</span>
+          <span
+            className="text-xs font-bold tabular-nums"
+            style={{ color: s.count > 0 ? s.color : 'var(--muted-foreground)' }}
+          >
+            {s.count}
+          </span>
+        </div>
+      ))}
+      <div className="mx-1 my-2 h-px bg-border" />
+      <div className="flex items-center gap-3 rounded-xl px-3 py-2">
+        <div className="size-2 shrink-0 rounded-full bg-border" />
+        <span className="flex-1 text-sm font-medium text-muted-foreground">Total</span>
+        <span className="text-xs font-bold tabular-nums text-muted-foreground">{total}</span>
+      </div>
+    </div>
+  )
 }
 
 function getSidebarSection(pathname: string): SidebarSection | null {
@@ -37,14 +97,7 @@ function getSidebarSection(pathname: string): SidebarSection | null {
     }
   }
   if (pathname.startsWith('/contacts')) {
-    return {
-      title: 'Mon CRM',
-      items: [
-        { href: '/contacts',              label: 'Prospects',   icon: Users },
-        { href: '/contacts?view=clients', label: 'Clients',     icon: UserCheck },
-        { href: '/contacts?view=partenaires', label: 'Partenaires', icon: Handshake },
-      ],
-    }
+    return { title: 'Mon CRM', items: [] }
   }
   if (pathname.startsWith('/formation')) {
     return {
@@ -122,11 +175,17 @@ export function DesktopSidebar({ collapsed, onToggle }: Props) {
       <div className="mx-3 h-px bg-border shrink-0" />
 
       {/* Contextual nav */}
-      <nav className="flex flex-col gap-0.5 px-2 pt-3 flex-1 overflow-y-auto overflow-x-hidden">
-        {section.items.map((item) => (
-          <NavItem key={item.href} {...item} active={isActive(item.href)} collapsed={collapsed} />
-        ))}
-      </nav>
+      {pathname.startsWith('/contacts') ? (
+        <div className="flex-1 overflow-y-auto overflow-x-hidden">
+          <CrmSidebarContent collapsed={collapsed} />
+        </div>
+      ) : (
+        <nav className="flex flex-col gap-0.5 px-2 pt-3 flex-1 overflow-y-auto overflow-x-hidden">
+          {section.items.map((item) => (
+            <NavItem key={item.href} {...item} active={isActive(item.href)} collapsed={collapsed} />
+          ))}
+        </nav>
+      )}
 
       {/* Bottom — settings + profil toujours accessibles */}
       <div className="shrink-0 flex flex-col gap-0.5 px-2 pb-3 pt-1">

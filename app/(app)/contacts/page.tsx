@@ -86,7 +86,7 @@ function Th({
       <button
         type="button"
         onClick={() => onSort(sortKey)}
-        className="flex items-center gap-4 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+        className="flex items-center gap-3 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
       >
         {label}
         <SortIcon active={active} dir={dir} />
@@ -117,28 +117,30 @@ function ThFilter({
   const active = current === sortKey
   return (
     <th className={cn('px-4 py-3 text-left', className)}>
-      <div ref={containerRef} className="relative inline-flex items-center gap-1.5">
-        <span className="text-xs font-medium text-muted-foreground">{label}</span>
+      <div ref={containerRef} className="relative inline-flex items-center gap-2">
+        {/* Label cliquable pour le tri */}
+        <button
+          type="button"
+          onClick={() => onSort(sortKey)}
+          className={cn(
+            'flex items-center gap-3 text-xs font-medium transition-colors',
+            active ? 'text-foreground' : 'text-muted-foreground hover:text-foreground'
+          )}
+        >
+          {label}
+          <SortIcon active={active} dir={dir} />
+        </button>
 
-        {/* Chevron filtre — avant l'icône de tri */}
+        {/* Chevron filtre uniquement */}
         <button
           type="button"
           onClick={onToggle}
           className={cn(
-            'flex size-5 items-center justify-center rounded transition-colors',
-            value !== 'all' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+            'flex size-4 items-center justify-center rounded transition-colors',
+            value !== 'all' ? 'text-primary' : 'text-muted-foreground/50 hover:text-muted-foreground'
           )}
         >
           <ChevronDown className={cn('size-3 stroke-2 transition-transform', open && 'rotate-180')} />
-        </button>
-
-        {/* Icône tri */}
-        <button
-          type="button"
-          onClick={() => onSort(sortKey)}
-          className="flex size-5 items-center justify-center rounded text-muted-foreground hover:text-foreground transition-colors"
-        >
-          <SortIcon active={active} dir={dir} />
         </button>
 
         {/* Dropdown aligné sur le début du wrapper */}
@@ -684,7 +686,6 @@ function ContactsContent() {
 
               {/* Lignes par page */}
               <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                <span>Lignes</span>
                 <div ref={pageSizeRef} className="relative">
                   <button
                     type="button"
