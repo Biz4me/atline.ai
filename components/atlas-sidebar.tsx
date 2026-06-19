@@ -6,7 +6,7 @@ import { useRef, useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 import {
   ChevronLeft, ChevronRight, Sparkles, Mic,
-  Search, X, History,
+  Search, X, History, Calendar,
 } from 'lucide-react'
 import { toast } from 'sonner'
 
@@ -103,7 +103,7 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
             </button>
             <button type="button" onClick={onToggle} title="Prochains rendez-vous"
               className="flex size-10 items-center justify-center rounded-xl mx-auto text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
-              <CalendarDays className="size-[18px] stroke-[1.5]" />
+              <Calendar className="size-[18px] stroke-[1.5]" />
             </button>
           </nav>
         )}

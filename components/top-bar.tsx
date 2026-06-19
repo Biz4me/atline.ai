@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Sparkles, CalendarDays, MessageSquare } from 'lucide-react'
+import { Sparkles, Calendar, MessageSquare } from 'lucide-react'
 import { BusinessSwitcher } from '@/components/business-switcher'
 import { MessagesSheet } from '@/components/messages-sheet'
 import Link from 'next/link'
@@ -33,7 +33,7 @@ export function TopBar() {
             aria-label="Agenda"
             className="flex size-9 items-center justify-center rounded-full text-muted-foreground transition-colors active:bg-muted"
           >
-            <CalendarDays className="size-5 stroke-[1.5]" />
+            <Calendar className="size-5 stroke-[1.5]" />
           </Link>
 
           {/* Messages → sheet */}

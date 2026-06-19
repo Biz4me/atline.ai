@@ -3,7 +3,7 @@
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
 import {
-  Home, Mic, CalendarDays, Users, UserCheck, Handshake,
+  Home, Mic, Calendar, Users, UserCheck, Handshake,
   BookOpen, Library, PenLine, Inbox, BarChart2, GitFork,
   ChevronLeft, ChevronRight,
   Settings, User, TrendingUp,
@@ -31,7 +31,7 @@ function getSidebarSection(pathname: string): SidebarSection | null {
       items: [
         { href: '/home',    label: 'Accueil',    icon: Home },
         { href: '/aria',    label: 'Simulateur', icon: Mic,        color: '#14B8A6' },
-        { href: '/agenda',  label: 'Agenda',     icon: CalendarDays },
+        { href: '/agenda',  label: 'Agenda',     icon: Calendar },
         { href: '/rapport', label: 'Rapport',    icon: TrendingUp },
       ],
     }

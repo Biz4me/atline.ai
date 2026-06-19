@@ -1,7 +1,7 @@
 'use client'
 
 import { useRouter } from 'next/navigation'
-import { Bell, ChevronLeft, SquarePen, Plus, CalendarDays, MessageCircle } from 'lucide-react'
+import { Bell, ChevronLeft, SquarePen, Plus, Calendar, MessageCircle } from 'lucide-react'
 import { DiscAvatar } from '@/components/disc-avatar'
 import { currentUser } from '@/lib/data'
 import Link from 'next/link'
@@ -66,7 +66,7 @@ export function AppHeader({
             aria-label="Calendrier éditorial"
             className="flex size-9 items-center justify-center rounded-full text-fg-2 transition-colors active:bg-muted"
           >
-            <CalendarDays className="size-5 stroke-[1.5]" />
+            <Calendar className="size-5 stroke-[1.5]" />
           </Link>
           {/* Notifications */}
           <Link

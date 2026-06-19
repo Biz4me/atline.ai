@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Route, ContactRound, SquarePen, BookOpen, MessageSquare, CalendarDays, Sparkles, Grid3X3, Moon, Sun } from 'lucide-react'
+import { Route, ContactRound, SquarePen, BookOpen, MessageSquare, Calendar, Sparkles, Grid3X3, Moon, Sun } from 'lucide-react'
 import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import { BusinessSwitcher } from '@/components/business-switcher'
@@ -78,7 +78,7 @@ export function DesktopTopBar() {
           href="/agenda"
           className="flex size-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted transition-colors"
         >
-          <CalendarDays className="size-[26px] stroke-[1.5]" />
+          <Calendar className="size-[26px] stroke-[1.5]" />
         </Link>
         <Link
           href="/atlas"
