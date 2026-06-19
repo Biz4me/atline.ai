@@ -385,13 +385,10 @@ function ContactsContent() {
       </div>
 
       {/* ══ DESKTOP ═════════════════════════════════════════════ */}
-      <div className="hidden lg:flex flex-col h-[calc(100dvh-56px)] overflow-hidden bg-muted/40 p-4 gap-0">
+      <div className="hidden lg:flex flex-col h-[calc(100dvh-56px)] overflow-hidden bg-muted/40 px-4 pt-4 pb-4 gap-3">
 
-        {/* Card principale */}
-        <div className="flex flex-col flex-1 overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
-
-        {/* Sub-header */}
-        <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
+        {/* Sub-header — flottant sur le fond gris */}
+        <div className="flex items-center justify-between shrink-0 px-1">
           <div className="flex items-center gap-3">
             <h1 className="text-lg font-bold text-foreground">Mes contacts</h1>
             <span className="rounded-full bg-muted px-2.5 py-0.5 text-xs font-medium text-muted-foreground">
@@ -404,7 +401,7 @@ function ContactsContent() {
               <button
                 type="button"
                 onClick={() => setExportImportOpen((o) => !o)}
-                className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2.5 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
+                className="flex items-center gap-2 rounded-xl border border-border bg-background px-4 py-2 text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted transition-colors"
               >
                 <Download className="size-4 stroke-[1.5]" />
                 Export / Import
@@ -435,13 +432,16 @@ function ContactsContent() {
             <button
               type="button"
               onClick={() => setAddOpen(true)}
-              className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2.5 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-colors"
+              className="flex items-center gap-2 rounded-xl bg-primary px-4 py-2 text-sm font-bold text-primary-foreground hover:bg-primary/90 transition-colors"
             >
               <Plus className="size-4 stroke-2" />
               Ajouter un contact
             </button>
           </div>
         </div>
+
+        {/* Card principale — toolbar + table + pagination */}
+        <div className="flex flex-col flex-1 overflow-hidden rounded-2xl border border-border bg-background shadow-sm">
 
         {/* Toolbar */}
         <div className="flex items-center gap-3 border-b border-border px-6 py-3 shrink-0">
