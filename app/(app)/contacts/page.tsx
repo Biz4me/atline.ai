@@ -516,8 +516,8 @@ function ContactsContent() {
         {/* Main : table + pagination */}
         <div className="flex flex-col flex-1 overflow-hidden">
 
-          {/* Table — pas de scrollbar, lignes paginées */}
-          <div className="flex-1 overflow-hidden">
+          {/* Table — scroll sans barre visible */}
+          <div className="flex-1 overflow-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
             {list.length === 0 ? (
               <div className="flex flex-col items-center gap-3 py-20 text-center">
                 <div className="flex size-12 items-center justify-center rounded-2xl bg-muted">
