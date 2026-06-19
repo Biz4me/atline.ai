@@ -7,11 +7,11 @@ import { cn } from '@/lib/utils'
 import { BusinessSwitcher } from '@/components/business-switcher'
 
 const NAV_TABS = [
-  { href: '/home',       icon: Compass,      label: 'Parcours'   },
-  { href: '/contacts',   icon: Users,        label: 'CRM'        },
-  { href: '/formation',  icon: BookOpen,     label: 'Formation'  },
-  { href: '/nova',       icon: Zap,          label: 'Nova'       },
-  { href: '/network',    icon: GitFork,      label: 'Réseau'     },
+  { href: '/home',       icon: Compass,      label: 'Parcours'                },
+  { href: '/contacts',   icon: Users,        label: 'CRM'                     },
+  { href: '/formation',  icon: BookOpen,     label: 'Formation'               },
+  { href: '/nova',       icon: Zap,          label: 'Nova',  color: '#8B5CF6' },
+  { href: '/network',    icon: GitFork,      label: 'Réseau'                  },
 ]
 
 export function DesktopTopBar() {
@@ -28,6 +28,7 @@ export function DesktopTopBar() {
       <div className="flex flex-1 items-center justify-center gap-1">
         {NAV_TABS.map(({ href, icon: Icon, label }) => {
           const active = pathname === href || pathname.startsWith(href + '/')
+          const activeColor = color ?? undefined
           return (
             <Link
               key={href}
@@ -39,6 +40,7 @@ export function DesktopTopBar() {
                   ? 'text-primary'
                   : 'text-muted-foreground hover:text-foreground hover:bg-muted'
               )}
+              style={active && activeColor ? { color: activeColor } : undefined}
             >
               <Icon className={cn('size-5', active ? 'stroke-[2]' : 'stroke-[1.5]')} />
               {active && (

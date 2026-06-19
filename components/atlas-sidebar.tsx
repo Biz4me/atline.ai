@@ -103,8 +103,8 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
         {!isOpen && (
           <nav className="flex flex-col gap-0.5 px-2 pt-3 overflow-x-hidden">
             <button type="button" onClick={onToggle} title="Simulateur ARIA"
-              className="flex size-10 items-center justify-center rounded-xl mx-auto text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
-              <Mic className="size-[18px] stroke-[1.5]" />
+              className="flex size-10 items-center justify-center rounded-xl mx-auto hover:bg-muted transition-colors">
+              <Mic className="size-[18px] stroke-[1.5]" style={{ color: '#14B8A6' }} />
             </button>
             <button type="button" onClick={onToggle} title="Prochains rendez-vous"
               className="flex size-10 items-center justify-center rounded-xl mx-auto text-muted-foreground hover:bg-muted hover:text-foreground transition-colors">
@@ -119,7 +119,7 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
           <div className="rounded-xl border border-border bg-surface overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <div className="flex items-center gap-1.5">
-                <Mic className="size-3.5 text-muted-foreground stroke-[1.5]" />
+                <Mic className="size-3.5 stroke-[1.5]" style={{ color: '#14B8A6' }} />
                 <p className="text-sm font-bold text-foreground">Simulateur ARIA</p>
               </div>
               <Link href="/aria" className="text-xs font-semibold text-primary">Voir tout →</Link>

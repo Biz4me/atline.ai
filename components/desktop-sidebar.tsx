@@ -15,6 +15,7 @@ interface SidebarItem {
   href: string
   label: string
   icon: LucideIcon
+  color?: string
 }
 
 interface SidebarSection {
@@ -29,7 +30,7 @@ function getSidebarSection(pathname: string): SidebarSection | null {
       title: 'Mon parcours',
       items: [
         { href: '/home',   label: 'Accueil',    icon: Home },
-        { href: '/aria',   label: 'Simulateur', icon: Mic },
+        { href: '/aria',   label: 'Simulateur', icon: Mic, color: '#14B8A6' },
         { href: '/agenda', label: 'Agenda',      icon: CalendarDays },
       ],
     }
@@ -57,9 +58,9 @@ function getSidebarSection(pathname: string): SidebarSection | null {
     return {
       title: 'Nova — Contenu',
       items: [
-        { href: '/nova',        label: 'Accueil',    icon: BarChart2 },
-        { href: '/nova/create', label: 'Créer',      icon: PenLine },
-        { href: '/nova/inbox',  label: 'Inbox',      icon: Inbox },
+        { href: '/nova',        label: 'Accueil',    icon: BarChart2, color: '#8B5CF6' },
+        { href: '/nova/create', label: 'Créer',      icon: PenLine,   color: '#8B5CF6' },
+        { href: '/nova/inbox',  label: 'Inbox',      icon: Inbox,     color: '#8B5CF6' },
       ],
     }
   }
@@ -137,14 +138,16 @@ export function DesktopSidebar({ collapsed, onToggle }: Props) {
 }
 
 function NavItem({
-  href, label, icon: Icon, active, collapsed,
+  href, label, icon: Icon, active, collapsed, color,
 }: {
   href: string
   label: string
   icon: LucideIcon
   active: boolean
   collapsed: boolean
+  color?: string
 }) {
+  const activeColor = active && color ? color : undefined
   return (
     <Link
       href={href}
@@ -152,12 +155,16 @@ function NavItem({
       className={cn(
         'flex items-center gap-3 rounded-xl px-3 py-2.5 text-sm font-medium transition-colors whitespace-nowrap',
         active
-          ? 'bg-primary/10 text-primary font-semibold'
+          ? 'font-semibold'
           : 'text-muted-foreground hover:bg-muted hover:text-foreground',
         collapsed && 'justify-center px-0',
       )}
+      style={active ? {
+        color: activeColor ?? 'var(--primary)',
+        backgroundColor: activeColor ? `${activeColor}1a` : 'var(--primary-soft, color-mix(in srgb, var(--primary) 10%, transparent))',
+      } : undefined}
     >
-      <Icon className={cn('size-[18px] shrink-0', active && 'text-primary')} />
+      <Icon className="size-[18px] shrink-0" />
       {!collapsed && <span>{label}</span>}
     </Link>
   )
