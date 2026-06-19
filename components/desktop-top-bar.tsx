@@ -2,7 +2,7 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Route, ContactRound, SquarePen, BookOpen, MessageSquare, CalendarDays, Sparkles } from 'lucide-react'
+import { Route, ContactRound, SquarePen, BookOpen, MessageSquare, CalendarDays, Sparkles, Plus } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { BusinessSwitcher } from '@/components/business-switcher'
 
@@ -48,28 +48,34 @@ export function DesktopTopBar() {
 
       {/* Right — utilities */}
       <div className="w-60 flex-shrink-0 flex items-center justify-end gap-1">
+        <button
+          type="button"
+          className="flex size-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted transition-colors"
+        >
+          <Plus className="size-[26px] stroke-[1.5]" />
+        </button>
         <Link
           href="/messages"
-          className="flex size-9 items-center justify-center rounded-full text-muted-foreground hover:bg-muted transition-colors"
+          className="flex size-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted transition-colors"
         >
-          <MessageSquare className="size-5 stroke-[1.5]" />
+          <MessageSquare className="size-[26px] stroke-[1.5]" />
         </Link>
         <Link
           href="/agenda"
-          className="flex size-9 items-center justify-center rounded-full text-muted-foreground hover:bg-muted transition-colors"
+          className="flex size-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted transition-colors"
         >
-          <CalendarDays className="size-5 stroke-[1.5]" />
+          <CalendarDays className="size-[26px] stroke-[1.5]" />
         </Link>
         <Link
           href="/atlas"
           className={cn(
-            'flex size-9 items-center justify-center rounded-full transition-colors',
+            'flex size-10 items-center justify-center rounded-full transition-colors',
             pathname.startsWith('/atlas')
               ? 'bg-primary text-primary-foreground'
               : 'text-primary hover:bg-accent'
           )}
         >
-          <Sparkles className="size-5 stroke-[1.5]" />
+          <Sparkles className="size-[26px] stroke-[1.5]" />
         </Link>
       </div>
     </header>
