@@ -22,6 +22,7 @@ import { toast } from 'sonner'
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 import type { ContactStage } from '@/lib/types'
+import { Card } from '@/components/card'
 
 /* ── Helpers ──────────────────────────────────────────────────── */
 const stageLabel: Record<string, string> = {
@@ -40,7 +41,6 @@ const stagePill: Record<string, string> = {
   nouveau:    'bg-muted text-muted-foreground',
 }
 
-/* Statut = catégorie affichée dans le header */
 function getStatut(stage: string): 'Prospect' | 'Client' | 'Partenaire' {
   if (stage === 'client') return 'Client'
   if (stage === 'partenaire') return 'Partenaire'
@@ -60,10 +60,10 @@ function sourceColor(s: string) {
 
 const personalityName: Record<string, string> = { D: 'Rouge', I: 'Jaune', S: 'Vert', C: 'Bleu' }
 const personalityDesc: Record<string, string> = {
-  D: 'Direct, orienté résultats — va droit au but.',
-  I: 'Sociable, enthousiaste — guidé par l\'émotion.',
-  S: 'Stable, relationnel — mise sur la confiance.',
-  C: 'Analytique, prudent — veut des preuves.',
+  D: "Direct, orienté résultats — va droit au but.",
+  I: "Sociable, enthousiaste — guidé par l'émotion.",
+  S: "Stable, relationnel — mise sur la confiance.",
+  C: "Analytique, prudent — veut des preuves.",
 }
 const personalityBg: Record<string, string> = {
   D: '#dc2626',
@@ -126,25 +126,16 @@ function EditSheet({
   }
 
   const inputCls = 'w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring/40 placeholder:text-muted-foreground'
-  const labelCls = 'mb-1.5 block text-[11px] font-extrabold uppercase tracking-widest text-muted-foreground'
+  const labelCls = 'mb-1.5 block text-[11px] font-bold uppercase tracking-widest text-muted-foreground'
 
   return (
     <div className="fixed inset-0 z-50 flex flex-col">
-      {/* Backdrop */}
       <div className="flex-1 bg-black/40" onClick={onClose} />
-
-      {/* Sheet */}
       <div className="max-h-[92dvh] overflow-y-auto rounded-t-3xl bg-background">
-        {/* Handle */}
         <div className="sticky top-0 z-10 bg-background pt-3 pb-0">
           <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-border" />
-          {/* Header */}
           <div className="flex items-center gap-2 border-b border-border px-4 pb-3">
-            <button
-              type="button"
-              onClick={onClose}
-              className="text-sm font-semibold text-muted-foreground"
-            >
+            <button type="button" onClick={onClose} className="text-sm font-medium text-muted-foreground">
               Annuler
             </button>
             <h2 className="flex-1 text-center text-sm font-bold text-foreground">
@@ -161,7 +152,6 @@ function EditSheet({
         </div>
 
         <div className="flex flex-col gap-5 px-4 py-5 pb-10">
-          {/* Prénom + Nom */}
           <div className="grid grid-cols-2 gap-3">
             <div>
               <label className={labelCls}>Prénom</label>
@@ -173,7 +163,6 @@ function EditSheet({
             </div>
           </div>
 
-          {/* Statut */}
           <div>
             <label className={labelCls}>Statut</label>
             <div className="flex gap-2">
@@ -195,7 +184,6 @@ function EditSheet({
             </div>
           </div>
 
-          {/* Stage */}
           <div>
             <label className={labelCls}>Stage</label>
             <div className="flex flex-wrap gap-2">
@@ -217,31 +205,26 @@ function EditSheet({
             </div>
           </div>
 
-          {/* Ville */}
           <div>
             <label className={labelCls}>Ville</label>
             <input value={city} onChange={(e) => setCity(e.target.value)} placeholder="Paris" className={inputCls} />
           </div>
 
-          {/* Téléphone */}
           <div>
             <label className={labelCls}>Téléphone</label>
             <input value={phone} onChange={(e) => setPhone(e.target.value)} type="tel" placeholder="+33 6 00 00 00 00" className={inputCls} />
           </div>
 
-          {/* Email */}
           <div>
             <label className={labelCls}>Email</label>
             <input value={email} onChange={(e) => setEmail(e.target.value)} type="email" placeholder="contact@email.fr" className={inputCls} />
           </div>
 
-          {/* Source */}
           <div>
             <label className={labelCls}>Source</label>
             <input value={source} onChange={(e) => setSource(e.target.value)} placeholder="Instagram, LinkedIn…" className={inputCls} />
           </div>
 
-          {/* Profil DISC */}
           <div>
             <label className={labelCls}>Profil DISC</label>
             <div className="flex gap-2">
@@ -264,7 +247,6 @@ function EditSheet({
             </div>
           </div>
 
-          {/* Note libre */}
           <div>
             <label className={labelCls}>Note libre</label>
             <textarea
@@ -295,11 +277,9 @@ export default function ContactDetailPage({
   const [editOpen, setEditOpen] = useState(false)
 
   const initials = `${contact.firstName[0]}${contact.lastName[0]}`
-  const personality = contact.disc ? personalityName[contact.disc] : null
   const avatarBg = contact.disc ? personalityBg[contact.disc] : undefined
   const statut = getStatut(contact.stage)
 
-  /* shared blocks rendered in both mobile and desktop columns */
   const actionTiles = [
     { icon: MessageSquare, label: 'Message', href: `/messages/${contact.id}` },
     { icon: PhoneCall,    label: 'Appel',   href: undefined, action: () => toast.success(`Appel vers ${contact.firstName}`) },
@@ -308,53 +288,32 @@ export default function ContactDetailPage({
 
   return (
     <div className="flex min-h-dvh flex-col bg-background">
-      {/* Header mobile only */}
-      <div
-        className="sticky top-0 z-30 flex items-center gap-2 border-b border-border bg-background/90 px-4 py-3 backdrop-blur lg:hidden"
-        style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
-      >
-        <button
-          type="button"
-          onClick={() => router.back()}
-          className="-ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"
+
+      {/* ── MOBILE ONLY — ne jamais toucher ── */}
+      <div className="lg:hidden">
+        <div
+          className="sticky top-0 z-30 flex items-center gap-2 border-b border-border bg-background/90 px-4 py-3 backdrop-blur"
+          style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
         >
-          <ChevronLeft className="size-5 stroke-[1.5]" />
-        </button>
-        <p className="flex-1 text-center text-sm font-semibold text-muted-foreground">{statut}</p>
-        <button
-          type="button"
-          onClick={() => setEditOpen(true)}
-          className="flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"
-        >
-          <Pencil className="size-4 stroke-[1.5]" />
-        </button>
-      </div>
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="-ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"
+          >
+            <ChevronLeft className="size-5 stroke-[1.5]" />
+          </button>
+          <p className="flex-1 text-center text-sm font-medium text-muted-foreground">{statut}</p>
+          <button
+            type="button"
+            onClick={() => setEditOpen(true)}
+            className="flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"
+          >
+            <Pencil className="size-4 stroke-[1.5]" />
+          </button>
+        </div>
 
-      {/* ── Desktop header ── */}
-      <div className="hidden lg:flex items-center gap-3 border-b border-border px-8 py-4">
-        <button type="button" onClick={() => router.back()} className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:bg-muted transition-colors">
-          <ChevronLeft className="size-4 stroke-[1.5]" />
-        </button>
-        <h1 className="font-display text-[22px] font-bold text-foreground flex-1">
-          {contact.firstName} {contact.lastName}
-        </h1>
-        <span className={cn('rounded-full px-3 py-1 text-xs font-bold', stagePill[contact.stage] ?? 'bg-muted text-muted-foreground')}>
-          {stageLabel[contact.stage] ?? contact.stage}
-        </span>
-        <button type="button" onClick={() => setEditOpen(true)}
-          className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-sm font-semibold text-foreground hover:bg-muted transition-colors">
-          <Pencil className="size-4 stroke-[1.5]" />
-          Modifier
-        </button>
-      </div>
-
-      {/* ── Layout : mobile = 1 col / desktop = 2 cols ── */}
-      <div className="flex flex-col gap-5 px-4 pt-6 pb-10 lg:grid lg:grid-cols-[300px_1fr] lg:gap-0 lg:px-0 lg:pt-0 lg:pb-0 lg:items-start lg:min-h-0 lg:flex-1">
-
-        {/* ── Colonne gauche (profil + actions) ── */}
-        <div className="flex flex-col gap-5 lg:border-r lg:border-border lg:px-8 lg:py-8 lg:sticky lg:top-0 lg:h-[calc(100dvh-73px)] lg:overflow-y-auto">
-          {/* Avatar + nom (mobile only — desktop has header) */}
-          <div className="flex flex-col items-center gap-3 text-center lg:hidden">
+        <div className="flex flex-col gap-5 px-4 pt-6 pb-10">
+          <div className="flex flex-col items-center gap-3 text-center">
             <div className="flex size-20 items-center justify-center rounded-full text-2xl font-bold text-white bg-muted" style={avatarBg ? { backgroundColor: avatarBg } : undefined}>
               {initials}
             </div>
@@ -371,15 +330,6 @@ export default function ContactDetailPage({
             </div>
           </div>
 
-          {/* Avatar desktop centré */}
-          <div className="hidden lg:flex flex-col items-center gap-4 text-center">
-            <div className="flex size-24 items-center justify-center rounded-full text-3xl font-bold text-white bg-muted" style={avatarBg ? { backgroundColor: avatarBg } : undefined}>
-              {initials}
-            </div>
-            {contact.city && <span className="text-sm text-muted-foreground">{contact.city}</span>}
-          </div>
-
-          {/* 3 tiles actions */}
           <div className="grid grid-cols-3 gap-2">
             {actionTiles.map((tile) => {
               const Icon = tile.icon
@@ -388,190 +338,401 @@ export default function ContactDetailPage({
                 return (
                   <Link key={tile.label} href={tile.href} className={cls}>
                     <Icon className="size-5 stroke-[1.5] text-primary" />
-                    <span className="text-xs font-semibold text-foreground">{tile.label}</span>
+                    <span className="text-xs font-medium text-foreground">{tile.label}</span>
                   </Link>
                 )
               }
               return (
                 <button key={tile.label} type="button" onClick={tile.action} className={cls}>
                   <Icon className="size-5 stroke-[1.5] text-primary" />
-                  <span className="text-xs font-semibold text-foreground">{tile.label}</span>
+                  <span className="text-xs font-medium text-foreground">{tile.label}</span>
                 </button>
               )
             })}
           </div>
 
-          {/* Simuler + Atlas */}
           <div className="grid grid-cols-2 gap-2">
             <Link href={`/aria?contact=${contact.id}`}
               className="flex items-center justify-center gap-2 rounded-2xl bg-primary/10 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/15 active:bg-primary/20">
               <Mic className="size-4 stroke-[1.5]" />
               Simuler
             </Link>
-            <button type="button" onClick={() => toast.success('Atlas analyse ce contact…')}
+            <button type="button" onClick={() => toast.success("Atlas analyse ce contact…")}
               className="flex items-center justify-center gap-2 rounded-2xl bg-primary/10 py-3 text-sm font-bold text-primary transition-colors hover:bg-primary/15 active:bg-primary/20">
               <span className="font-display text-base font-bold">A</span>
               Atlas
             </button>
           </div>
 
-          {/* Coordonnées desktop (dans la colonne gauche) */}
-          <div className="hidden lg:flex flex-col divide-y divide-border rounded-2xl border border-border bg-surface overflow-hidden">
-            {contact.phone && (
-              <div className="flex items-center gap-3 px-4 py-3">
-                <Phone className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-                <a href={`tel:${contact.phone}`} className="text-sm font-semibold text-primary">{contact.phone}</a>
-              </div>
-            )}
-            {contact.email && (
-              <div className="flex items-center gap-3 px-4 py-3">
-                <Mail className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">{contact.email}</span>
-              </div>
-            )}
-            {contact.source && (
-              <div className="flex items-center gap-3 px-4 py-3">
-                <Link2 className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-                <span className={cn('text-sm font-semibold', sourceColor(contact.source))}>
-                  Source : {contact.source}
-                </span>
-              </div>
-            )}
-            <div className="flex items-center gap-3 px-4 py-3">
-              <Clock className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-              <span className="text-sm text-muted-foreground">
-                Dernier contact · <span className="font-semibold text-foreground">{contact.lastInteraction}</span>
-              </span>
-            </div>
-          </div>
-        </div>
+          <Tabs defaultValue="infos">
+            <TabsList className="grid w-full grid-cols-3 rounded-xl bg-muted p-1">
+              <TabsTrigger value="infos">Infos</TabsTrigger>
+              <TabsTrigger value="notes">Notes</TabsTrigger>
+              <TabsTrigger value="historique">Historique</TabsTrigger>
+            </TabsList>
 
-        {/* ── Colonne droite (tabs) ── */}
-        <div className="lg:px-8 lg:py-8 lg:overflow-y-auto lg:h-[calc(100dvh-73px)]">
-        {/* Tabs */}
-        <Tabs defaultValue="infos">
-          <TabsList className="grid w-full grid-cols-3 rounded-xl bg-muted p-1">
-            <TabsTrigger value="infos">Infos</TabsTrigger>
-            <TabsTrigger value="notes">Notes</TabsTrigger>
-            <TabsTrigger value="historique">Historique</TabsTrigger>
-          </TabsList>
-
-          {/* ── Infos ── */}
-          <TabsContent value="infos" className="mt-4 flex flex-col gap-0">
-            {/* Personnalité */}
-            <div className="border-b border-border pb-4 mb-0">
-              <p className="mb-3 text-[11px] font-extrabold uppercase tracking-widest text-primary">Personnalité</p>
-              {contact.disc ? (
-                <div className="flex items-center gap-3">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white" style={{ backgroundColor: personalityBg[contact.disc] }}>
-                    {personalityName[contact.disc][0]}
-                  </span>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-sm font-bold text-foreground">{personalityName[contact.disc]}</p>
-                    <p className="text-xs text-muted-foreground leading-relaxed">
-                      {personalityDesc[contact.disc]}
-                    </p>
+            <TabsContent value="infos" className="mt-4 flex flex-col gap-0">
+              <div className="border-b border-border pb-4 mb-0">
+                <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-primary">Personnalité</p>
+                {contact.disc ? (
+                  <div className="flex items-center gap-3">
+                    <span className="flex size-9 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white" style={{ backgroundColor: personalityBg[contact.disc] }}>
+                      {personalityName[contact.disc][0]}
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <p className="text-sm font-bold text-foreground">{personalityName[contact.disc]}</p>
+                      <p className="text-xs text-muted-foreground leading-relaxed">{personalityDesc[contact.disc]}</p>
+                    </div>
+                    <button type="button" onClick={() => setEditOpen(true)} className="shrink-0 text-xs font-medium text-primary">
+                      Modifier →
+                    </button>
                   </div>
-                  <button
-                    type="button"
-                    onClick={() => setEditOpen(true)}
-                    className="shrink-0 text-xs font-semibold text-primary"
-                  >
-                    Modifier →
-                  </button>
+                ) : (
+                  <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/50 p-3">
+                    <HelpCircle className="size-5 shrink-0 text-muted-foreground stroke-[1.5]" />
+                    <span className="flex-1 text-sm text-muted-foreground">Profil de personnalité non défini</span>
+                    <Link href={`/disc-quiz/${contact.id}`} className="shrink-0 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground">
+                      Définir le profil
+                    </Link>
+                  </div>
+                )}
+              </div>
+              <div className="flex flex-col divide-y divide-border">
+                {contact.phone && (
+                  <div className="flex items-center gap-3 py-3">
+                    <Phone className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                    <a href={`tel:${contact.phone}`} className="text-sm font-medium text-primary">{contact.phone}</a>
+                  </div>
+                )}
+                {contact.email && (
+                  <div className="flex items-center gap-3 py-3">
+                    <Mail className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                    <span className="text-sm text-muted-foreground">{contact.email}</span>
+                  </div>
+                )}
+                {contact.source && (
+                  <div className="flex items-center gap-3 py-3">
+                    <Link2 className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                    <span className={cn('text-sm font-medium', sourceColor(contact.source))}>
+                      Rencontré sur {contact.source}
+                    </span>
+                  </div>
+                )}
+                <div className="flex items-center gap-3 py-3">
+                  <Clock className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                  <span className="text-sm text-muted-foreground">
+                    Dernier contact · <span className="font-medium text-foreground">{contact.lastInteraction}</span>
+                  </span>
+                </div>
+              </div>
+            </TabsContent>
+
+            <TabsContent value="notes" className="mt-4">
+              {contact.notes ? (
+                <div className="rounded-2xl border border-border bg-surface p-4">
+                  <p className="text-sm leading-relaxed text-muted-foreground">{contact.notes}</p>
                 </div>
               ) : (
-                <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/50 p-3">
-                  <HelpCircle className="size-5 shrink-0 text-muted-foreground stroke-[1.5]" />
-                  <span className="flex-1 text-sm text-muted-foreground">Profil de personnalité non défini</span>
-                  <Link
-                    href={`/disc-quiz/${contact.id}`}
-                    className="shrink-0 rounded-lg border border-border bg-surface px-3 py-1.5 text-xs font-semibold text-foreground"
-                  >
-                    Définir le profil
-                  </Link>
+                <div className="rounded-2xl border border-dashed border-border px-6 py-10 text-center">
+                  <p className="text-sm text-muted-foreground">Aucune note. Ajoute un contexte pour mieux le suivre.</p>
                 </div>
               )}
+            </TabsContent>
+
+            <TabsContent value="historique" className="mt-4">
+              {contact.timeline.length === 0 ? (
+                <div className="rounded-2xl border border-dashed border-border px-6 py-10 text-center">
+                  <p className="text-sm text-muted-foreground">Aucune interaction pour le moment.</p>
+                </div>
+              ) : (
+                <ol className="flex flex-col gap-4">
+                  {contact.timeline.map((ev) => {
+                    const Icon = timelineIcons[ev.type]
+                    return (
+                      <li key={ev.id} className="flex gap-3">
+                        <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                          <Icon className="size-4 stroke-[1.5]" />
+                        </span>
+                        <div className="flex-1 pt-1">
+                          <p className="text-sm font-medium text-foreground">{ev.label}</p>
+                          <p className="text-xs text-muted-foreground">{ev.date}</p>
+                        </div>
+                      </li>
+                    )
+                  })}
+                </ol>
+              )}
+            </TabsContent>
+          </Tabs>
+        </div>
+      </div>
+
+      {/* ── DESKTOP ONLY ── */}
+      <div className="hidden lg:flex flex-col h-[calc(100dvh-56px)] overflow-hidden bg-muted/40 px-8 pt-8 pb-8 gap-4">
+
+        {/* Header row */}
+        <div className="flex items-center gap-3 shrink-0">
+          <button
+            type="button"
+            onClick={() => router.back()}
+            className="flex size-8 items-center justify-center rounded-xl border border-border bg-surface text-muted-foreground hover:bg-muted transition-colors"
+          >
+            <ChevronLeft className="size-4 stroke-[1.5]" />
+          </button>
+          <h1 className="text-sm font-bold text-foreground flex-1">
+            {contact.firstName} {contact.lastName}
+          </h1>
+          <span className={cn('rounded-full px-3 py-1 text-xs font-bold', stagePill[contact.stage] ?? 'bg-muted text-muted-foreground')}>
+            {stageLabel[contact.stage] ?? contact.stage}
+          </span>
+          <button
+            type="button"
+            onClick={() => setEditOpen(true)}
+            className="flex items-center gap-2 rounded-xl border border-border bg-surface px-4 py-2 text-xs font-medium text-foreground hover:bg-muted transition-colors"
+          >
+            <Pencil className="size-3.5 stroke-[1.5]" />
+            Modifier
+          </button>
+        </div>
+
+        {/* Main grid */}
+        <div className="grid grid-cols-[280px_1fr] gap-4 flex-1 min-h-0 overflow-hidden">
+
+          {/* Left card — profil */}
+          <Card className="flex flex-col overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden">
+
+            {/* Avatar + nom */}
+            <div className="flex flex-col items-center gap-3 px-5 pt-6 pb-4 text-center border-b border-border shrink-0">
+              <div
+                className="flex size-16 items-center justify-center rounded-full text-xl font-bold text-white bg-muted"
+                style={avatarBg ? { backgroundColor: avatarBg } : undefined}
+              >
+                {initials}
+              </div>
+              <div>
+                <p className="text-sm font-bold text-foreground">
+                  {contact.firstName} {contact.lastName}
+                </p>
+                {contact.city && (
+                  <p className="text-[11px] text-muted-foreground mt-0.5">{contact.city}</p>
+                )}
+              </div>
+            </div>
+
+            {/* 3 action tiles */}
+            <div className="grid grid-cols-3 gap-2 px-4 py-4 shrink-0 border-b border-border">
+              {actionTiles.map((tile) => {
+                const Icon = tile.icon
+                const cls = 'flex flex-col items-center gap-1.5 rounded-xl border border-border bg-background py-3 text-center transition-colors hover:bg-muted/40'
+                if (tile.href) {
+                  return (
+                    <Link key={tile.label} href={tile.href} className={cls}>
+                      <Icon className="size-4 stroke-[1.5] text-primary" />
+                      <span className="text-[11px] font-medium text-foreground">{tile.label}</span>
+                    </Link>
+                  )
+                }
+                return (
+                  <button key={tile.label} type="button" onClick={tile.action} className={cls}>
+                    <Icon className="size-4 stroke-[1.5] text-primary" />
+                    <span className="text-[11px] font-medium text-foreground">{tile.label}</span>
+                  </button>
+                )
+              })}
+            </div>
+
+            {/* Simuler + Atlas */}
+            <div className="grid grid-cols-2 gap-2 px-4 py-4 shrink-0 border-b border-border">
+              <Link
+                href={`/aria?contact=${contact.id}`}
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-primary/10 py-2.5 text-xs font-bold text-primary transition-colors hover:bg-primary/15"
+              >
+                <Mic className="size-3.5 stroke-[1.5]" />
+                Simuler
+              </Link>
+              <button
+                type="button"
+                onClick={() => toast.success("Atlas analyse ce contact…")}
+                className="flex items-center justify-center gap-1.5 rounded-xl bg-primary/10 py-2.5 text-xs font-bold text-primary transition-colors hover:bg-primary/15"
+              >
+                <span className="font-bold text-sm leading-none">A</span>
+                Atlas
+              </button>
             </div>
 
             {/* Coordonnées */}
-            <div className="flex flex-col divide-y divide-border">
+            <div className="flex flex-col divide-y divide-border px-1">
               {contact.phone && (
-                <div className="flex items-center gap-3 py-3">
-                  <Phone className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-                  <a href={`tel:${contact.phone}`} className="text-sm font-semibold text-primary">
-                    {contact.phone}
-                  </a>
+                <div className="flex items-center gap-3 px-3 py-3">
+                  <Phone className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
+                  <a href={`tel:${contact.phone}`} className="text-xs font-medium text-primary truncate">{contact.phone}</a>
                 </div>
               )}
               {contact.email && (
-                <div className="flex items-center gap-3 py-3">
-                  <Mail className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-                  <span className="text-sm text-muted-foreground">{contact.email}</span>
+                <div className="flex items-center gap-3 px-3 py-3">
+                  <Mail className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
+                  <span className="text-xs text-muted-foreground truncate">{contact.email}</span>
                 </div>
               )}
               {contact.source && (
-                <div className="flex items-center gap-3 py-3">
-                  <Link2 className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-                  <span className={cn('text-sm font-semibold', sourceColor(contact.source))}>
-                    Rencontré sur {contact.source}
+                <div className="flex items-center gap-3 px-3 py-3">
+                  <Link2 className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
+                  <span className={cn('text-xs font-medium truncate', sourceColor(contact.source))}>
+                    {contact.source}
                   </span>
                 </div>
               )}
-              <div className="flex items-center gap-3 py-3">
-                <Clock className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
-                <span className="text-sm text-muted-foreground">
-                  Dernier contact · <span className="font-semibold text-foreground">{contact.lastInteraction}</span>
+              <div className="flex items-center gap-3 px-3 py-3">
+                <Clock className="size-3.5 shrink-0 stroke-[1.5] text-muted-foreground" />
+                <span className="text-[11px] text-muted-foreground">
+                  Dernier contact · <span className="font-medium text-foreground">{contact.lastInteraction}</span>
                 </span>
               </div>
             </div>
-          </TabsContent>
+          </Card>
 
-          {/* ── Notes ── */}
-          <TabsContent value="notes" className="mt-4">
-            {contact.notes ? (
-              <div className="rounded-2xl border border-border bg-surface p-4">
-                <p className="text-sm leading-relaxed text-muted-foreground">{contact.notes}</p>
-              </div>
-            ) : (
-              <div className="rounded-2xl border border-dashed border-border px-6 py-10 text-center">
-                <p className="text-sm text-muted-foreground">Aucune note. Ajoute un contexte pour mieux le suivre.</p>
-              </div>
-            )}
-          </TabsContent>
+          {/* Right card — tabs */}
+          <Card className="flex flex-col overflow-hidden">
+            <Tabs defaultValue="infos" className="flex flex-col h-full">
 
-          {/* ── Historique ── */}
-          <TabsContent value="historique" className="mt-4">
-            {contact.timeline.length === 0 ? (
-              <div className="rounded-2xl border border-dashed border-border px-6 py-10 text-center">
-                <p className="text-sm text-muted-foreground">Aucune interaction pour le moment.</p>
+              {/* Tab bar */}
+              <div className="flex items-center border-b border-border px-5 py-3 shrink-0">
+                <TabsList className="h-auto bg-transparent p-0 gap-1">
+                  <TabsTrigger
+                    value="infos"
+                    className="px-4 py-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent"
+                  >
+                    Infos
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="notes"
+                    className="px-4 py-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent"
+                  >
+                    Notes
+                  </TabsTrigger>
+                  <TabsTrigger
+                    value="historique"
+                    className="px-4 py-1.5 rounded-lg text-xs font-medium data-[state=active]:bg-muted data-[state=active]:text-foreground data-[state=inactive]:text-muted-foreground data-[state=inactive]:bg-transparent"
+                  >
+                    Historique
+                  </TabsTrigger>
+                </TabsList>
               </div>
-            ) : (
-              <ol className="flex flex-col gap-4">
-                {contact.timeline.map((ev) => {
-                  const Icon = timelineIcons[ev.type]
-                  return (
-                    <li key={ev.id} className="flex gap-3">
-                      <span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
-                        <Icon className="size-4 stroke-[1.5]" />
+
+              {/* Infos */}
+              <TabsContent value="infos" className="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-6 py-5 mt-0 flex flex-col gap-6">
+                {/* Personnalité */}
+                <div>
+                  <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-primary">Personnalité</p>
+                  {contact.disc ? (
+                    <div className="flex items-center gap-4 rounded-xl border border-border bg-background px-4 py-3">
+                      <span
+                        className="flex size-10 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white"
+                        style={{ backgroundColor: personalityBg[contact.disc] }}
+                      >
+                        {personalityName[contact.disc][0]}
                       </span>
-                      <div className="flex-1 pt-1">
-                        <p className="text-sm font-semibold text-foreground">{ev.label}</p>
-                        <p className="text-xs text-muted-foreground">{ev.date}</p>
+                      <div className="flex-1 min-w-0">
+                        <p className="text-sm font-bold text-foreground">{personalityName[contact.disc]}</p>
+                        <p className="text-xs text-muted-foreground mt-0.5 leading-relaxed">{personalityDesc[contact.disc]}</p>
                       </div>
-                    </li>
-                  )
-                })}
-              </ol>
-            )}
-          </TabsContent>
-        </Tabs>
-        </div>
-        {/* end right column */}
-      </div>
-      {/* end 2-col layout */}
+                      <button type="button" onClick={() => setEditOpen(true)} className="shrink-0 text-xs font-medium text-primary">
+                        Modifier →
+                      </button>
+                    </div>
+                  ) : (
+                    <div className="flex items-center gap-3 rounded-xl border border-border bg-muted/50 p-4">
+                      <HelpCircle className="size-5 shrink-0 text-muted-foreground stroke-[1.5]" />
+                      <span className="flex-1 text-sm text-muted-foreground">Profil de personnalité non défini</span>
+                      <Link href={`/disc-quiz/${contact.id}`} className="shrink-0 rounded-xl border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors">
+                        Définir le profil
+                      </Link>
+                    </div>
+                  )}
+                </div>
 
-      {/* Edit sheet */}
+                {/* Coordonnées */}
+                <div>
+                  <p className="mb-3 text-[11px] font-bold uppercase tracking-widest text-muted-foreground">Coordonnées</p>
+                  <div className="flex flex-col divide-y divide-border rounded-xl border border-border bg-background overflow-hidden">
+                    {contact.phone && (
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        <Phone className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                        <a href={`tel:${contact.phone}`} className="text-sm font-medium text-primary">{contact.phone}</a>
+                      </div>
+                    )}
+                    {contact.email && (
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        <Mail className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                        <span className="text-sm text-muted-foreground">{contact.email}</span>
+                      </div>
+                    )}
+                    {contact.source && (
+                      <div className="flex items-center gap-3 px-4 py-3">
+                        <Link2 className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                        <span className={cn('text-sm font-medium', sourceColor(contact.source))}>
+                          Rencontré sur {contact.source}
+                        </span>
+                      </div>
+                    )}
+                    <div className="flex items-center gap-3 px-4 py-3">
+                      <Clock className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" />
+                      <span className="text-sm text-muted-foreground">
+                        Dernier contact · <span className="font-medium text-foreground">{contact.lastInteraction}</span>
+                      </span>
+                    </div>
+                  </div>
+                </div>
+              </TabsContent>
+
+              {/* Notes */}
+              <TabsContent value="notes" className="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-6 py-5 mt-0">
+                {contact.notes ? (
+                  <div className="rounded-xl border border-border bg-background p-5">
+                    <p className="text-sm leading-relaxed text-muted-foreground">{contact.notes}</p>
+                  </div>
+                ) : (
+                  <div className="rounded-xl border border-dashed border-border px-6 py-16 text-center">
+                    <p className="text-sm text-muted-foreground">Aucune note. Ajoute un contexte pour mieux le suivre.</p>
+                  </div>
+                )}
+              </TabsContent>
+
+              {/* Historique */}
+              <TabsContent value="historique" className="flex-1 overflow-y-auto [scrollbar-width:none] [&::-webkit-scrollbar]:hidden px-6 py-5 mt-0">
+                {contact.timeline.length === 0 ? (
+                  <div className="rounded-xl border border-dashed border-border px-6 py-16 text-center">
+                    <p className="text-sm text-muted-foreground">Aucune interaction pour le moment.</p>
+                  </div>
+                ) : (
+                  <ol className="flex flex-col">
+                    {contact.timeline.map((ev, i) => {
+                      const Icon = timelineIcons[ev.type]
+                      return (
+                        <li key={ev.id} className="flex gap-4">
+                          <div className="flex flex-col items-center">
+                            <span className="flex size-8 shrink-0 items-center justify-center rounded-full bg-muted text-muted-foreground">
+                              <Icon className="size-3.5 stroke-[1.5]" />
+                            </span>
+                            {i < contact.timeline.length - 1 && (
+                              <div className="w-px flex-1 bg-border mt-1 mb-1" />
+                            )}
+                          </div>
+                          <div className="flex-1 pb-4 pt-1">
+                            <p className="text-sm font-medium text-foreground">{ev.label}</p>
+                            <p className="text-[11px] text-muted-foreground mt-0.5">{ev.date}</p>
+                          </div>
+                        </li>
+                      )
+                    })}
+                  </ol>
+                )}
+              </TabsContent>
+            </Tabs>
+          </Card>
+        </div>
+      </div>
+
       {editOpen && <EditSheet contact={contact} onClose={() => setEditOpen(false)} />}
     </div>
   )
