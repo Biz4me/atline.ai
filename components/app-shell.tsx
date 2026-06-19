@@ -4,6 +4,7 @@ import { useState, useEffect, type ReactNode } from 'react'
 import { cn } from '@/lib/utils'
 import { DesktopSidebar } from '@/components/desktop-sidebar'
 import { AtlasSidebar } from '@/components/atlas-sidebar'
+import { DesktopTopBar } from '@/components/desktop-top-bar'
 import { BottomNav } from '@/components/bottom-nav'
 
 export function AppShell({ children }: { children: ReactNode }) {
@@ -33,11 +34,12 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   return (
     <>
+      <DesktopTopBar />
       <DesktopSidebar collapsed={collapsed} onToggle={toggle} />
       <AtlasSidebar collapsed={atlasCollapsed} onToggle={toggleAtlas} />
       <div
         className={cn(
-          'app-shell pb-[110px] lg:pb-0 lg:max-w-none lg:mx-0',
+          'app-shell pb-[110px] lg:pb-0 lg:max-w-none lg:mx-0 lg:pt-14',
           'transition-[padding-left,padding-right] duration-200 ease-out',
           collapsed ? 'lg:pl-16' : 'lg:pl-60',
           atlasCollapsed ? 'lg:pr-0' : 'lg:pr-[320px]',

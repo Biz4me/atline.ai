@@ -42,7 +42,7 @@ export function DesktopSidebar({ collapsed, onToggle }: Props) {
   return (
     <aside
       className={cn(
-        'hidden lg:flex flex-col fixed left-0 top-0 h-dvh z-40',
+        'hidden lg:flex flex-col fixed left-0 top-14 h-[calc(100dvh-3.5rem)] z-40',
         'bg-surface border-r border-border overflow-hidden',
         'transition-[width] duration-200 ease-out',
         collapsed ? 'w-16' : 'w-60',
