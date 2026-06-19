@@ -15,10 +15,10 @@ export function AppShell({ children }: { children: ReactNode }) {
   const hasSidebar = SECTIONS_WITH_SIDEBAR.some(s => pathname.startsWith(s))
   const atlasHidden = pathname === '/atlas' || pathname.startsWith('/atlas/')
   const [collapsed, setCollapsed] = useState(() =>
-    typeof window !== 'undefined' ? localStorage.getItem('sidebar-collapsed') === '1' : false
+    typeof window !== 'undefined' ? document.documentElement.getAttribute('data-sc') === '1' : false
   )
   const [atlasCollapsed, setAtlasCollapsed] = useState(() =>
-    typeof window !== 'undefined' ? localStorage.getItem('atlas-sidebar-collapsed') === '1' : false
+    typeof window !== 'undefined' ? document.documentElement.getAttribute('data-ac') === '1' : false
   )
 
   const toggle = () => {
