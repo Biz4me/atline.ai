@@ -103,6 +103,29 @@ pm2 logs atline-app --lines 20
 - **Typographie :** `text-sm font-bold` pour titres, `text-xs text-muted-foreground` pour labels
 - Toujours utiliser les mêmes composants, couleurs et tailles que le mobile existant
 
+### Palette de couleurs — règle stricte
+
+**Ces 7 couleurs sont les SEULES autorisées dans toute l'interface.** Ne jamais introduire d'autres couleurs.
+
+**Agents IA :**
+| Agent | Couleur | Hex |
+|-------|---------|-----|
+| Atlas | Orange | `#F97316` (= `var(--primary)`) |
+| ARIA  | Teal    | `#14B8A6` |
+| Nova  | Violet  | `#8B5CF6` |
+
+**Profils DISC (contacts CRM) :**
+| Profil | Couleur | Hex |
+|--------|---------|-----|
+| Rouge  | Rouge   | `#EF4444` |
+| Vert   | Vert    | `#22C55E` |
+| Bleu   | Bleu    | `#3B82F6` |
+| Jaune  | Jaune   | `#F4B342` |
+
+**Exceptions autorisées :**
+- Boutons de validation (confirm, succès) : vert `#22C55E`
+- Prospect "chaud" : rouge légèrement plus chaud que `#EF4444` (ex: `#DC2626`) — acceptable
+
 ---
 
 ## Turbopack — problème apostrophes françaises
