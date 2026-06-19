@@ -367,7 +367,7 @@ export default function HomePage() {
                 </div>
                 <Link
                   href="/atlas"
-                  className="flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity shrink-0"
+                  className="flex items-center gap-1.5 rounded-xl bg-primary/10 text-primary px-3.5 py-2 text-xs font-bold hover:bg-primary/20 transition-colors shrink-0"
                 >
                   Discuter
                 </Link>
