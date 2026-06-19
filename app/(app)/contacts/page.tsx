@@ -189,6 +189,10 @@ function ContactsContent() {
   const [tempColFilter, setTempColFilter] = useState('all')
   const [tempColOpen, setTempColOpen] = useState(false)
   const tempColRef = useRef<HTMLDivElement>(null)
+  const [pageSize, setPageSize] = useState(10)
+  const [page, setPage] = useState(0)
+  const [pageSizeOpen, setPageSizeOpen] = useState(false)
+  const pageSizeRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
@@ -196,6 +200,7 @@ function ContactsContent() {
       if (exportImportRef.current && !exportImportRef.current.contains(e.target as Node)) setExportImportOpen(false)
       if (stadeColRef.current && !stadeColRef.current.contains(e.target as Node)) setStadeColOpen(false)
       if (tempColRef.current && !tempColRef.current.contains(e.target as Node)) setTempColOpen(false)
+      if (pageSizeRef.current && !pageSizeRef.current.contains(e.target as Node)) setPageSizeOpen(false)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
@@ -247,6 +252,12 @@ function ContactsContent() {
 
     return result
   }, [segment, stageFilter, query, current.id, sortKey, sortDir, stadeColFilter, tempColFilter])
+
+  const totalPages = Math.max(1, Math.ceil(list.length / pageSize))
+  const safePage   = Math.min(page, totalPages - 1)
+  const paginated  = list.slice(safePage * pageSize, (safePage + 1) * pageSize)
+
+  useEffect(() => { setPage(0) }, [segment, stageFilter, query, stadeColFilter, tempColFilter, sortKey, sortDir])
 
   const filters = stageFilters[segment]
   const thProps = { current: sortKey, dir: sortDir, onSort: toggleSort }
@@ -502,11 +513,11 @@ function ContactsContent() {
           </div>
         </div>
 
-        {/* Main : table + panel */}
-        <div className="flex flex-1 overflow-hidden">
+        {/* Main : table + pagination */}
+        <div className="flex flex-col flex-1 overflow-hidden">
 
-          {/* Table */}
-          <div className="flex-1 overflow-auto">
+          {/* Table — pas de scrollbar, lignes paginées */}
+          <div className="flex-1 overflow-hidden">
             {list.length === 0 ? (
               <div className="flex flex-col items-center gap-3 py-20 text-center">
                 <div className="flex size-12 items-center justify-center rounded-2xl bg-muted">
@@ -567,7 +578,7 @@ function ContactsContent() {
                   </tr>
                 </thead>
                 <tbody>
-                  {list.map((c) => (
+                  {paginated.map((c) => (
                     <tr
                       key={c.id}
                       onClick={() => router.push(`/contacts/${c.id}`)}
@@ -666,6 +677,103 @@ function ContactsContent() {
               </table>
             )}
           </div>
+
+          {/* Pagination */}
+          {list.length > 0 && (
+            <div className="flex items-center justify-between border-t border-border px-6 py-3 shrink-0">
+
+              {/* Lignes par page */}
+              <div className="flex items-center gap-2 text-sm text-muted-foreground">
+                <span>Lignes</span>
+                <div ref={pageSizeRef} className="relative">
+                  <button
+                    type="button"
+                    onClick={() => setPageSizeOpen((o) => !o)}
+                    className="flex items-center gap-1.5 rounded-lg border border-border bg-surface px-2.5 py-1.5 text-sm font-medium text-foreground hover:bg-muted transition-colors"
+                  >
+                    {pageSize}
+                    <ChevronDown className={cn('size-3.5 stroke-2 transition-transform', pageSizeOpen && 'rotate-180')} />
+                  </button>
+                  {pageSizeOpen && (
+                    <div className="absolute bottom-full mb-1.5 left-0 z-20 min-w-[80px] rounded-xl border border-border bg-surface shadow-lg overflow-hidden py-1">
+                      {[10, 20, 50].map((n) => (
+                        <button
+                          key={n}
+                          type="button"
+                          onClick={() => { setPageSize(n); setPage(0); setPageSizeOpen(false) }}
+                          className={cn(
+                            'flex w-full items-center gap-2 px-3 py-2 text-sm transition-colors',
+                            pageSize === n ? 'bg-primary/5 text-primary font-medium' : 'text-foreground hover:bg-muted'
+                          )}
+                        >
+                          {pageSize === n && <Check className="size-3.5 stroke-2" />}
+                          {n}
+                        </button>
+                      ))}
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              {/* Navigation pages */}
+              <div className="flex items-center gap-1">
+                <button
+                  type="button"
+                  disabled={safePage === 0}
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  Précédent
+                </button>
+
+                {(() => {
+                  const pages: (number | '…')[] = []
+                  if (totalPages <= 7) {
+                    for (let i = 0; i < totalPages; i++) pages.push(i)
+                  } else {
+                    pages.push(0)
+                    if (safePage > 2) pages.push('…')
+                    for (let i = Math.max(1, safePage - 1); i <= Math.min(totalPages - 2, safePage + 1); i++) pages.push(i)
+                    if (safePage < totalPages - 3) pages.push('…')
+                    pages.push(totalPages - 1)
+                  }
+                  return pages.map((p, i) =>
+                    p === '…' ? (
+                      <span key={`ellipsis-${i}`} className="px-2 text-sm text-muted-foreground">…</span>
+                    ) : (
+                      <button
+                        key={p}
+                        type="button"
+                        onClick={() => setPage(p as number)}
+                        className={cn(
+                          'flex size-8 items-center justify-center rounded-lg text-sm font-medium transition-colors',
+                          safePage === p
+                            ? 'bg-primary text-primary-foreground'
+                            : 'text-muted-foreground hover:bg-muted'
+                        )}
+                      >
+                        {(p as number) + 1}
+                      </button>
+                    )
+                  )
+                })()}
+
+                <button
+                  type="button"
+                  disabled={safePage === totalPages - 1}
+                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  className="rounded-lg px-3 py-1.5 text-sm font-medium text-muted-foreground hover:bg-muted disabled:opacity-40 disabled:cursor-not-allowed transition-colors"
+                >
+                  Suivant
+                </button>
+              </div>
+
+              {/* Info */}
+              <span className="text-xs text-muted-foreground">
+                {safePage * pageSize + 1}–{Math.min((safePage + 1) * pageSize, list.length)} sur {list.length}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
