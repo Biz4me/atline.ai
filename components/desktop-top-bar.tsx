@@ -26,9 +26,8 @@ export function DesktopTopBar() {
 
       {/* Center — section tabs */}
       <div className="flex flex-1 items-center justify-center gap-1">
-        {NAV_TABS.map(({ href, icon: Icon, label }) => {
+        {NAV_TABS.map(({ href, icon: Icon, label, color: agentColor }) => {
           const active = pathname === href || pathname.startsWith(href + '/')
-          const activeColor = color ?? undefined
           return (
             <Link
               key={href}
@@ -36,11 +35,9 @@ export function DesktopTopBar() {
               title={label}
               className={cn(
                 'relative flex items-center justify-center size-10 rounded-lg transition-colors',
-                active
-                  ? 'text-primary'
-                  : 'text-muted-foreground hover:text-foreground hover:bg-muted'
+                active && !agentColor ? 'text-primary' : !active ? 'text-muted-foreground hover:text-foreground hover:bg-muted' : ''
               )}
-              style={active && activeColor ? { color: activeColor } : undefined}
+              style={active && agentColor ? { color: agentColor } : undefined}
             >
               <Icon className={cn('size-5', active ? 'stroke-[2]' : 'stroke-[1.5]')} />
               {active && (
