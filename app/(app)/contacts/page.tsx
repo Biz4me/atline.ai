@@ -385,7 +385,7 @@ function ContactsContent() {
       </div>
 
       {/* ══ DESKTOP ═════════════════════════════════════════════ */}
-      <div className="hidden lg:flex flex-col h-[calc(100dvh-56px)] overflow-hidden bg-muted/40 p-4">
+      <div className="hidden lg:flex flex-col h-[calc(100dvh-56px)] overflow-hidden bg-muted/40 px-8 pt-8 pb-8">
 
         {/* Card — même composant que la Home */}
         <div className="flex flex-col flex-1 overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
