@@ -86,9 +86,9 @@ interface Props {
 }
 
 const FORMATION_CRM = [
-  { icon: Brain,   label: 'Repère les couleurs', sub: 'Profils DISC', href: '/formation' },
-  { icon: Zap,     label: "Script d'invitation",  sub: 'Module 3',    href: '/formation' },
-  { icon: ListPlus, label: 'Brise-glace',         sub: 'Module 2',    href: '/formation' },
+  { icon: Brain,    label: 'Repère les couleurs', sub: 'Profils DISC', href: '/formation' },
+  { icon: Zap,      label: 'Brise-glace',          sub: 'Module 2',    href: '/formation' },
+  { icon: ListPlus, label: "Script d'invitation",  sub: 'Module 3',    href: '/formation' },
 ]
 
 function CrmRailContent() {
@@ -126,7 +126,7 @@ function CrmRailContent() {
       {/* ── Card 1 : Formation CRM ── */}
       <div className="rounded-xl border border-border bg-surface overflow-hidden">
         <div className="flex items-center justify-between px-4 py-3 border-b border-border">
-          <p className="text-sm font-bold text-foreground">Formation CRM</p>
+          <p className="text-sm font-bold text-foreground">Alimenter ma liste</p>
           <Link href="/formation" className="text-xs font-medium text-muted-foreground hover:text-foreground transition-colors">
             Continuer →
           </Link>
