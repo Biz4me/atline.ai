@@ -2,7 +2,8 @@
 
 import Link from 'next/link'
 import { usePathname } from 'next/navigation'
-import { Route, ContactRound, SquarePen, BookOpen, MessageSquare, CalendarDays, Sparkles, Grid3X3 } from 'lucide-react'
+import { Route, ContactRound, SquarePen, BookOpen, MessageSquare, CalendarDays, Sparkles, Grid3X3, Moon, Sun } from 'lucide-react'
+import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import { BusinessSwitcher } from '@/components/business-switcher'
 
@@ -15,6 +16,7 @@ const NAV_TABS = [
 
 export function DesktopTopBar() {
   const pathname = usePathname()
+  const { theme, setTheme } = useTheme()
 
   return (
     <header className="hidden lg:flex fixed top-0 left-0 right-0 h-14 z-50 items-center border-b border-border bg-background/95 backdrop-blur px-4">
@@ -48,6 +50,18 @@ export function DesktopTopBar() {
 
       {/* Right — utilities */}
       <div className="w-60 flex-shrink-0 flex items-center justify-end gap-1">
+        {/* Provisoire — remplacé par Settings */}
+        <button
+          type="button"
+          onClick={() => setTheme(theme === 'dark' ? 'light' : 'dark')}
+          title={theme === 'dark' ? 'Mode clair' : 'Mode sombre'}
+          className="flex size-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted transition-colors"
+        >
+          {theme === 'dark'
+            ? <Sun className="size-[18px] stroke-[1.5]" />
+            : <Moon className="size-[18px] stroke-[1.5]" />
+          }
+        </button>
         <button
           type="button"
           className="flex size-10 items-center justify-center rounded-full text-muted-foreground hover:bg-muted transition-colors"

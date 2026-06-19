@@ -4,6 +4,7 @@ import { AppHeader } from '@/components/app-header'
 import { Card, SectionTitle } from '@/components/card'
 import { Bell, Moon, Globe, Lock, Trash2, ChevronRight, Smartphone, Eye } from 'lucide-react'
 import { useState } from 'react'
+import { useTheme } from 'next-themes'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 
@@ -35,7 +36,8 @@ export default function SettingsPage() {
     aria: false,
     nova: true,
   })
-  const [dark, setDark] = useState(false)
+  const { theme, setTheme } = useTheme()
+  const dark = theme === 'dark'
   const [lang, setLang] = useState('fr')
 
   return (
@@ -70,7 +72,7 @@ export default function SettingsPage() {
             <div className="flex items-center gap-3 px-4 py-3.5">
               <Moon className="size-5 shrink-0 text-muted-foreground stroke-[1.5]" />
               <span className="flex-1 text-sm font-medium text-foreground">Mode sombre</span>
-              <Toggle value={dark} onChange={setDark} />
+              <Toggle value={dark} onChange={(v) => setTheme(v ? 'dark' : 'light')} />
             </div>
             <div className="flex items-center gap-3 px-4 py-3.5">
               <Globe className="size-5 shrink-0 text-muted-foreground stroke-[1.5]" />
