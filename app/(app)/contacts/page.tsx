@@ -86,11 +86,79 @@ function Th({
       <button
         type="button"
         onClick={() => onSort(sortKey)}
-        className="flex items-center gap-1.5 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+        className="flex items-center gap-4 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
       >
         {label}
         <SortIcon active={active} dir={dir} />
       </button>
+    </th>
+  )
+}
+
+/* ── En-tête filtrable + triable ─────────────────────────────── */
+function ThFilter({
+  label, sortKey, current, dir, onSort,
+  options, value, onChange,
+  open, onToggle, containerRef, className,
+}: {
+  label: string
+  sortKey: SortKey
+  current: SortKey | null
+  dir: SortDir
+  onSort: (k: SortKey) => void
+  options: { id: string; label: string }[]
+  value: string
+  onChange: (v: string) => void
+  open: boolean
+  onToggle: () => void
+  containerRef: React.RefObject<HTMLDivElement>
+  className?: string
+}) {
+  const active = current === sortKey
+  return (
+    <th className={cn('px-4 py-3 text-left', className)}>
+      <div className="flex items-center gap-1">
+        <button
+          type="button"
+          onClick={() => onSort(sortKey)}
+          className="flex items-center gap-4 text-xs font-medium text-muted-foreground hover:text-foreground transition-colors"
+        >
+          {label}
+          <SortIcon active={active} dir={dir} />
+        </button>
+        <div ref={containerRef} className="relative">
+          <button
+            type="button"
+            onClick={onToggle}
+            className={cn(
+              'flex size-5 items-center justify-center rounded transition-colors',
+              value !== 'all' ? 'text-primary' : 'text-muted-foreground hover:text-foreground'
+            )}
+          >
+            <ChevronDown className={cn('size-3 stroke-2 transition-transform', open && 'rotate-180')} />
+          </button>
+          {open && (
+            <div className="absolute left-0 top-full mt-1.5 z-20 min-w-[160px] rounded-xl border border-border bg-surface shadow-lg overflow-hidden py-1">
+              {options.map((opt) => (
+                <button
+                  key={opt.id}
+                  type="button"
+                  onClick={() => onChange(opt.id)}
+                  className={cn(
+                    'flex w-full items-center gap-2.5 px-3 py-2.5 text-sm text-left transition-colors',
+                    value === opt.id ? 'bg-primary/5 text-primary font-medium' : 'text-foreground hover:bg-muted'
+                  )}
+                >
+                  <span className="flex size-4 shrink-0 items-center justify-center">
+                    {value === opt.id && <Check className="size-3.5 stroke-2" />}
+                  </span>
+                  {opt.label}
+                </button>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
     </th>
   )
 }
@@ -111,15 +179,19 @@ function ContactsContent() {
   const exportImportRef = useRef<HTMLDivElement>(null)
   const [importModalOpen, setImportModalOpen] = useState(false)
   const [importFile, setImportFile] = useState<File | null>(null)
+  const [stadeColFilter, setStadeColFilter] = useState('all')
+  const [stadeColOpen, setStadeColOpen] = useState(false)
+  const stadeColRef = useRef<HTMLDivElement>(null)
+  const [tempColFilter, setTempColFilter] = useState('all')
+  const [tempColOpen, setTempColOpen] = useState(false)
+  const tempColRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     function handleClick(e: MouseEvent) {
-      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) {
-        setDropdownOpen(false)
-      }
-      if (exportImportRef.current && !exportImportRef.current.contains(e.target as Node)) {
-        setExportImportOpen(false)
-      }
+      if (dropdownRef.current && !dropdownRef.current.contains(e.target as Node)) setDropdownOpen(false)
+      if (exportImportRef.current && !exportImportRef.current.contains(e.target as Node)) setExportImportOpen(false)
+      if (stadeColRef.current && !stadeColRef.current.contains(e.target as Node)) setStadeColOpen(false)
+      if (tempColRef.current && !tempColRef.current.contains(e.target as Node)) setTempColOpen(false)
     }
     document.addEventListener('mousedown', handleClick)
     return () => document.removeEventListener('mousedown', handleClick)
@@ -147,6 +219,8 @@ function ContactsContent() {
     let result = contacts
       .filter((c) => c.businessId === current.id)
       .filter((c) => activeStages.includes(c.stage))
+      .filter((c) => stadeColFilter === 'all' || c.stade === stadeColFilter)
+      .filter((c) => tempColFilter === 'all' || c.stage === tempColFilter)
       .filter((c) =>
         query
           ? `${c.firstName} ${c.lastName}`.toLowerCase().includes(query.toLowerCase())
@@ -168,7 +242,7 @@ function ContactsContent() {
     }
 
     return result
-  }, [segment, stageFilter, query, current.id, sortKey, sortDir])
+  }, [segment, stageFilter, query, current.id, sortKey, sortDir, stadeColFilter, tempColFilter])
 
   const filters = stageFilters[segment]
   const thProps = { current: sortKey, dir: sortDir, onSort: toggleSort }
@@ -449,8 +523,38 @@ function ContactsContent() {
                 <thead className="sticky top-0 z-10 bg-background border-b border-border">
                   <tr>
                     <Th label="Contact"            sortKey="name"            {...thProps} className="min-w-[200px]" />
-                    <Th label="Stade"              sortKey="stade"           {...thProps} />
-                    <Th label="Température"        sortKey="stage"           {...thProps} />
+                    <ThFilter
+                      label="Stade" sortKey="stade" {...thProps}
+                      options={[
+                        { id: 'all', label: 'Tous' },
+                        { id: 'invitation', label: 'Invitation' },
+                        { id: 'présentation', label: 'Présentation' },
+                        { id: 'suivi', label: 'Suivi' },
+                        { id: 'closing', label: 'Closing' },
+                        { id: 'démarré', label: 'Démarré' },
+                      ]}
+                      value={stadeColFilter}
+                      onChange={(v) => { setStadeColFilter(v); setStadeColOpen(false) }}
+                      open={stadeColOpen}
+                      onToggle={() => setStadeColOpen((o) => !o)}
+                      containerRef={stadeColRef}
+                    />
+                    <ThFilter
+                      label="Température" sortKey="stage" {...thProps}
+                      options={[
+                        { id: 'all', label: 'Tous' },
+                        { id: 'nouveau', label: 'Nouveau' },
+                        { id: 'chaud', label: 'Chaud' },
+                        { id: 'prospect', label: 'Qualifié' },
+                        { id: 'client', label: 'Client' },
+                        { id: 'partenaire', label: 'Partenaire' },
+                      ]}
+                      value={tempColFilter}
+                      onChange={(v) => { setTempColFilter(v); setTempColOpen(false) }}
+                      open={tempColOpen}
+                      onToggle={() => setTempColOpen((o) => !o)}
+                      containerRef={tempColRef}
+                    />
                     <Th label="Ville"              sortKey="city"            {...thProps} />
                     <Th label="Dernière activité"  sortKey="lastInteraction" {...thProps} />
                     <th className="px-4 py-3 text-right text-xs font-medium text-muted-foreground">
