@@ -113,7 +113,7 @@ const feedItems: FeedItem[] = [
     kind: 'network',
     id: 'f2',
     initials: 'TH',
-    avatarBg: 'bg-blue-400',
+    avatarBg: 'bg-muted',
     name: 'Thomas',
     label: 'a signé son premier closing',
     sub: 'il y a 2h · ton N1',
@@ -138,7 +138,7 @@ const feedItems: FeedItem[] = [
     kind: 'network',
     id: 'f4',
     initials: 'MA',
-    avatarBg: 'bg-green-400',
+    avatarBg: 'bg-muted',
     name: 'Marie',
     label: 'a terminé le module 2',
     sub: 'il y a 4h · ta filleule',
@@ -163,7 +163,7 @@ const feedItems: FeedItem[] = [
     kind: 'network',
     id: 'f6',
     initials: 'LU',
-    avatarBg: 'bg-violet-400',
+    avatarBg: 'bg-muted',
     name: 'Lucas',
     label: 'a ajouté 3 contacts cette semaine',
     sub: 'hier · ton N2',
@@ -363,7 +363,6 @@ export default function HomePage() {
                   href="/atlas"
                   className="flex items-center gap-1.5 rounded-xl bg-primary px-3.5 py-2 text-xs font-bold text-primary-foreground hover:opacity-90 transition-opacity shrink-0"
                 >
-                  <Sparkles className="size-3.5 stroke-2" />
                   Discuter
                 </Link>
               </div>
@@ -415,9 +414,7 @@ export default function HomePage() {
                           href={task.cta}
                           className={cn(
                             'shrink-0 rounded-xl px-3 py-1.5 text-xs font-bold transition-colors',
-                            task.ctaPrimary
-                              ? 'bg-primary text-primary-foreground hover:opacity-90'
-                              : 'border border-border bg-surface text-foreground hover:bg-muted'
+                            'border border-border bg-surface text-foreground hover:bg-muted'
                           )}
                         >
                           {task.ctaLabel}
@@ -439,7 +436,7 @@ export default function HomePage() {
               <div className="divide-y divide-border">
                 {(feedItems.filter((f) => f.kind === 'network') as FeedNetwork[]).map((item) => (
                   <div key={item.id} className="flex items-center gap-3 px-5 py-3.5 hover:bg-muted/20 transition-colors">
-                    <span className={cn('flex size-9 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white', item.avatarBg)}>
+                    <span className={cn('flex size-9 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-muted-foreground', item.avatarBg)}>
                       {item.initials}
                     </span>
                     <div className="flex-1 min-w-0">
@@ -517,7 +514,7 @@ export default function HomePage() {
                         <p className="text-[11px] text-muted-foreground">{s.time}</p>
                       </div>
                       {s.score && (
-                        <span className="text-xs font-bold text-[#22c55e] shrink-0">{s.score}</span>
+                        <span className="flex size-6 items-center justify-center rounded-md bg-[#22c55e]/10 text-[#22c55e] text-[10px] font-bold shrink-0">{s.score}</span>
                       )}
                     </Link>
                   )
@@ -563,12 +560,12 @@ export default function HomePage() {
               <div className="p-4 flex items-center gap-3">
                 <div className="flex -space-x-2">
                   {[
-                    { initials: 'SL', bg: 'bg-blue-400' },
-                    { initials: 'JM', bg: 'bg-green-400' },
-                    { initials: 'KB', bg: 'bg-violet-400' },
-                    { initials: 'NB', bg: 'bg-amber-400' },
+                    { initials: 'SL', bg: 'bg-muted' },
+                    { initials: 'JM', bg: 'bg-muted' },
+                    { initials: 'KB', bg: 'bg-muted' },
+                    { initials: 'NB', bg: 'bg-muted' },
                   ].map((a) => (
-                    <span key={a.initials} className={cn('flex size-8 items-center justify-center rounded-full border-2 border-background text-[10px] font-bold text-white', a.bg)}>
+                    <span key={a.initials} className={cn('flex size-8 items-center justify-center rounded-full border-2 border-background text-[10px] font-bold text-muted-foreground', a.bg)}>
                       {a.initials}
                     </span>
                   ))}
