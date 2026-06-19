@@ -13,6 +13,7 @@ import {
   Users,
   Check,
   Sparkles,
+  Mic,
 } from 'lucide-react'
 import Link from 'next/link'
 import { useState } from 'react'
@@ -412,14 +413,14 @@ export default function HomePage() {
                       <span className={cn('flex size-8 shrink-0 items-center justify-center rounded-lg', task.iconBg)}>
                         <Icon className={cn('size-4 stroke-[1.5]', task.iconColor)} />
                       </span>
-                      <p className={cn('flex-1 text-sm text-foreground', done && 'line-through text-muted-foreground')}>
+                      <p className={cn('flex-1 text-sm font-medium text-foreground', done && 'line-through text-muted-foreground')}>
                         {task.label}
                       </p>
                       {!done && (
                         <Link
                           href={task.cta}
                           className={cn(
-                            'shrink-0 rounded-xl px-3 py-1.5 text-xs font-bold transition-colors',
+                            'shrink-0 rounded-xl px-3 py-1.5 text-xs font-medium transition-colors',
                             'border border-border bg-surface text-foreground hover:bg-muted'
                           )}
                         >
@@ -505,7 +506,7 @@ export default function HomePage() {
               <div className="flex flex-col gap-0.5 p-2">
                 {[
                   { icon: Sparkles, label: "Stratégie — relances prospects c...", time: "Auj. · 09:12", score: null },
-                  { icon: Sparkles, label: "Débrief simulation — Closing", time: "Hier · 18:40", score: 88 },
+                  { icon: Mic,      label: "Débrief simulation — Closing", time: "Hier · 18:40", score: 88 },
                   { icon: Sparkles, label: "Préparation call équipe", time: "Hier · 08:30", score: null },
                 ].map((s, i) => {
                   const Icon = s.icon
@@ -536,7 +537,7 @@ export default function HomePage() {
               </div>
               <div className="p-4">
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-sm text-foreground">Module 3 — Script d'invitation</span>
+                  <span className="text-sm font-medium text-foreground">Module 3 — Script d'invitation</span>
                   <span className="text-xs font-bold text-primary">60%</span>
                 </div>
                 <div className="h-1.5 w-full rounded-full bg-muted overflow-hidden mb-4">
@@ -546,11 +547,11 @@ export default function HomePage() {
                   {[
                     { n: '1/6', label: 'modules' },
                     { n: '24 min', label: 'restantes' },
-                    { n: '4 leçons', label: 'à finir' },
+                    { n: '4', label: 'leçons restantes' },
                   ].map((s) => (
                     <div key={s.label} className="rounded-xl bg-muted/60 py-2 px-3 text-center">
                       <p className="text-sm font-bold text-foreground">{s.n}</p>
-                      <p className="text-[10px] text-muted-foreground mt-0.5">{s.label}</p>
+                      <p className="text-[11px] text-muted-foreground mt-0.5">{s.label}</p>
                     </div>
                   ))}
                 </div>
