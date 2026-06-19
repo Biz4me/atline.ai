@@ -388,7 +388,7 @@ function ContactsContent() {
       <div className="hidden lg:flex flex-col h-[calc(100dvh-56px)] overflow-hidden bg-muted/40 px-8 pt-8 pb-8">
 
         {/* Card — même composant que la Home */}
-        <div className="flex flex-col flex-1 overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
+        <div className="flex flex-col flex-1 min-h-0 overflow-hidden rounded-2xl border border-border bg-surface shadow-card">
 
         {/* Sub-header */}
         <div className="flex items-center justify-between px-6 py-4 border-b border-border shrink-0">
@@ -453,7 +453,7 @@ function ContactsContent() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Rechercher un contact…"
-              className="w-full rounded-lg border border-border bg-muted py-2 pl-9 pr-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-1 focus:ring-ring/40"
+              className="w-full rounded-xl border border-border bg-muted py-2 pl-9 pr-3 text-sm outline-none placeholder:text-muted-foreground focus:ring-1 focus:ring-ring/40"
             />
           </div>
 
