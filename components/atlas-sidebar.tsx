@@ -119,7 +119,7 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
           <div className="rounded-xl border border-border bg-surface overflow-hidden">
             <div className="flex items-center justify-between px-4 py-3 border-b border-border">
               <div className="flex items-center gap-1.5">
-                <Mic className="size-3.5 stroke-[1.5]" style={{ color: '#14B8A6' }} />
+                <Mic className="size-4 stroke-[1.5]" style={{ color: '#14B8A6' }} />
                 <p className="text-sm font-bold text-foreground">Simulateur ARIA</p>
               </div>
               <Link href="/aria" className="text-xs font-semibold text-primary">Voir tout →</Link>
