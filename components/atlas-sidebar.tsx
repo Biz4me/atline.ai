@@ -184,12 +184,10 @@ export function AtlasSidebar({ collapsed, onToggle }: Props) {
               <Link
                 href={contact ? `/aria?contact=${contact.id}&sim=${contact.sim}` : '/aria'}
                 className={cn(
-                  'flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-opacity',
-                  contact
-                    ? 'text-white hover:opacity-90'
-                    : 'bg-muted text-muted-foreground pointer-events-none'
+                  'flex w-full items-center justify-center gap-2 rounded-xl py-2.5 text-xs font-bold transition-opacity text-white hover:opacity-90',
+                  !contact && 'pointer-events-none opacity-60'
                 )}
-                style={contact ? { backgroundColor: '#14B8A6' } : undefined}
+                style={{ backgroundColor: '#14B8A6' }}
               >
                 <Mic className="size-3.5 stroke-2" />
                 {contact ? `Simuler — ${contact.sim}` : 'Simuler'}
