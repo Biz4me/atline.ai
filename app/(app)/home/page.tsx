@@ -346,9 +346,6 @@ export default function HomePage() {
             <Card className="p-0 overflow-hidden">
               <div className="flex items-start justify-between px-5 py-4 border-b border-border">
                 <div className="flex items-start gap-3">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary/10">
-                    <Sparkles className="size-4 text-primary stroke-[1.5]" />
-                  </span>
                   <div>
                     <p className="text-sm font-bold text-foreground">
                       Ton plan du jour{' '}
@@ -498,7 +495,6 @@ export default function HomePage() {
             <Card className="p-0 overflow-hidden">
               <div className="flex items-center justify-between px-5 py-3.5 border-b border-border">
                 <div className="flex items-center gap-2">
-                  <Sparkles className="size-4 stroke-[1.5] text-primary" />
                   <span className="text-sm font-bold text-foreground">Sessions avec Atlas</span>
                 </div>
                 <Link href="/atlas" className="text-xs font-semibold text-primary">Tout voir →</Link>
