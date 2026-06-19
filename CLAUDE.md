@@ -168,6 +168,18 @@ Desktop layout en 2 colonnes `grid-cols-[1fr_340px]` :
 
 ---
 
+## Décision plateforme — Next.js vs React Native
+
+**Choix assumé : Next.js web (PWA), pas React Native.**
+
+La priorité absolue est la qualité et la latence du simulateur vocal ARIA (~245ms cible : Deepgram → Groq → Cartesia). Cette latence est dominée à 96%+ par la pipeline backend — la plateforme cliente ne change pas grand chose. React Native n'apporterait aucun gain mesurable sur la latence perçue.
+
+Ce que Next.js permet en plus : 100% des ressources sur la pipeline vocale, déploiements sans review App Store, contexte CRM disponible en temps réel pendant la simulation.
+
+Compensation pour le manque de natif : PWA installable (icône téléphone) + Web Push API.
+
+---
+
 ## Règles de travail
 
 1. Desktop uniquement — ne jamais toucher le mobile

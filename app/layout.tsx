@@ -3,6 +3,10 @@ import { Analytics } from '@vercel/analytics/next'
 import { Toaster } from '@/components/ui/sonner'
 import './globals.css'
 
+// Cabinet Grotesk via Fontshare CDN (display font — titres, KPIs)
+const cabinetGroteskHref =
+  'https://api.fontshare.com/v2/css?f[]=cabinet-grotesk@800,700,600&display=swap'
+
 export const metadata: Metadata = {
   title: 'Atline — Ton coach MLM',
   description:
@@ -31,6 +35,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="fr">
+      <head>
+        <link rel="preconnect" href="https://api.fontshare.com" />
+        <link rel="stylesheet" href={cabinetGroteskHref} />
+      </head>
       <body className="font-sans antialiased">
         {children}
         <Toaster position="top-center" />
