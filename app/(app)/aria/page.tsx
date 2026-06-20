@@ -4,6 +4,7 @@ import { useState, useEffect, useRef, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { ChevronLeft, Mic, Search, X, Phone, PhoneOff, Pause, ChevronRight } from 'lucide-react'
 import { cn } from '@/lib/utils'
+import { Room, RoomEvent, Track } from 'livekit-client'
 
 /* ── Types ──────────────────────────────────────────────────── */
 type Phase = 'Invitation' | 'Suivi' | 'Démarrage' | 'Coaching'
@@ -243,18 +244,68 @@ function SimulatorScreen({
   const [seconds, setSeconds] = useState(0)
   const [showEndModal, setShowEndModal] = useState(false)
   const [speaking, setSpeaking] = useState(false)
+  const [connecting, setConnecting] = useState(false)
   const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+  const roomRef = useRef<Room | null>(null)
 
   useEffect(() => {
     if (simState === 'calling') {
       timerRef.current = setInterval(() => setSeconds((s) => s + 1), 1000)
-      const speakInterval = setInterval(() => setSpeaking((s) => !s), 2500)
-      return () => {
-        clearInterval(timerRef.current!)
-        clearInterval(speakInterval)
-      }
+      return () => clearInterval(timerRef.current!)
     }
   }, [simState])
+
+  useEffect(() => {
+    return () => { roomRef.current?.disconnect() }
+  }, [])
+
+  const startCall = async () => {
+    setConnecting(true)
+    try {
+      const res = await fetch('/api/livekit-token', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ color: 'bleu', scenario: 'objection_pyramide' }),
+      })
+      const { token, url } = await res.json()
+
+      const room = new Room()
+      roomRef.current = room
+
+      room.on(RoomEvent.TrackSubscribed, (track) => {
+        if (track.kind === Track.Kind.Audio) {
+          const el = track.attach()
+          el.play().catch(() => {})
+          document.body.appendChild(el)
+        }
+      })
+
+      room.on(RoomEvent.TrackUnsubscribed, (track) => {
+        track.detach().forEach((el) => el.remove())
+      })
+
+      room.on(RoomEvent.ActiveSpeakersChanged, (speakers) => {
+        setSpeaking(speakers.some((s) => s.isAgent))
+      })
+
+      room.on(RoomEvent.Disconnected, () => {
+        setSimState('ended')
+      })
+
+      await room.connect(url, token, { audio: true, video: false })
+      setSimState('calling')
+    } catch (e) {
+      console.error('LiveKit connect error', e)
+    } finally {
+      setConnecting(false)
+    }
+  }
+
+  const endCall = async () => {
+    await roomRef.current?.disconnect()
+    roomRef.current = null
+    onDebrief()
+  }
 
   const formatTime = (s: number) => {
     const m = Math.floor(s / 60).toString().padStart(2, '0')
@@ -369,23 +420,24 @@ function SimulatorScreen({
         <div className="flex flex-col items-center gap-3 pb-16">
           <button
             type="button"
-            onClick={() => setSimState('calling')}
-            className="flex size-20 items-center justify-center rounded-full bg-[#22C55E] shadow-lg shadow-green-500/30 transition-transform active:scale-95"
+            onClick={startCall}
+            disabled={connecting}
+            className="flex size-20 items-center justify-center rounded-full bg-[#22C55E] shadow-lg shadow-green-500/30 transition-transform active:scale-95 disabled:opacity-60"
           >
-            <Phone className="size-8 stroke-[1.5] text-white" />
+            {connecting
+              ? <span className="size-5 animate-spin rounded-full border-2 border-white border-t-transparent" />
+              : <Phone className="size-8 stroke-[1.5] text-white" />
+            }
           </button>
-          <p className="text-xs text-white/40">Appuie pour appeler {contact.firstName}</p>
+          <p className="text-xs text-white/40">
+            {connecting ? "Connexion en cours…" : `Appuie pour appeler ${contact.firstName}`}
+          </p>
         </div>
       )}
 
       {simState === 'calling' && (
         <div className="flex items-center justify-center gap-6 pb-16">
-          <button
-            type="button"
-            className="flex size-14 items-center justify-center rounded-full bg-white/10 text-white active:bg-white/20"
-          >
-            <Pause className="size-5 stroke-[1.5]" />
-          </button>
+          <div className="size-14" />
           <button
             type="button"
             onClick={() => setShowEndModal(true)}
@@ -424,7 +476,7 @@ function SimulatorScreen({
               </button>
               <button
                 type="button"
-                onClick={onDebrief}
+                onClick={endCall}
                 className="flex-1 rounded-xl bg-red-500 py-3.5 text-sm font-bold text-white transition-transform active:scale-[0.98]"
               >
                 Terminer
