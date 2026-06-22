@@ -317,10 +317,21 @@ export default function ToolboxPage() {
 
       {/* ── DESKTOP ONLY ── */}
       <div className="hidden lg:block">
-        <div className="flex flex-col gap-5 px-8 pt-8 pb-8 max-w-2xl mx-auto">
-          <QuickLinksSection />
-          <DesktopSupports />
-          <BotsSection />
+        <div className="px-8 pt-8 pb-8 max-w-5xl mx-auto">
+          <h1 className="font-display text-[28px] font-extrabold tracking-tight text-foreground mb-6">
+            Boîte à outils
+          </h1>
+          <div className="grid grid-cols-2 gap-6 items-start">
+            {/* Colonne gauche */}
+            <div className="flex flex-col gap-6">
+              <QuickLinksSection />
+              <BotsSection />
+            </div>
+            {/* Colonne droite */}
+            <div className="flex flex-col gap-6">
+              <MobileSupports />
+            </div>
+          </div>
         </div>
       </div>
     </>
