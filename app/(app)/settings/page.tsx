@@ -38,24 +38,29 @@ export default function SettingsPage() {
   })
   const { theme, setTheme } = useTheme()
   const dark = theme === 'dark'
-  const [lang, setLang] = useState('fr')
 
-  return (
-    <>
-      <AppHeader title="Paramètres" back showActions={false} />
+  const notifItems = [
+    { key: 'atlas' as const, icon: Bell, label: 'Atlas — Rappels quotidiens' },
+    { key: 'contacts' as const, icon: Smartphone, label: 'Nouveaux messages contacts' },
+    { key: 'commissions' as const, icon: Bell, label: 'Nouvelles commissions' },
+    { key: 'aria' as const, icon: Bell, label: "ARIA — Rappels d'entraînement" },
+    { key: 'nova' as const, icon: Bell, label: 'Nova — Posts à publier' },
+  ]
 
-      <div className="flex flex-col gap-5 px-4 pt-4 lg:px-8 lg:pt-8 lg:max-w-2xl lg:mx-auto">
+  const privacyItems = [
+    { icon: Lock, label: 'Changer mon mot de passe' },
+    { icon: Eye, label: 'Qui peut voir mon profil' },
+    { icon: Smartphone, label: 'Sessions actives' },
+  ]
+
+  function Content() {
+    return (
+      <div className="flex flex-col gap-5">
         {/* Notifications */}
         <section>
           <SectionTitle>Notifications</SectionTitle>
           <Card className="divide-y divide-border p-0">
-            {[
-              { key: 'atlas' as const, icon: Bell, label: 'Atlas — Rappels quotidiens' },
-              { key: 'contacts' as const, icon: Smartphone, label: 'Nouveaux messages contacts' },
-              { key: 'commissions' as const, icon: Bell, label: 'Nouvelles commissions' },
-              { key: 'aria' as const, icon: Bell, label: 'ARIA — Rappels d\'entraînement' },
-              { key: 'nova' as const, icon: Bell, label: 'Nova — Posts à publier' },
-            ].map((item) => (
+            {notifItems.map((item) => (
               <div key={item.key} className="flex items-center gap-3 px-4 py-3.5">
                 <item.icon className="size-5 shrink-0 text-muted-foreground stroke-[1.5]" />
                 <span className="flex-1 text-sm font-medium text-foreground">{item.label}</span>
@@ -86,11 +91,7 @@ export default function SettingsPage() {
         <section>
           <SectionTitle>Confidentialité & sécurité</SectionTitle>
           <Card className="divide-y divide-border p-0">
-            {[
-              { icon: Lock, label: 'Changer mon mot de passe' },
-              { icon: Eye, label: 'Qui peut voir mon profil' },
-              { icon: Smartphone, label: 'Sessions actives' },
-            ].map((row) => (
+            {privacyItems.map((row) => (
               <button
                 key={row.label}
                 type="button"
@@ -120,6 +121,25 @@ export default function SettingsPage() {
             </button>
           </Card>
         </section>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {/* ── MOBILE ONLY ── */}
+      <div className="lg:hidden">
+        <AppHeader title="Paramètres" back showActions={false} />
+        <div className="px-4 pt-4 pb-8">
+          <Content />
+        </div>
+      </div>
+
+      {/* ── DESKTOP ONLY ── */}
+      <div className="hidden lg:block">
+        <div className="px-8 pt-8 pb-8 max-w-2xl mx-auto">
+          <Content />
+        </div>
       </div>
     </>
   )

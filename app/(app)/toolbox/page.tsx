@@ -89,100 +89,117 @@ function CopyableLink({ url }: { url: string }) {
   )
 }
 
+function ToolboxContent() {
+  return (
+    <div className="flex flex-col gap-5">
+      {/* Liens rapides */}
+      <section>
+        <SectionTitle>Liens rapides</SectionTitle>
+        <div className="flex flex-col gap-2">
+          {quickLinks.map((link) => {
+            const Icon = link.icon
+            return (
+              <Card key={link.id} className="p-4">
+                <div className="flex items-center gap-3">
+                  <span className={cn('flex size-10 shrink-0 items-center justify-center rounded-xl', link.color)}>
+                    <Icon className="size-5 stroke-[1.5]" />
+                  </span>
+                  <div className="min-w-0 flex-1">
+                    <p className="text-sm font-bold text-foreground">{link.label}</p>
+                    <p className="text-xs text-muted-foreground">{link.desc}</p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toast.info(`Ouvrir ${link.label}`)}
+                    className="shrink-0 rounded-xl border border-border bg-surface p-2 transition-colors active:bg-muted"
+                  >
+                    <ExternalLink className="size-4 stroke-[1.5] text-muted-foreground" />
+                  </button>
+                </div>
+                <CopyableLink url={link.url} />
+              </Card>
+            )
+          })}
+        </div>
+      </section>
+
+      {/* Supports */}
+      <section>
+        <SectionTitle>Supports de vente</SectionTitle>
+        <Card className="divide-y divide-border p-0">
+          {supports.map((s) => {
+            const Icon = s.icon
+            return (
+              <button
+                key={s.id}
+                type="button"
+                onClick={() => toast.info(`Ouvrir ${s.label}`)}
+                className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-muted"
+              >
+                <Icon className={cn('size-5 shrink-0 stroke-[1.5]', s.color)} />
+                <div className="min-w-0 flex-1">
+                  <p className="truncate text-sm font-semibold text-foreground">{s.label}</p>
+                  <p className="text-xs text-muted-foreground">{s.type}</p>
+                </div>
+                <ExternalLink className="size-4 shrink-0 text-muted-foreground" />
+              </button>
+            )
+          })}
+        </Card>
+      </section>
+
+      {/* Bot prospect */}
+      <section>
+        <SectionTitle>Bot de prospection</SectionTitle>
+        <div className="flex flex-col gap-2">
+          {botLinks.map((bot) => (
+            <Card key={bot.id} className="flex items-center gap-3 p-4">
+              <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted">
+                <Bot className="size-5 stroke-[1.5] text-muted-foreground" />
+              </span>
+              <div className="min-w-0 flex-1">
+                <p className="text-sm font-bold text-foreground">{bot.platform}</p>
+                <p className="text-xs text-muted-foreground">{bot.desc}</p>
+              </div>
+              <span className={cn(
+                'rounded-full px-2.5 py-1 text-[11px] font-bold',
+                bot.active
+                  ? 'bg-success/15 text-success'
+                  : 'bg-muted text-muted-foreground'
+              )}>
+                {bot.active ? 'Actif' : 'Inactif'}
+              </span>
+            </Card>
+          ))}
+          <button
+            type="button"
+            onClick={() => toast.info('Configurer le bot')}
+            className="rounded-2xl border border-dashed border-border py-3 text-sm font-semibold text-muted-foreground transition-colors active:bg-muted"
+          >
+            + Configurer un nouveau bot
+          </button>
+        </div>
+      </section>
+    </div>
+  )
+}
+
 export default function ToolboxPage() {
   return (
     <>
-      <AppHeader title="Boîte à outils" back />
+      {/* ── MOBILE ONLY ── */}
+      <div className="lg:hidden">
+        <AppHeader title="Boîte à outils" back />
+        <div className="px-4 pt-4 pb-8">
+          <ToolboxContent />
+        </div>
+      </div>
 
-      <div className="flex flex-col gap-5 px-4 pt-4 lg:px-8 lg:pt-8 lg:max-w-2xl lg:mx-auto">
-        {/* Liens rapides */}
-        <section>
-          <SectionTitle>Liens rapides</SectionTitle>
-          <div className="flex flex-col gap-2">
-            {quickLinks.map((link) => {
-              const Icon = link.icon
-              return (
-                <Card key={link.id} className="p-4">
-                  <div className="flex items-center gap-3">
-                    <span className={cn('flex size-10 shrink-0 items-center justify-center rounded-xl', link.color)}>
-                      <Icon className="size-5 stroke-[1.5]" />
-                    </span>
-                    <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-foreground">{link.label}</p>
-                      <p className="text-xs text-muted-foreground">{link.desc}</p>
-                    </div>
-                    <button
-                      type="button"
-                      onClick={() => toast.info(`Ouvrir ${link.label}`)}
-                      className="shrink-0 rounded-xl border border-border bg-surface p-2 transition-colors active:bg-muted"
-                    >
-                      <ExternalLink className="size-4 stroke-[1.5] text-muted-foreground" />
-                    </button>
-                  </div>
-                  <CopyableLink url={link.url} />
-                </Card>
-              )
-            })}
-          </div>
-        </section>
-
-        {/* Supports */}
-        <section>
-          <SectionTitle>Supports de vente</SectionTitle>
-          <Card className="divide-y divide-border p-0">
-            {supports.map((s) => {
-              const Icon = s.icon
-              return (
-                <button
-                  key={s.id}
-                  type="button"
-                  onClick={() => toast.info(`Ouvrir ${s.label}`)}
-                  className="flex w-full items-center gap-3 px-4 py-3.5 text-left transition-colors active:bg-muted"
-                >
-                  <Icon className={cn('size-5 shrink-0 stroke-[1.5]', s.color)} />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-foreground">{s.label}</p>
-                    <p className="text-xs text-muted-foreground">{s.type}</p>
-                  </div>
-                  <ExternalLink className="size-4 shrink-0 text-muted-foreground" />
-                </button>
-              )
-            })}
-          </Card>
-        </section>
-
-        {/* Bot prospect */}
-        <section>
-          <SectionTitle>Bot de prospection</SectionTitle>
-          <div className="flex flex-col gap-2">
-            {botLinks.map((bot) => (
-              <Card key={bot.id} className="flex items-center gap-3 p-4">
-                <span className="flex size-10 shrink-0 items-center justify-center rounded-xl bg-muted">
-                  <Bot className="size-5 stroke-[1.5] text-muted-foreground" />
-                </span>
-                <div className="min-w-0 flex-1">
-                  <p className="text-sm font-bold text-foreground">{bot.platform}</p>
-                  <p className="text-xs text-muted-foreground">{bot.desc}</p>
-                </div>
-                <span className={cn(
-                  'rounded-full px-2.5 py-1 text-[11px] font-bold',
-                  bot.active
-                    ? 'bg-success/15 text-success'
-                    : 'bg-muted text-muted-foreground'
-                )}>
-                  {bot.active ? 'Actif' : 'Inactif'}
-                </span>
-              </Card>
-            ))}
-            <button
-              type="button"
-              onClick={() => toast.info('Configurer le bot')}
-              className="rounded-2xl border border-dashed border-border py-3 text-sm font-semibold text-muted-foreground transition-colors active:bg-muted"
-            >
-              + Configurer un nouveau bot
-            </button>
-          </div>
-        </section>
+      {/* ── DESKTOP ONLY ── */}
+      <div className="hidden lg:block">
+        <div className="px-8 pt-8 pb-8 max-w-2xl mx-auto">
+          <ToolboxContent />
+        </div>
       </div>
     </>
   )

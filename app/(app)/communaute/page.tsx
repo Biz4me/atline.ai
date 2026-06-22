@@ -80,7 +80,7 @@ const threads = [
     space: 'general' as Space,
     category: 'Wins',
     categoryColor: 'bg-success/15 text-success',
-    title: 'J\'ai recruté 3 filleuls en 2 semaines avec la méthode DISC',
+    title: "J'ai recruté 3 filleuls en 2 semaines avec la méthode DISC",
     author: 'Nadia Benali',
     authorInitials: 'NB',
     authorColor: 'bg-primary',
@@ -149,11 +149,9 @@ export default function CommunautePage() {
     })
   }
 
-  return (
-    <>
-      <AppHeader title="Communauté" back showActions={false} />
-
-      <div className="flex flex-col gap-4 px-4 pt-4 lg:px-8 lg:pt-8 lg:max-w-3xl lg:mx-auto">
+  function Content({ maxWidth }: { maxWidth?: string }) {
+    return (
+      <div className={cn('flex flex-col gap-4', maxWidth)}>
         {/* Spaces tabs */}
         <div className="grid grid-cols-2 gap-1 rounded-xl bg-muted p-1">
           {spaces.map((s) => (
@@ -200,7 +198,7 @@ export default function CommunautePage() {
           </span>
         </div>
 
-        {/* Threads actifs */}
+        {/* Threads */}
         <div className="flex flex-col gap-2.5">
           {filtered.map((thread) => (
             <div
@@ -209,22 +207,15 @@ export default function CommunautePage() {
               className="cursor-pointer text-left"
             >
               <Card className="p-4 transition-colors active:bg-muted/50">
-                {/* Category + Pin */}
                 <div className="mb-2 flex items-center gap-2">
-                  {thread.pinned && (
-                    <Pin className="size-3 shrink-0 text-primary" />
-                  )}
+                  {thread.pinned && <Pin className="size-3 shrink-0 text-primary" />}
                   <span className={cn('rounded-full px-2 py-0.5 text-[11px] font-bold', thread.categoryColor)}>
                     {thread.category}
                   </span>
                 </div>
-
-                {/* Title */}
                 <p className="mb-3 text-[15px] font-semibold leading-snug text-foreground">
                   {thread.title}
                 </p>
-
-                {/* Author row */}
                 <div className="flex items-center gap-2">
                   <span className={cn('flex size-7 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white', thread.authorColor)}>
                     {thread.authorInitials}
@@ -235,8 +226,6 @@ export default function CommunautePage() {
                   </span>
                   <span className="ml-auto text-[11px] text-muted-foreground">{thread.time}</span>
                 </div>
-
-                {/* Footer */}
                 <div className="mt-3 flex items-center gap-4 border-t border-border pt-2.5">
                   <div className="flex items-center gap-1.5 text-xs text-muted-foreground">
                     <MessageSquare className="size-3.5 stroke-[1.5]" />
@@ -256,7 +245,6 @@ export default function CommunautePage() {
           ))}
         </div>
 
-        {/* CTA nouvelle discussion */}
         <button
           type="button"
           onClick={() => toast.info('Nouvelle discussion')}
@@ -265,6 +253,25 @@ export default function CommunautePage() {
           <Plus className="size-5 stroke-2" />
           Nouvelle discussion
         </button>
+      </div>
+    )
+  }
+
+  return (
+    <>
+      {/* ── MOBILE ONLY ── */}
+      <div className="lg:hidden">
+        <AppHeader title="Communauté" back showActions={false} />
+        <div className="px-4 pt-4 pb-8">
+          <Content />
+        </div>
+      </div>
+
+      {/* ── DESKTOP ONLY ── */}
+      <div className="hidden lg:block">
+        <div className="px-8 pt-8 pb-8 max-w-3xl mx-auto">
+          <Content />
+        </div>
       </div>
     </>
   )

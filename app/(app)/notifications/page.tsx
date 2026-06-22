@@ -23,7 +23,7 @@ const notifications: Notif[] = [
     id: 'n1',
     type: 'contact',
     title: 'Julie Fontaine a répondu',
-    body: 'Coucou ! J\'ai vu ta story sur ta routine, ça m\'intéresse trop.',
+    body: "Coucou ! J'ai vu ta story sur ta routine, ça m'intéresse trop.",
     time: 'Il y a 15 min',
     read: false,
     avatar: { first: 'Julie', last: 'Fontaine', disc: 'I' },
@@ -32,7 +32,7 @@ const notifications: Notif[] = [
     id: 'n2',
     type: 'atlas',
     title: 'Atlas · Rappel',
-    body: 'Tu as 3 contacts chauds sans relance depuis 2 jours. C\'est le bon moment.',
+    body: "Tu as 3 contacts chauds sans relance depuis 2 jours. C'est le bon moment.",
     time: 'Il y a 1 h',
     read: false,
     icon: Bell,
@@ -41,7 +41,7 @@ const notifications: Notif[] = [
   {
     id: 'n3',
     type: 'contact',
-    title: 'Marc Lemaire s\'est inscrit',
+    title: "Marc Lemaire s'est inscrit",
     body: 'Marc a rejoint via ton lien de parrainage. Prends contact rapidement !',
     time: 'Il y a 2 h',
     read: false,
@@ -61,7 +61,7 @@ const notifications: Notif[] = [
   {
     id: 'n5',
     type: 'achievement',
-    title: 'Objectif atteint ! 🎉',
+    title: 'Objectif atteint !',
     body: 'Tu as complété le module "Méthode DISC" à 60%. Continue sur ta lancée !',
     time: 'Hier · 14:00',
     read: true,
@@ -72,7 +72,7 @@ const notifications: Notif[] = [
     id: 'n6',
     type: 'aria',
     title: 'ARIA · Entraînement disponible',
-    body: 'Tu n\'as pas simulé d\'appel depuis 3 jours. Prépare ta prochaine conversation.',
+    body: "Tu n'as pas simulé d'appel depuis 3 jours. Prépare ta prochaine conversation.",
     time: 'Il y a 2 j',
     read: true,
     icon: Mic,
@@ -99,68 +99,80 @@ const notifications: Notif[] = [
   },
 ]
 
+function NotifList({ unreadCount }: { unreadCount: number }) {
+  return (
+    <div className="flex flex-col gap-4">
+      {unreadCount > 0 && (
+        <div className="flex items-center justify-between">
+          <p className="text-sm font-semibold text-foreground">{unreadCount} non lues</p>
+          <button type="button" className="text-xs font-semibold text-primary">
+            Tout marquer comme lu
+          </button>
+        </div>
+      )}
+
+      <Card className="divide-y divide-border p-0">
+        {notifications.map((notif) => (
+          <button
+            key={notif.id}
+            type="button"
+            className={cn(
+              'flex w-full items-start gap-3 px-4 py-3.5 text-left transition-colors active:bg-muted',
+              !notif.read && 'bg-primary/[0.03]'
+            )}
+          >
+            {notif.avatar ? (
+              <div className="relative shrink-0">
+                <DiscAvatar firstName={notif.avatar.first} lastName={notif.avatar.last} disc={notif.avatar.disc} size="sm" />
+                {notif.icon && (
+                  <span className={cn('absolute -bottom-1 -right-1 flex size-5 items-center justify-center rounded-full ring-2 ring-background', notif.iconColor ?? 'bg-muted text-muted-foreground')}>
+                    <notif.icon className="size-3 stroke-2" />
+                  </span>
+                )}
+              </div>
+            ) : (
+              <span className={cn('flex size-9 shrink-0 items-center justify-center rounded-xl', notif.iconColor ?? 'bg-muted text-muted-foreground')}>
+                {notif.icon && <notif.icon className="size-5 stroke-[1.5]" />}
+              </span>
+            )}
+
+            <div className="min-w-0 flex-1">
+              <div className="flex items-start justify-between gap-2">
+                <p className={cn('text-sm', !notif.read ? 'font-bold text-foreground' : 'font-semibold text-foreground')}>
+                  {notif.title}
+                </p>
+                {!notif.read && (
+                  <span className="mt-1 size-2 shrink-0 rounded-full bg-primary" />
+                )}
+              </div>
+              <p className="mt-0.5 text-xs text-muted-foreground text-pretty line-clamp-2">{notif.body}</p>
+              <p className="mt-1 text-[11px] text-muted-foreground">{notif.time}</p>
+            </div>
+          </button>
+        ))}
+      </Card>
+    </div>
+  )
+}
+
 export default function NotificationsPage() {
   const unreadCount = notifications.filter((n) => !n.read).length
 
   return (
     <>
-      <AppHeader title="Notifications" back showActions={false} />
+      {/* ── MOBILE ONLY ── */}
+      <div className="lg:hidden">
+        <AppHeader title="Notifications" back showActions={false} />
+        <div className="px-4 pt-4 pb-8">
+          <NotifList unreadCount={unreadCount} />
+        </div>
+      </div>
 
-      <div className="flex flex-col gap-4 px-4 pt-4 lg:px-8 lg:pt-6 lg:max-w-2xl lg:mx-auto">
-        {unreadCount > 0 && (
-          <div className="flex items-center justify-between">
-            <p className="text-sm font-semibold text-foreground">{unreadCount} non lues</p>
-            <button type="button" className="text-xs font-semibold text-primary">
-              Tout marquer comme lu
-            </button>
-          </div>
-        )}
-
-        <Card className="divide-y divide-border p-0">
-          {notifications.map((notif) => (
-            <button
-              key={notif.id}
-              type="button"
-              className={cn(
-                'flex w-full items-start gap-3 px-4 py-3.5 text-left transition-colors active:bg-muted',
-                !notif.read && 'bg-primary/[0.03]'
-              )}
-            >
-              {notif.avatar ? (
-                <div className="relative shrink-0">
-                  <DiscAvatar
-                    firstName={notif.avatar.first}
-                    lastName={notif.avatar.last}
-                    disc={notif.avatar.disc}
-                    size="sm"
-                  />
-                  {notif.icon && (
-                    <span className={cn('absolute -bottom-1 -right-1 flex size-5 items-center justify-center rounded-full ring-2 ring-background', notif.iconColor ?? 'bg-muted text-muted-foreground')}>
-                      <notif.icon className="size-3 stroke-2" />
-                    </span>
-                  )}
-                </div>
-              ) : (
-                <span className={cn('flex size-9 shrink-0 items-center justify-center rounded-xl', notif.iconColor ?? 'bg-muted text-muted-foreground')}>
-                  {notif.icon && <notif.icon className="size-5 stroke-[1.5]" />}
-                </span>
-              )}
-
-              <div className="min-w-0 flex-1">
-                <div className="flex items-start justify-between gap-2">
-                  <p className={cn('text-sm', !notif.read ? 'font-bold text-foreground' : 'font-semibold text-foreground')}>
-                    {notif.title}
-                  </p>
-                  {!notif.read && (
-                    <span className="mt-1 size-2 shrink-0 rounded-full bg-primary" />
-                  )}
-                </div>
-                <p className="mt-0.5 text-xs text-muted-foreground text-pretty line-clamp-2">{notif.body}</p>
-                <p className="mt-1 text-[11px] text-muted-foreground">{notif.time}</p>
-              </div>
-            </button>
-          ))}
-        </Card>
+      {/* ── DESKTOP ONLY ── */}
+      <div className="hidden lg:block">
+        <div className="px-8 pt-8 pb-8 max-w-2xl mx-auto">
+          <NotifList unreadCount={unreadCount} />
+        </div>
       </div>
     </>
   )
