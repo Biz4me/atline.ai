@@ -18,6 +18,7 @@ import {
   Mic,
   CalendarPlus,
   CreditCard,
+  Wrench,
 } from 'lucide-react'
 import { TopBar } from '@/components/top-bar'
 import { Card } from '@/components/card'
@@ -127,6 +128,20 @@ export default function ProfilePage() {
               <div className="flex-1">
                 <p className="text-sm font-semibold">Entraînement ARIA</p>
                 <p className="text-xs text-muted-foreground">Simule tes conversations de vente</p>
+              </div>
+              <ChevronRight className="size-4 text-muted-foreground" />
+            </Card>
+          </Link>
+
+          {/* Boîte à outils */}
+          <Link href="/toolbox" className="block">
+            <Card className="flex items-center gap-3 p-4">
+              <span className="grid size-10 place-items-center rounded-full bg-muted">
+                <Wrench className="size-5 text-muted-foreground" />
+              </span>
+              <div className="flex-1">
+                <p className="text-sm font-semibold">Boîte à outils</p>
+                <p className="text-xs text-muted-foreground">Liens, supports de vente, bots</p>
               </div>
               <ChevronRight className="size-4 text-muted-foreground" />
             </Card>
