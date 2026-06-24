@@ -14,6 +14,7 @@ export async function GET(_req: Request, props: { params: Promise<{ moduleId: st
       type: true,
       durationMin: true,
       summary: true,
+      intro: true,
       content: true,
       _count: { select: { questions: true } },
     },

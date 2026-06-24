@@ -3,13 +3,14 @@
 import { useEffect, useState } from 'react'
 import { useRouter, useParams } from 'next/navigation'
 import Link from 'next/link'
-import { ChevronLeft, ChevronRight, Clock, CheckCircle2 } from 'lucide-react'
+import { ChevronLeft, ChevronRight, CheckCircle2 } from 'lucide-react'
 import { Card } from '@/components/card'
 import { cn } from '@/lib/utils'
 
 type Lesson = {
   id: string
   title: string
+  intro: string | null
   position: number
   kind: 'LESSON' | 'QUIZ'
   durationMin: number | null
@@ -116,6 +117,18 @@ export default function ModulePage() {
           />
         </div>
 
+        {/* CTA — avant la liste */}
+        {ctaTarget && (
+          <Link href={`/formation/${moduleId}/${ctaTarget.id}`}>
+            <button
+              type="button"
+              className="w-full rounded-2xl bg-primary py-3 text-base font-semibold text-white transition-transform active:scale-[0.98]"
+            >
+              {ctaLabel}
+            </button>
+          </Link>
+        )}
+
         {/* Skeleton leçons */}
         {lessons.length === 0 && (
           <div className="flex flex-col gap-2">
@@ -158,11 +171,10 @@ export default function ModulePage() {
                         <p className="truncate text-sm font-semibold text-foreground">
                           {lesson.title}
                         </p>
-                        {lesson.durationMin ? (
-                          <div className="mt-0.5 flex items-center gap-1.5">
-                            <Clock className="size-3 text-muted-foreground" />
-                            <span className="text-xs text-muted-foreground">{lesson.durationMin} min</span>
-                          </div>
+                        {lesson.intro ? (
+                          <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground leading-snug">
+                            {lesson.intro}
+                          </p>
                         ) : (
                           <p className="mt-0.5 text-xs text-muted-foreground">
                             {isQuiz ? `${lesson._count.questions} questions` : 'Lecture'}
@@ -177,18 +189,6 @@ export default function ModulePage() {
               )
             })}
           </div>
-        )}
-
-        {/* CTA */}
-        {ctaTarget && (
-          <Link href={`/formation/${moduleId}/${ctaTarget.id}`}>
-            <button
-              type="button"
-              className="w-full rounded-2xl bg-primary py-3 text-base font-semibold text-white transition-transform active:scale-[0.98]"
-            >
-              {ctaLabel}
-            </button>
-          </Link>
         )}
 
       </div>
