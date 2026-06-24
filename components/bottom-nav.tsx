@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import React, { useRef, useState } from 'react'
 import { cn } from '@/lib/utils'
-import { Route, Users, User, GitFork, Sparkles, X, History, ArrowLeft, Mic, SendHorizontal, MoreHorizontal, CreditCard, GraduationCap } from 'lucide-react'
+import { Route, Users, User, GitFork, Sparkles, X, History, ArrowLeft, Mic, SendHorizontal, MoreHorizontal, CreditCard, BookOpen } from 'lucide-react'
 import { usePageVisibility } from '@/components/page-visibility-context'
 
 /* ── Tabs ───────────────────────────────────────────────────── */
@@ -12,7 +12,7 @@ const ALL_TABS = [
   { href: '/home',     label: 'Parcours', icon: Route,   visKey: 'home',     side: 'left'  },
   { href: '/contacts', label: 'Contacts', icon: Users,   visKey: 'contacts', side: 'left'  },
   { href: '/network',   label: 'Réseau',    icon: GitFork,  visKey: 'network',   side: 'right' },
-  { href: '/formation', label: 'Formation', icon: GraduationCap, visKey: 'formation', side: 'right' },
+  { href: '/formation', label: 'Formation', icon: BookOpen, visKey: 'formation', side: 'right' },
 ]
 
 const MORE_ITEMS = [
@@ -369,7 +369,7 @@ export function BottomNav() {
             </svg>
           )
         })()}
-        <div className="flex h-[60px] items-center justify-around px-2">
+        <div className="flex h-[60px] items-center justify-evenly px-1">
           {/* Left tabs */}
           {leftTabs.map(tab => (
             <NavItem key={tab.href} tab={tab} active={!moreOpen && isActive(tab.href)} />
@@ -410,7 +410,7 @@ function NavItem({ tab, active }: { tab: { href: string; label: string; icon: ty
         active ? 'text-primary' : 'text-muted-foreground',
       )}
     >
-      <Icon className={cn('size-6 stroke-[1.5]', active && 'stroke-2')} />
+      <Icon className={cn('size-5 stroke-[1.5]', active && 'stroke-2')} />
     </Link>
   )
 }

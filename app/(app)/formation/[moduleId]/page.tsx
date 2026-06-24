@@ -65,25 +65,22 @@ export default function ModulePage() {
 
   return (
     <div
-      className="fixed inset-0 z-[55] overflow-y-auto bg-background animate-slide-in-right"
-      style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}
+      className="min-h-screen bg-background animate-slide-in-right"
     >
       {/* Header sticky */}
       <div
-        className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background/90 px-4 py-3 backdrop-blur"
-        style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
+        className="sticky top-0 z-10 relative flex items-center justify-center border-b border-border bg-background/90 px-2 backdrop-blur"
+        style={{ height: 56, paddingTop: 'env(safe-area-inset-top)' }}
       >
         <button
           type="button"
           onClick={() => router.back()}
-          className="flex size-9 items-center justify-center rounded-full text-foreground active:bg-muted"
+          className="absolute left-2 flex size-9 items-center justify-center rounded-full text-foreground active:bg-muted"
         >
-          <ChevronLeft className="size-5 stroke-[1.5]" />
+          <ChevronLeft className="size-6" />
         </button>
-        <p className="max-w-[55%] truncate text-sm font-semibold text-foreground">
-          {mod ? stripPrefix(mod.title) : ''}
-        </p>
-        <span className="text-xs text-muted-foreground">{moduleNum} / {totalModules}</span>
+        <p className="text-sm font-semibold text-foreground">Module {moduleNum}</p>
+        <span className="absolute right-4 text-xs text-muted-foreground">{moduleNum} / {totalModules}</span>
       </div>
 
       {/* Body */}
@@ -167,17 +164,26 @@ export default function ModulePage() {
                       </span>
 
                       {/* Contenu */}
-                      <div className="min-w-0 flex-1">
+                      <div className="min-w-0 flex-1 flex flex-col justify-center">
                         <p className="truncate text-sm font-semibold text-foreground">
-                          {lesson.title}
+                          {isQuiz ? 'Quiz' : lesson.title}
                         </p>
-                        {lesson.intro ? (
-                          <p className="mt-0.5 line-clamp-2 text-xs text-muted-foreground leading-snug">
+                        {isQuiz ? (
+                          <div className="mt-0.5 min-h-[2.5rem] flex flex-col justify-between">
+                            {lesson.title.includes(" — ") && (
+                              <p className="line-clamp-1 text-sm font-semibold text-foreground leading-snug">
+                                {lesson.title.split(" — ").slice(1).join(" — ")}
+                              </p>
+                            )}
+                            <p className="text-xs text-muted-foreground">{lesson._count.questions} questions</p>
+                          </div>
+                        ) : lesson.intro ? (
+                          <p className="mt-0.5 line-clamp-2 text-sm text-muted-foreground leading-snug min-h-[2.5rem]">
                             {lesson.intro}
                           </p>
                         ) : (
-                          <p className="mt-0.5 text-xs text-muted-foreground">
-                            {isQuiz ? `${lesson._count.questions} questions` : 'Lecture'}
+                          <p className="mt-0.5 text-sm text-muted-foreground min-h-[2.5rem] flex items-end">
+                            Lecture
                           </p>
                         )}
                       </div>

@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
-const DEMO_USER_ID = 'demo'
+const DEMO_USER_ID = 'c7a0c77a-0881-4361-91aa-75cc7076b8aa'
 
 export async function GET(_req: Request, props: { params: Promise<{ moduleId: string }> }) {
   const { moduleId } = await props.params

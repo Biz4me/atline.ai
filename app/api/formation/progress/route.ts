@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server'
 import { db } from '@/lib/db'
 
 // TODO: remplacer DEMO_USER_ID par getServerSession une fois l'auth configurée
-const DEMO_USER_ID = 'demo'
+const DEMO_USER_ID = 'c7a0c77a-0881-4361-91aa-75cc7076b8aa'
 
 export async function GET() {
   const progress = await db.userLessonProgress.findMany({

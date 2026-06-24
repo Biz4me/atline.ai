@@ -1,5 +1,6 @@
 'use client'
 
+import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
 import {
@@ -35,6 +36,18 @@ const desktopStats = [
 
 export default function ProfilePage() {
   const { current: activeBusiness } = useBusiness()
+  const [moduleDone, setModuleDone] = useState<boolean[]>(Array(11).fill(false))
+
+  useEffect(() => {
+    fetch('/api/formation/modules').then(r => r.json()).then((course) => {
+      if (!course?.modules) return
+      const done = Array(11).fill(false)
+      course.modules.forEach((m: { position: number; progress: { status: string }[] }) => {
+        if (m.position < 11) done[m.position] = m.progress?.[0]?.status === 'DONE'
+      })
+      setModuleDone(done)
+    }).catch(() => {})
+  }, [])
 
   return (
     <>
@@ -140,24 +153,32 @@ export default function ProfilePage() {
               </div>
           </Card>
 
-          {/* Settings list */}
-          <section>
-            <h2 className="mb-2 px-1 text-sm font-semibold text-muted-foreground">Réglages</h2>
-            <Card className="divide-y divide-border p-0">
-              {[
-                { icon: Bell, label: 'Notifications' },
-                { icon: Shield, label: 'Confidentialité & sécurité' },
-                { icon: Settings, label: "Préférences de l'app" },
-                { icon: CircleHelp, label: 'Aide & support' },
-              ].map((row) => (
-                <button key={row.label} className="flex w-full items-center gap-3 px-4 py-3.5 text-left">
-                  <row.icon className="size-5 text-muted-foreground" />
-                  <span className="flex-1 text-sm font-medium">{row.label}</span>
-                  <ChevronRight className="size-4 text-muted-foreground" />
-                </button>
+
+          {/* Badges */}
+          <Card className="p-0 overflow-hidden">
+            <div className="px-4 py-3.5 border-b border-border flex items-center gap-2.5">
+              <span className="grid size-8 shrink-0 place-items-center rounded-full bg-primary/10">
+                <Trophy className="size-4 text-primary" />
+              </span>
+              <div className="flex-1">
+                <p className="text-sm font-semibold text-foreground">Badges Formation</p>
+                <p className="text-xs text-muted-foreground">{moduleDone.filter(Boolean).length} / 11 obtenus</p>
+              </div>
+            </div>
+            <div className="grid grid-cols-11 gap-1.5 px-4 py-3.5">
+              {moduleDone.map((earned, i) => (
+                <div
+                  key={i}
+                  className={`flex flex-col items-center gap-1 rounded-xl py-2 ${earned ? 'bg-primary/10' : 'bg-muted/50'}`}
+                >
+                  <Trophy className={`size-4 ${earned ? 'text-primary' : 'text-muted-foreground/30'}`} />
+                  <span className={`text-[10px] font-bold ${earned ? 'text-primary' : 'text-muted-foreground/40'}`}>{i + 1}</span>
+                </div>
               ))}
-            </Card>
-          </section>
+            </div>
+          </Card>
+
+
 
         </div>
       </div>
