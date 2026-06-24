@@ -109,20 +109,18 @@ export default function FormationPage() {
 
                         {/* Contenu */}
                         <div className="min-w-0 flex-1">
-                          <p className="line-clamp-2 text-sm font-semibold leading-snug text-foreground">
+                          <p className="truncate text-sm font-semibold text-foreground">
                             {stripPrefix(mod.title)}
                           </p>
                           <p className="mt-0.5 text-xs text-muted-foreground">
                             {mod._count.lessons} leçons
                           </p>
-                          {inProgress && (
-                            <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-muted">
-                              <div
-                                className="h-full rounded-full bg-primary"
-                                style={{ width: `${pct}%` }}
-                              />
-                            </div>
-                          )}
+                          <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-muted">
+                            <div
+                              className="h-full rounded-full bg-primary transition-all"
+                              style={{ width: `${pct}%` }}
+                            />
+                          </div>
                         </div>
 
                         <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
