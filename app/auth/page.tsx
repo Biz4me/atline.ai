@@ -151,14 +151,14 @@ export default function AuthPage() {
             <div className="relative">
               <input
                 type={showPwd ? 'text' : 'password'}
-                placeholder="••••••••"
+                placeholder="Mot de passe"
                 autoComplete={isLogin ? 'current-password' : 'new-password'}
                 value={password}
                 onChange={e => setPassword(e.target.value)}
                 required
                 className="w-full rounded-xl border border-border bg-background px-4 py-3 pr-11 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30"
               />
-              <button type="button" onClick={() => setShowPwd(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+              <button type="button" onClick={() => setShowPwd(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 outline-none focus:outline-none">
                 {showPwd ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
               </button>
             </div>
@@ -170,14 +170,14 @@ export default function AuthPage() {
               <div className="relative">
                 <input
                   type={showConfirm ? 'text' : 'password'}
-                  placeholder="••••••••"
+                  placeholder="Confirmer"
                   autoComplete="new-password"
                   value={confirm}
                   onChange={e => setConfirm(e.target.value)}
                   required
                   className="w-full rounded-xl border border-border bg-background px-4 py-3 pr-11 text-sm text-foreground outline-none placeholder:text-muted-foreground focus:ring-2 focus:ring-primary/30"
                 />
-                <button type="button" onClick={() => setShowConfirm(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground">
+                <button type="button" onClick={() => setShowConfirm(v => !v)} className="absolute right-3 top-1/2 -translate-y-1/2 text-muted-foreground z-10 outline-none focus:outline-none">
                   {showConfirm ? <EyeOff className="size-4" /> : <Eye className="size-4" />}
                 </button>
               </div>
