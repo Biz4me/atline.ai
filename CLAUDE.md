@@ -292,3 +292,26 @@ profile/ · settings/ · settings/[section]/ · abonnement/ · mon-abonnement/ �
 - Leçon/Quiz X : router.push('/formation/[moduleId]') — jamais router.back()
 - Congrats modal "Continuer à apprendre" : router.push('/formation')
 - Fail modal "Fermer" : router.push('/formation/[moduleId]')
+
+---
+
+## Prisma — Migrations
+
+**⚠️ Ne jamais utiliser `prisma db push` — uniquement `prisma migrate dev`.**
+
+Baseline effectué le 24 juin 2026 (commit b8c3c23) — la BDD est maintenant gérée par Prisma Migrate.
+
+### Workflow changement de schema
+
+```bash
+# 1. Modifier prisma/schema.prisma
+# 2. Créer et appliquer la migration
+cd /opt/atline/atline-app
+DATABASE_URL="$(grep DATABASE_URL .env.local | cut -d= -f2-)" npx prisma migrate dev --name "description_du_changement"
+# 3. Commiter le fichier SQL généré
+git add prisma/migrations/ prisma/schema.prisma && git commit -m "..." && git push
+```
+
+### État actuel
+- `prisma/migrations/0001_baseline/` — 84 tables, 59 enums (snapshot initial)
+- Prochaine migration : `0002_...`
