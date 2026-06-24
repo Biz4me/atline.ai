@@ -9,6 +9,30 @@ Application Next.js pour les distributeurs MLM utilisant Atline AI.
 
 ---
 
+## Service IA (atline-ai-service)
+
+Microservice FastAPI distinct — **repo git séparé.**
+
+| Info | Valeur |
+|------|--------|
+| Chemin serveur | `/opt/atline/apps/atline-ai-service` |
+| Port | 8100 |
+| GitHub | `Biz4me/atline-ai-service` |
+| PM2 | `atline-ai-service` |
+
+```bash
+# Modifier le service IA
+cd /opt/atline/apps/atline-ai-service
+# éditer...
+git add -A && git commit -m "..." && git push
+pm2 restart atline-ai-service --update-env
+```
+
+**LLM :** Anthropic direct → fallback automatique OpenRouter si KO.
+**Doc complète :** voir `/opt/atline/apps/atline-ai-service/CLAUDE.md`
+
+---
+
 ## Stack technique
 
 | Composant | Version |
