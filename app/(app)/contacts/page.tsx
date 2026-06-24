@@ -17,7 +17,6 @@ import { AddContactSheet } from '@/components/add-contact-sheet'
 import { Card } from '@/components/card'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
-import { contacts } from '@/lib/data'
 
 type Segment = 'tous' | 'prospects' | 'clients' | 'partenaires'
 type SortKey = 'name' | 'stade' | 'stage' | 'city' | 'lastInteraction'
@@ -174,6 +173,37 @@ function ThFilter({
 function ContactsContent() {
   const { current } = useBusiness()
   const router = useRouter()
+  const [apiContacts, setApiContacts] = useState<Contact[]>([])
+
+  const fetchContacts = useCallback(async () => {
+    try {
+      const res = await fetch('/api/contacts' + (current?.id && current.id !== 'atline' ? '?businessId=' + current.id : ''))
+      if (!res.ok) return
+      const data = await res.json()
+      setApiContacts(data.map((c: any) => {
+        const parts = (c.name ?? '').split(' ')
+        return {
+          id: c.id,
+          firstName: parts[0] ?? '',
+          lastName: parts.slice(1).join(' ') ?? '',
+          stage: c.stage ?? 'nouveau',
+          stade: undefined,
+          disc: null,
+          source: c.source ?? 'manuel',
+          lastInteraction: c.lastContact ?? c.createdAt ?? '',
+          phone: c.phone ?? '',
+          email: c.email ?? '',
+          city: c.city ?? '',
+          inCrm: false,
+          businessId: c.businessId ?? '',
+          notes: c.note ?? '',
+          timeline: [],
+        }
+      }))
+    } catch {}
+  }, [current?.id])
+
+  useEffect(() => { fetchContacts() }, [fetchContacts])
   const [segment, setSegment]         = useState<Segment>('tous')
   const [stageFilter, setStageFilter] = useState('tous')
   const [query, setQuery]             = useState('')

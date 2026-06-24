@@ -1,6 +1,6 @@
 'use client'
 
-import { Suspense, useMemo, useState } from 'react'
+import { Suspense, useMemo, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { useSession } from 'next-auth/react'
 import Image from 'next/image'
@@ -138,6 +138,13 @@ function OnboardingContent() {
   const [contacts, setContacts] = useState<Contact[]>([newContact()])
   const [firstName, setFirstName] = useState('')
   const [lastName, setLastName] = useState('')
+
+  useEffect(() => {
+    fetch('/api/me').then(r => r.json()).then(data => {
+      if (data.firstName) setFirstName(data.firstName)
+      if (data.lastName) setLastName(data.lastName)
+    }).catch(() => {})
+  }, [])
 
   const networkName = network === 'Autre' ? networkOther : network
   const stepList = useMemo(() => computeStepList(!!networkName), [networkName])
