@@ -193,6 +193,10 @@ export default function HomePage() {
   const [plan, setPlan] = useState<{ id: string; tasks: DailyTask[] } | null>(null)
   const [planLoading, setPlanLoading] = useState(true)
   const [generating, setGenerating] = useState(false)
+  const [checkedTasks, setCheckedTasks] = useState<Set<string>>(new Set())
+
+  const dailyTasks = plan?.tasks ?? []
+  const allDone = dailyTasks.length > 0 && dailyTasks.every((t) => checkedTasks.has(t.id))
 
   const fetchPlan = useCallback(async () => {
     setPlanLoading(true)
