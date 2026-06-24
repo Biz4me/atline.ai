@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 
 export async function GET(_req: Request, { params }: { params: { moduleId: string } }) {
   const lessons = await db.lmsLesson.findMany({
-    where: { moduleId: params.moduleId, published: true },
+    where: { moduleId: params.moduleId },
     orderBy: { position: 'asc' },
     select: {
       id: true,
@@ -13,7 +13,6 @@ export async function GET(_req: Request, { params }: { params: { moduleId: strin
       type: true,
       durationMin: true,
       summary: true,
-      intro: true,
       content: true,
       _count: { select: { questions: true } },
     },
