@@ -1,13 +1,12 @@
 'use client'
 
-import { useMemo, useState, useRef, useEffect } from 'react'
+import { useMemo, useState, useRef, useEffect, useCallback } from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { TopBar } from '@/components/top-bar'
 import { useBusiness } from '@/components/business-provider'
 import { DiscAvatar } from '@/components/disc-avatar'
 import { StagePill } from '@/components/pills'
-import { contacts } from '@/lib/data'
 import type { Contact, ContactStage } from '@/lib/types'
 import {
   Search, Plus, UserRound, ChevronDown, Check,
@@ -228,8 +227,8 @@ function ContactsContent() {
     const filterDef    = stageFilters[segment].find((f) => f.id === stageFilter)
     const activeStages = filterDef?.stages ?? segStages
 
-    let result = contacts
-      .filter((c) => c.businessId === current.id)
+    let result = apiContacts
+      .filter((_c) => true) // already filtered server-side by business
       .filter((c) => activeStages.includes(c.stage))
       .filter((c) => stadeColFilter === 'all' || c.stade === stadeColFilter)
       .filter((c) => tempColFilter === 'all' || c.stage === tempColFilter)
@@ -390,7 +389,7 @@ function ContactsContent() {
 
         {/* KPI Strip — même pattern que Home */}
         {(() => {
-          const all    = contacts.filter((c) => c.businessId === current.id)
+          const all    = apiContacts
           const chauds = all.filter((c) => c.stage === 'chaud').length
           const nouveaux = all.filter((c) => c.stage === 'nouveau').length
           return (
