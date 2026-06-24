@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import { AppHeader } from '@/components/app-header'
+import { TopBar } from '@/components/top-bar'
 import { Card } from '@/components/card'
 import { cn } from '@/lib/utils'
 import { CheckCircle2, ChevronRight } from 'lucide-react'
@@ -42,9 +42,11 @@ export default function FormationPage() {
     <>
       {/* ── MOBILE ONLY ── */}
       <div className="lg:hidden">
-        <AppHeader title="Formation" showActions={false} />
-
-        <div className="flex flex-col gap-4 px-4 pt-4 pb-8">
+        <TopBar />
+        <div className="flex flex-col gap-4 px-4 pt-5 pb-8">
+          <h1 className="font-display text-[32px] font-extrabold leading-tight tracking-[-0.025em] text-foreground">
+            Formation
+          </h1>
 
           {/* Progression globale */}
           <Card className="p-4">
