@@ -792,7 +792,7 @@ function ContactsContent() {
         </div>{/* fin card principale */}
       </div>
 
-      <AddContactSheet open={addOpen} onOpenChange={setAddOpen} />
+      <AddContactSheet open={addOpen} onOpenChange={setAddOpen} onAdded={fetchContacts} />
 
       {/* ══ MODALE IMPORT ════════════════════════════════════════ */}
       {importModalOpen && (
