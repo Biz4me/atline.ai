@@ -192,3 +192,79 @@ profile/ · settings/ · settings/[section]/ · abonnement/ · mon-abonnement/ �
 3. Déployer sur Hetzner sans demander
 4. Utiliser double guillemets pour les strings français avec apostrophes
 5. Pas de `admin.atline.ai` ici — projet distinct
+
+---
+
+## Module Formation
+
+### Structure des pages
+-  — liste des modules, progression globale
+-  — leçons du module, barre de progression
+-  — leçon (LESSON) ou quiz (QUIZ)
+
+### Quiz player — règles critiques
+- Container quiz :  (pas )
+- En-tête (progress + question) : 
+- Options : 
+- Bouton Question suivante : 
+- Z-index : quiz , bouton , modales 
+
+### Modales quiz
+- **Quiz réussi → X** : modale félicitations + badge module → 
+- **Quiz raté → X** : modale Pas encore ! + réviser 24h → 
+- **Quiz en cours → X** : modale confirmation abandon
+- Détection phase :  (pas  —  est seulement pour les quiz réussis)
+
+### Progression modules
+- API  calcule dynamiquement depuis  + 
+- Module DONE = toutes les LESSON done + tous les QUIZ passed
+- Badge vert sur module card = 
+- Badges dans profil : 11 trophées (un par module)
+
+### DEMO_USER_ID
+- Valeur :  (UUID réel en base)
+- À remplacer par  quand l'auth est branchée
+- Fichiers concernés : tous les 
+
+### Fermeture des pages
+- Leçon/Quiz → X :  (pas )
+- Congrats modal Continuer à apprendre : 
+- Fail modal Fermer : 
+
+---
+
+## Module Formation
+
+### Structure des pages
+- `/formation` — liste des modules, progression globale
+- `/formation/[moduleId]` — leçons du module, barre de progression
+- `/formation/[moduleId]/[lessonId]` — leçon (LESSON) ou quiz (QUIZ)
+
+### Quiz player — règles critiques
+- Container quiz : `fixed inset-0 z-[60] flex flex-col` (pas `overflow-y-auto`)
+- En-tête (progress + question) : `shrink-0`
+- Options : `flex-1 overflow-y-auto no-scrollbar pb-[88px]`
+- Bouton "Question suivante" : `fixed bottom-0 z-[61]`
+- Z-index : quiz z-[60], bouton z-[61], modales z-[70]
+
+### Modales quiz
+- **Quiz réussi + X** : modale félicitations + badge module → router.push('/formation')
+- **Quiz raté + X** : modale "Pas encore !" + réviser 24h → router.push('/formation/[moduleId]')
+- **Quiz en cours + X** : modale confirmation abandon
+- Détection phase : `quizProgress.phase === 'result'` (pas `done` — done est seulement pour les quiz réussis)
+
+### Progression modules
+- API `/api/formation/modules` calcule dynamiquement depuis UserLessonProgress + UserQuizAttempt
+- Module DONE = toutes les LESSON done + tous les QUIZ passed
+- Badge vert sur module card = status === 'DONE'
+- Badges dans profil : 11 trophées (un par module)
+
+### DEMO_USER_ID
+- Valeur : `c7a0c77a-0881-4361-91aa-75cc7076b8aa` (UUID réel en base)
+- À remplacer par getServerSession() quand l'auth est branchée
+- Fichiers concernés : tous les app/api/formation/*/route.ts
+
+### Fermeture des pages
+- Leçon/Quiz X : router.push('/formation/[moduleId]') — jamais router.back()
+- Congrats modal "Continuer à apprendre" : router.push('/formation')
+- Fail modal "Fermer" : router.push('/formation/[moduleId]')
