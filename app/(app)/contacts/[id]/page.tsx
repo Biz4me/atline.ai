@@ -1,10 +1,10 @@
 'use client'
 
-import { use, useState } from 'react'
-import { notFound, useRouter } from 'next/navigation'
-import { contacts } from '@/lib/data'
+import { use, useState, useEffect } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   ChevronLeft,
+  Loader2,
   MessageSquare,
   PhoneCall,
   CalendarPlus,
@@ -120,9 +120,11 @@ const stagesByStatut: Record<Statut, { id: ContactStage; label: string; color: s
 function EditSheet({
   contact,
   onClose,
+  onSave,
 }: {
-  contact: ReturnType<typeof contacts.find> & {}
+  contact: any
   onClose: () => void
+  onSave?: () => void
 }) {
   const [firstName, setFirstName] = useState(contact!.firstName)
   const [lastName, setLastName] = useState(contact!.lastName)
@@ -135,9 +137,27 @@ function EditSheet({
   const [disc, setDisc] = useState<string>(contact!.disc ?? '')
   const [note, setNote] = useState(contact!.notes ?? '')
 
-  const handleSave = () => {
-    toast.success('Contact mis à jour')
-    onClose()
+  const handleSave = async () => {
+    try {
+      await fetch(`/api/contacts/${contact.id}`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          name: `${firstName} ${lastName}`.trim(),
+          stage,
+          city,
+          phone,
+          email,
+          note,
+          personality: disc || null,
+        }),
+      })
+      toast.success('Contact mis à jour')
+      onSave?.()
+      onClose()
+    } catch {
+      toast.error('Erreur lors de la sauvegarde')
+    }
   }
 
   const inputCls = 'w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none focus:ring-2 focus:ring-ring/40 placeholder:text-muted-foreground'
@@ -234,14 +254,39 @@ function SectionCard({ title, action, children }: { title: string; action?: Reac
 export default function ContactDetailPage({ params }: { params: Promise<{ id: string }> }) {
   const { id } = use(params)
   const router = useRouter()
-  const contact = contacts.find((c) => c.id === id)
-  if (!contact) notFound()
-
+  const [contact, setContact] = useState<any>(null)
+  const [loading, setLoading] = useState(true)
   const [editOpen, setEditOpen] = useState(false)
   const [notesEditing, setNotesEditing] = useState(false)
-  const [notesValue, setNotesValue] = useState(contact.notes ?? '')
+  const [notesValue, setNotesValue] = useState('')
 
-  const initials = `${contact.firstName[0]}${contact.lastName[0]}`
+  const fetchContact = async () => {
+    try {
+      const res = await fetch(`/api/contacts/${id}`)
+      if (!res.ok) { router.replace('/contacts'); return }
+      const data = await res.json()
+      // Normalize: API returns `name`, UI expects firstName/lastName
+      const parts = (data.name ?? '').split(' ')
+      data.firstName = parts[0] ?? ''
+      data.lastName = parts.slice(1).join(' ') ?? ''
+      data.disc = data.personality ?? null
+      data.notes = data.note ?? ''
+      setContact(data)
+      setNotesValue(data.note ?? '')
+    } catch { router.replace('/contacts') }
+    finally { setLoading(false) }
+  }
+
+  useEffect(() => { fetchContact() }, [id])
+
+  if (loading) return (
+    <div className="flex h-dvh items-center justify-center">
+      <Loader2 className="size-6 animate-spin text-muted-foreground" />
+    </div>
+  )
+  if (!contact) return null
+
+  const initials = contact.initials ?? `${contact.firstName?.[0] ?? ''}${contact.lastName?.[0] ?? ''}`
   const avatarBg = contact.disc ? personalityBg[contact.disc] : undefined
   const statut = getStatut(contact.stage)
 
@@ -685,7 +730,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
         </div>
       </div>
 
-      {editOpen && <EditSheet contact={contact} onClose={() => setEditOpen(false)} />}
+      {editOpen && <EditSheet contact={contact} onClose={() => setEditOpen(false)} onSave={fetchContact} />}
     </div>
   )
 }
