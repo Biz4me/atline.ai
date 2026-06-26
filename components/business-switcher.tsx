@@ -3,7 +3,7 @@
 import { useRef, useState, useEffect, useLayoutEffect } from 'react'
 import { createPortal } from 'react-dom'
 import { useRouter } from 'next/navigation'
-import { Check, ChevronDown, Plus, X, Users, GitFork, UserCheck, Calendar } from 'lucide-react'
+import { Check, ChevronDown, Plus, X, Users, GitFork, UserCheck, Calendar, Briefcase } from 'lucide-react'
 import { useBusiness } from '@/components/business-provider'
 import {
   Sheet,
@@ -148,29 +148,27 @@ export function BusinessSwitcher({ collapsed, variant = 'sheet', fullWidth = fal
       title={current.name}
     >
       <span
-        className="flex size-9 items-center justify-center rounded-full text-[13px] font-bold text-white"
+        className="flex size-9 items-center justify-center rounded-full text-white"
         style={{ backgroundColor: current.color }}
       >
-        {current.initials}
+        <Briefcase className="size-4" />
       </span>
     </button>
   ) : (
     <button
       type="button"
       onClick={openDropdown}
-      className={cn(
-        'inline-flex items-center gap-2 rounded-lg px-2 py-1.5 text-sm font-bold transition-colors hover:bg-muted outline-none',
-        open && 'bg-muted',
-      )}
+      className="flex items-center gap-2 pr-2 text-sm font-bold transition-colors outline-none"
     >
+      {/* ml-5 → centre l'avatar sur l'axe du rail (x=32) sans gros vide avant le nom */}
       <span
-        className="flex size-6 items-center justify-center rounded-full text-[11px] font-bold text-white shrink-0"
+        className="ml-5 flex size-6 shrink-0 items-center justify-center rounded-full text-white"
         style={{ backgroundColor: current.color }}
       >
-        {current.initials}
+        <Briefcase className="size-4" />
       </span>
-      {current.name}
-      <ChevronDown className={cn('size-3.5 text-muted-foreground transition-transform', open && 'rotate-180')} />
+      <span className="truncate">{current.name}</span>
+      <ChevronDown className={cn('size-3.5 shrink-0 text-muted-foreground transition-transform', open && 'rotate-180')} />
     </button>
   )
 
@@ -178,10 +176,10 @@ export function BusinessSwitcher({ collapsed, variant = 'sheet', fullWidth = fal
   const mobileTrigger = (
     <button type="button" onClick={openDropdown} className="outline-none">
       <span
-        className="flex size-10 items-center justify-center rounded-full text-[13px] font-bold text-white"
+        className="flex size-10 items-center justify-center rounded-full text-white"
         style={{ backgroundColor: current.color }}
       >
-        {current.initials}
+        <Briefcase className="size-5" />
       </span>
     </button>
   )
@@ -190,13 +188,22 @@ export function BusinessSwitcher({ collapsed, variant = 'sheet', fullWidth = fal
   if (variant === 'popover') {
     return (
       <>
+        {/* Desktop backdrop — voile sombre, HORS du ref pour que le clic-extérieur ferme */}
+        {/* h-[100dvh] car le header (backdrop-blur) est le bloc conteneur des fixed → bottom-0 collapse */}
+        {!fullWidth && open && (
+          <div
+            className="fixed inset-x-0 top-14 h-[100dvh] z-[59] bg-black/40 animate-in fade-in-0 duration-200"
+            onClick={() => setOpen(false)}
+          />
+        )}
+
         <div ref={ref} className="relative">
           {fullWidth ? mobileTrigger : desktopTrigger}
 
           {/* Desktop dropdown */}
           {!fullWidth && open && (
             <div
-              className="fixed left-0 w-56 rounded-b-xl shadow-lg border-b border-border bg-background z-[60] overflow-hidden py-1"
+              className="fixed left-0 w-[256px] rounded-b-xl shadow-lg border-b border-border bg-background z-[60] overflow-hidden py-1"
               style={{ top: '3.5rem' }}
             >
               {all.map((b) => (
@@ -204,13 +211,13 @@ export function BusinessSwitcher({ collapsed, variant = 'sheet', fullWidth = fal
                   key={b.id}
                   type="button"
                   onClick={() => { setCurrent(b); setOpen(false) }}
-                  className="flex w-full items-center gap-2.5 pl-6 pr-3 py-2"
+                  className="flex w-full items-center gap-2 pl-5 pr-3 py-2"
                 >
                   <span
-                    className="flex size-6 shrink-0 items-center justify-center rounded-full text-[10px] font-bold text-white"
+                    className="flex size-6 shrink-0 items-center justify-center rounded-full text-white"
                     style={{ backgroundColor: b.color }}
                   >
-                    {b.initials}
+                    <Briefcase className="size-4" />
                   </span>
                   <div className="flex-1 min-w-0 text-left">
                     <p className="text-sm font-medium text-foreground truncate">{b.name}</p>
@@ -218,7 +225,7 @@ export function BusinessSwitcher({ collapsed, variant = 'sheet', fullWidth = fal
                 </button>
               ))}
               {addMode ? (
-                <div className="flex items-center gap-2 pl-[58px] pr-3 py-2">
+                <div className="flex items-center gap-2 pl-[52px] pr-3 py-2">
                   <input
                     ref={inputRef}
                     type="text"
@@ -278,12 +285,12 @@ export function BusinessSwitcher({ collapsed, variant = 'sheet', fullWidth = fal
                   >
                     <span
                       className={cn(
-                        'flex size-10 items-center justify-center rounded-full text-[13px] font-bold text-white transition-all',
+                        'flex size-10 items-center justify-center rounded-full text-white transition-all',
                         current.id === b.id && 'ring-2 ring-primary ring-offset-2 ring-offset-background',
                       )}
                       style={{ backgroundColor: b.color }}
                     >
-                      {b.initials}
+                      <Briefcase className="size-5" />
                     </span>
                     <span className="text-xs font-medium text-foreground text-center max-w-[56px] truncate">
                       {b.name}
@@ -451,10 +458,10 @@ export function BusinessSwitcher({ collapsed, variant = 'sheet', fullWidth = fal
                             )}
                           >
                             <span
-                              className="flex size-8 shrink-0 items-center justify-center rounded-full text-[11px] font-bold text-white"
+                              className="flex size-8 shrink-0 items-center justify-center rounded-full text-white"
                               style={{ backgroundColor: b.color }}
                             >
-                              {b.initials}
+                              <Briefcase className="size-4" />
                             </span>
                             <span className="flex-1 text-sm font-medium text-foreground">{b.name}</span>
                             <span className={cn(
@@ -511,10 +518,10 @@ export function BusinessSwitcher({ collapsed, variant = 'sheet', fullWidth = fal
                 )}
               >
                 <span
-                  className="flex size-9 items-center justify-center rounded-full text-sm font-bold text-white"
+                  className="flex size-9 items-center justify-center rounded-full text-white"
                   style={{ backgroundColor: b.color }}
                 >
-                  {b.initials}
+                  <Briefcase className="size-4" />
                 </span>
                 <span className="flex-1">
                   <span className="block text-sm font-bold text-foreground">{b.name}</span>

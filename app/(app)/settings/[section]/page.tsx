@@ -26,7 +26,7 @@ export default function SettingsSectionPage({ params }: { params: { section: str
     >
       {/* Header */}
       <div
-        className="sticky top-0 z-10 relative flex items-center justify-center border-b border-border bg-background/90 px-4 py-3 backdrop-blur"
+        className="sticky top-0 z-10 relative flex items-center justify-center bg-background/90 px-4 py-3 backdrop-blur"
         style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
       >
         <button

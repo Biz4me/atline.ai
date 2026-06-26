@@ -279,7 +279,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
 
       {/* ── MOBILE ONLY — ne jamais toucher ── */}
       <div className="lg:hidden">
-        <div className="sticky top-0 z-30 flex items-center gap-2 border-b border-border bg-background/90 px-4 py-3 backdrop-blur"
+        <div className="sticky top-0 z-30 flex items-center gap-2 bg-background/90 px-4 py-3 backdrop-blur"
           style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}>
           <button type="button" onClick={() => router.back()} className="-ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted">
             <ChevronLeft className="size-5 stroke-[1.5]" />
@@ -559,8 +559,8 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
               </div>
             </SectionCard>
 
-            {/* 5. Simulations ARIA */}
-            <SectionCard title="Simulations ARIA" action={
+            {/* 5. Simulations Aria */}
+            <SectionCard title="Simulations Aria" action={
               <Link href={`/aria?contact=${contact.id}`} className="text-xs font-medium text-[#14B8A6]">Simuler →</Link>
             }>
               {mockSimSessions.length === 0 ? (

@@ -454,7 +454,7 @@ export const planLabels: Record<string, string> = {
   leader: 'Leader',
 }
 
-// --- ARIA personas -------------------------------------------------------
+// --- Aria personas -------------------------------------------------------
 export const ariaPersonas = [
   { id: 'sceptique', label: 'Le sceptique', desc: 'Doute de tout, teste ta conviction' },
   { id: 'occupe', label: 'L’occupé', desc: 'Pas le temps, va droit au but' },

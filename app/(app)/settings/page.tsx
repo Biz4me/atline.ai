@@ -36,7 +36,7 @@ export default function SettingsPage() {
       >
         {/* Header */}
         <div
-          className="sticky top-0 z-10 flex items-center justify-between border-b border-border bg-background/90 px-4 py-3 backdrop-blur"
+          className="sticky top-0 z-10 flex items-center justify-between bg-background/90 px-4 py-3 backdrop-blur"
           style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
         >
           <div className="size-9" />

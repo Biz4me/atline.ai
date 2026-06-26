@@ -101,7 +101,7 @@ export default function MessagesPage() {
       )}>
         {/* Header */}
         <header
-          className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-3 backdrop-blur"
+          className="sticky top-0 z-30 flex items-center gap-3 bg-background/90 px-4 py-3 backdrop-blur"
           style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
         >
           <button

@@ -75,8 +75,7 @@ function SetupScreen({
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <header
-        className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-3 backdrop-blur lg:px-8"
-        style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
+        className="sticky top-0 z-30 flex items-center gap-3 bg-background/90 px-4 pt-[max(0.75rem,env(safe-area-inset-top))] pb-3 backdrop-blur lg:px-6 lg:py-0 lg:h-[68px]"
       >
         <button
           type="button"
@@ -85,7 +84,13 @@ function SetupScreen({
         >
           <ChevronLeft className="size-5 stroke-[1.5]" />
         </button>
-        <h1 className="flex-1 font-display text-lg font-bold text-foreground">Simulation ARIA</h1>
+        <span
+          className="hidden lg:flex size-9 shrink-0 items-center justify-center rounded-[11px] text-white shadow-sm"
+          style={{ backgroundColor: '#14B8A6' }}
+        >
+          <Mic className="size-[18px] stroke-[1.5]" />
+        </span>
+        <h1 className="flex-1 font-display text-lg font-bold text-foreground lg:text-2xl">Aria</h1>
       </header>
 
       <div className="flex flex-col gap-6 px-4 pt-5 pb-10 lg:px-8 lg:max-w-2xl lg:mx-auto">
@@ -508,7 +513,7 @@ function SimulatorScreen({
               <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-primary font-display text-sm font-bold text-white">
                 A
               </span>
-              <span className="flex-1 text-sm text-white/70">Score ARIA estimé</span>
+              <span className="flex-1 text-sm text-white/70">Score Aria estimé</span>
               <span className="font-display text-lg font-bold text-primary">78 / 100</span>
             </div>
 

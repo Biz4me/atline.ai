@@ -67,7 +67,7 @@ const agents = [
     color: '#F97316', bg: 'bg-orange-50',
   },
   {
-    name: 'ARIA', role: 'Simulateur de conversations',
+    name: 'Aria', role: 'Simulateur de conversations',
     desc: 'Entraîne-toi à chaque phase de prospection grâce à des jeux de rôle IA adaptés à ton profil.',
     color: '#8B5CF6', bg: 'bg-violet-50',
   },
@@ -229,7 +229,7 @@ function OnboardingContent() {
             <div className="mt-8 w-full max-w-sm space-y-3 text-left">
               {[
                 { icon: Brain, label: 'Atlas qualifie tes prospects', color: 'text-primary', bg: 'bg-orange-50' },
-                { icon: Users, label: 'ARIA entraîne tes conversations', color: 'text-violet-600', bg: 'bg-violet-50' },
+                { icon: Users, label: 'Aria entraîne tes conversations', color: 'text-violet-600', bg: 'bg-violet-50' },
                 { icon: Sparkles, label: 'Nova optimise ton contenu', color: 'text-blue-600', bg: 'bg-blue-50' },
               ].map(({ icon: Icon, label, color, bg }) => (
                 <div key={label} className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3.5 shadow-card">

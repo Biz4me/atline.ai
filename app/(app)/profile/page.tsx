@@ -116,13 +116,13 @@ export default function ProfilePage() {
             </div>
           </Card>
 
-          {/* ARIA training counter */}
+          {/* Aria training counter */}
           <Card className="p-0 overflow-hidden">
               <div className="px-4 py-3.5 border-b border-border flex items-center gap-2.5">
                 <span className="grid size-8 shrink-0 place-items-center rounded-full bg-[#14B8A6]/10">
                   <Mic className="size-4 text-[#14B8A6]" />
                 </span>
-                <p className="text-sm font-semibold text-foreground">Entraînement ARIA</p>
+                <p className="text-sm font-semibold text-foreground">Entraînement Aria</p>
               </div>
               <div className="grid grid-cols-3 gap-2 px-4 py-3.5">
                 <div className="flex flex-col items-center gap-0.5 rounded-xl bg-muted/50 px-2 py-2.5">

@@ -667,7 +667,7 @@ function ContactsContent() {
                           </Link>
                           <Link
                             href={`/aria?contact=${c.id}`}
-                            title="Simuler avec ARIA"
+                            title="Simuler avec Aria"
                             className="flex size-8 items-center justify-center rounded-lg text-muted-foreground hover:text-[#14B8A6] hover:bg-[#14B8A6]/10 transition-colors"
                           >
                             <Mic className="size-4 stroke-[1.5]" />

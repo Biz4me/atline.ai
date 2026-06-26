@@ -26,7 +26,7 @@ export function AppHeader({
   const router = useRouter()
   return (
     <header
-      className="sticky top-0 z-30 flex items-center gap-3 border-b border-border bg-background/90 px-4 py-3 backdrop-blur lg:hidden"
+      className="sticky top-0 z-30 flex items-center gap-3 bg-background/90 px-4 py-3 backdrop-blur lg:hidden"
       style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}
     >
       {back && (

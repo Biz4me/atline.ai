@@ -71,7 +71,7 @@ const notifications: Notif[] = [
   {
     id: 'n6',
     type: 'aria',
-    title: 'ARIA · Entraînement disponible',
+    title: 'Aria · Entraînement disponible',
     body: "Tu n'as pas simulé d'appel depuis 3 jours. Prépare ta prochaine conversation.",
     time: 'Il y a 2 j',
     read: true,
