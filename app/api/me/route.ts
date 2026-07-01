@@ -101,6 +101,15 @@ export async function PATCH(req: Request) {
     data.birthDate = null
   }
 
+  // Username : format + dispo re-vérifiés serveur (un check client peut être contourné)
+  if (typeof body.username === 'string') {
+    const u = body.username.trim().toLowerCase()
+    if (!/^[a-z0-9._]{3,20}$/.test(u)) return NextResponse.json({ error: 'username_invalid' }, { status: 400 })
+    const existing = await db.user.findUnique({ where: { username: u }, select: { id: true } })
+    if (existing && existing.id !== session.user.id) return NextResponse.json({ error: 'username_taken' }, { status: 409 })
+    data.username = u
+  }
+
   const user = await db.user.update({
     where: { id: session.user.id },
     data,

@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronDown, Check, Loader2, User as UserIcon, MapPin, Sparkles, Target, Camera, Trash2, Share2 } from 'lucide-react'
+import { ChevronLeft, ChevronDown, Check, X, Loader2, User as UserIcon, MapPin, Sparkles, Target, Camera, Trash2, Share2 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { Card } from '@/components/card'
 import { SelectMenu } from '@/components/select-menu'
@@ -134,6 +134,7 @@ export default function ProfileEditPage() {
           socials: (u.socials && typeof u.socials === 'object' && !Array.isArray(u.socials)) ? u.socials : {},
           coaching: (u.coaching && typeof u.coaching === 'object' && !Array.isArray(u.coaching)) ? u.coaching : {},
         })
+        initialUsername.current = u.username ?? ''
         setLoading(false)
       })
       .catch(() => { if (active) setLoading(false) })
@@ -149,6 +150,29 @@ export default function ProfileEditPage() {
   const set = (k: keyof Form, v: string) => setForm((f) => ({ ...f, [k]: v }))
   const setSocial = (k: string, v: string) => setForm((f) => ({ ...f, socials: { ...f.socials, [k]: v } }))
   const setCoaching = (k: string, v: string) => setForm((f) => ({ ...f, coaching: { ...f.coaching, [k]: v } }))
+
+  // Date de naissance : ouvre le picker natif via un input caché
+  const birthDateRef = useRef<HTMLInputElement>(null)
+
+  // Pseudo : vérif de dispo en direct (débounce) via /api/auth/username
+  const [unameStatus, setUnameStatus] = useState<'idle' | 'checking' | 'ok' | 'taken' | 'invalid'>('idle')
+  const unameTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const initialUsername = useRef('')
+  const onUsernameChange = (raw: string) => {
+    const u = raw.toLowerCase().replace(/[^a-z0-9._]/g, '').slice(0, 20)
+    set('username', u)
+    if (unameTimer.current) clearTimeout(unameTimer.current)
+    if (u === initialUsername.current) { setUnameStatus('idle'); return }
+    if (u.length < 3) { setUnameStatus('invalid'); return }
+    setUnameStatus('checking')
+    unameTimer.current = setTimeout(async () => {
+      try {
+        const r = await fetch(`/api/auth/username?check=${encodeURIComponent(u)}`)
+        const d = await r.json()
+        setUnameStatus(!d.valid ? 'invalid' : d.available ? 'ok' : 'taken')
+      } catch { setUnameStatus('idle') }
+    }, 400)
+  }
 
   // Avatar : redimensionne côté navigateur (carré 256px JPEG) puis stocke en data URL
   function handlePhoto(file: File) {
@@ -179,7 +203,13 @@ export default function ProfileEditPage() {
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify(form),
       })
-      if (res.ok) toast.success('Profil enregistré')
+      if (res.ok) {
+        toast.success('Profil enregistré')
+        initialUsername.current = form.username
+        setUnameStatus('idle')
+      }
+      else if (res.status === 409) toast.error('Ce pseudo est déjà pris')
+      else if (res.status === 400) toast.error('Pseudo invalide (3-20 caractères : a-z, 0-9, . _)')
       else toast.error('Échec de l’enregistrement')
     } catch {
       toast.error('Erreur réseau')
@@ -246,8 +276,8 @@ export default function ProfileEditPage() {
         </div>
       ) : (
         <div className="space-y-5 px-4 pb-10 pt-4">
-          {/* Avatar uploadable + username */}
-          <div className="flex items-center gap-4">
+          {/* Avatar centré + nom */}
+          <div className="flex flex-col items-center gap-2.5">
             <label className="relative cursor-pointer">
               <input
                 type="file"
@@ -270,9 +300,7 @@ export default function ProfileEditPage() {
                 <Camera className="size-3.5" />
               </span>
             </label>
-            <div className="min-w-0">
-              {form.username && <p className="truncate text-base font-medium text-muted-foreground">@{form.username}</p>}
-            </div>
+            <p className="text-lg font-semibold text-foreground">{`${form.firstName} ${form.lastName}`.trim() || 'Ton profil'}</p>
           </div>
 
           {/* Complétion du profil — bandeau fin, sans carte */}
@@ -289,8 +317,31 @@ export default function ProfileEditPage() {
           <Collapsible icon={UserIcon} title="Identité" filled={sec.identite} total={tot.identite} open={!!open.identite} onToggle={() => toggle('identite')} onSave={save} saving={saving}>
             <input className={inputCls} value={form.firstName} onChange={(e) => set('firstName', e.target.value)} placeholder="Prénom" />
             <input className={inputCls} value={form.lastName} onChange={(e) => set('lastName', e.target.value)} placeholder="Nom" />
+            {/* Pseudo — modifiable, avec vérif de dispo en direct */}
+            <div>
+              <div className="relative flex items-center">
+                <span className="pointer-events-none absolute left-4 text-lg text-muted-foreground">@</span>
+                <input className={`${inputCls} pl-8 pr-10`} value={form.username} onChange={(e) => onUsernameChange(e.target.value)} placeholder="ton-pseudo" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
+                <span className="absolute right-3.5 top-1/2 -translate-y-1/2">
+                  {unameStatus === 'checking' && <Loader2 className="size-4 animate-spin text-muted-foreground" />}
+                  {unameStatus === 'ok' && <Check className="size-4 text-[#22C55E]" />}
+                  {(unameStatus === 'taken' || unameStatus === 'invalid') && <X className="size-4 text-destructive" />}
+                </span>
+              </div>
+              {unameStatus === 'taken' && <p className="mt-1 px-1 text-sm text-destructive">Ce pseudo est déjà pris.</p>}
+              {unameStatus === 'invalid' && <p className="mt-1 px-1 text-sm text-destructive">3-20 caractères : lettres, chiffres, . ou _</p>}
+              {unameStatus === 'ok' && <p className="mt-1 px-1 text-sm text-[#22C55E]">Disponible</p>}
+            </div>
             <SelectMenu className={inputCls} placeholder="Genre" value={form.gender} onChange={(v) => set('gender', v)} options={[{ value: 'M', label: 'Homme' }, { value: 'F', label: 'Femme' }, { value: 'N', label: 'Neutre' }]} />
-            <input className={inputCls} type="text" placeholder="Date de naissance" value={form.birthDate} onChange={(e) => set('birthDate', e.target.value)} onFocus={(e) => (e.target.type = 'date')} onBlur={(e) => { if (!e.target.value) e.target.type = 'text' }} />
+            {/* Date de naissance — bouton + input date caché (picker natif) */}
+            <div className="relative">
+              <button type="button" onClick={() => birthDateRef.current?.showPicker?.()} className={`${inputCls} flex items-center text-left`}>
+                <span className={form.birthDate ? 'text-foreground' : 'text-muted-foreground'}>
+                  {form.birthDate ? new Date(form.birthDate + 'T12:00:00').toLocaleDateString('fr-FR', { day: 'numeric', month: 'long', year: 'numeric' }) : 'Date de naissance'}
+                </span>
+              </button>
+              <input ref={birthDateRef} type="date" value={form.birthDate} onChange={(e) => set('birthDate', e.target.value)} max={new Date().toISOString().slice(0, 10)} className="pointer-events-none absolute inset-0 opacity-0" />
+            </div>
             <input className={inputCls} type="tel" value={form.phone} onChange={(e) => set('phone', e.target.value)} placeholder="Téléphone" />
             <input className={inputCls} type="tel" value={form.phone2} onChange={(e) => set('phone2', e.target.value)} placeholder="Téléphone secondaire" />
           </Collapsible>
