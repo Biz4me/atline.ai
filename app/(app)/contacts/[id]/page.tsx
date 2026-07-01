@@ -445,12 +445,12 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
           ))}
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <button type="button" onClick={() => router.push(`/aria?contact=${c.id}`)} className="flex items-center justify-center gap-1.5 rounded-2xl bg-[#14B8A6]/10 py-3 text-xs font-bold text-[#14B8A6] active:bg-[#14B8A6]/20"><Mic className="size-4 stroke-[1.5]" />Simuler avec Aria</button>
-          <button type="button" onClick={() => toast('Atlas analyse ce contact — bientôt')} className="flex items-center justify-center gap-1.5 rounded-2xl bg-primary/10 py-3 text-xs font-bold text-primary active:bg-primary/20"><Sparkles className="size-4 stroke-[1.5]" />Demander à Atlas</button>
+          <button type="button" onClick={() => router.push(`/aria?contact=${c.id}`)} className="flex items-center justify-center gap-1.5 rounded-2xl bg-[#14B8A6]/10 py-3 text-base font-bold text-[#14B8A6] active:bg-[#14B8A6]/20"><Mic className="size-4 stroke-[1.5]" />Simuler avec Aria</button>
+          <button type="button" onClick={() => toast('Atlas analyse ce contact — bientôt')} className="flex items-center justify-center gap-1.5 rounded-2xl bg-primary/10 py-3 text-base font-bold text-primary active:bg-primary/20"><Sparkles className="size-4 stroke-[1.5]" />Demander à Atlas</button>
         </div>
         <div className="grid grid-cols-2 gap-2">
-          <button type="button" onClick={() => setSchedule('rdv')} className="flex items-center justify-center gap-1.5 rounded-2xl border border-border bg-surface py-3 text-xs font-bold text-foreground active:bg-muted"><CalendarPlus className="size-4 stroke-[1.5] text-primary" />Planifier un RDV</button>
-          <button type="button" onClick={() => setSchedule('relance')} className="flex items-center justify-center gap-1.5 rounded-2xl border border-border bg-surface py-3 text-xs font-bold text-foreground active:bg-muted"><Bell className="size-4 stroke-[1.5] text-primary" />Programmer une relance</button>
+          <button type="button" onClick={() => setSchedule('rdv')} className="flex items-center justify-center gap-1.5 rounded-2xl border border-border bg-surface py-3 text-base font-bold text-foreground active:bg-muted"><CalendarPlus className="size-4 stroke-[1.5] text-primary" />Planifier un RDV</button>
+          <button type="button" onClick={() => setSchedule('relance')} className="flex items-center justify-center gap-1.5 rounded-2xl border border-border bg-surface py-3 text-base font-bold text-foreground active:bg-muted"><Bell className="size-4 stroke-[1.5] text-primary" />Programmer une relance</button>
         </div>
 
         {/* PIPELINE / STATUT */}
@@ -461,7 +461,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
                 <div className="flex flex-wrap gap-2">
                   {PROSPECT_STAGES.map((s) => (
                     <button key={s.id} type="button" onClick={() => save({ prospectStage: s.id }, 'Étape mise à jour')}
-                      className={cn('rounded-xl border px-3.5 py-2 text-xs font-bold transition-colors', c.prospectStage === s.id ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-surface text-foreground')}>{s.label}</button>
+                      className={cn('rounded-xl border px-3.5 py-2 text-base font-bold transition-colors', c.prospectStage === s.id ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-surface text-foreground')}>{s.label}</button>
                   ))}
                 </div>
                 <p className="text-[10px] leading-relaxed text-muted-foreground">
@@ -474,7 +474,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
               <div className="flex flex-wrap gap-2">
                 {PARTNER_STAGES.map((s) => (
                   <button key={s.id} type="button" onClick={() => save({ partnerStage: s.id }, 'Étape mise à jour')}
-                    className={cn('rounded-xl border px-3.5 py-2 text-xs font-bold transition-colors', c.partnerStage === s.id ? 'border-violet bg-violet text-white' : 'border-border bg-surface text-foreground')}>{s.label}</button>
+                    className={cn('rounded-xl border px-3.5 py-2 text-base font-bold transition-colors', c.partnerStage === s.id ? 'border-violet bg-violet text-white' : 'border-border bg-surface text-foreground')}>{s.label}</button>
                 ))}
               </div>
             )}
@@ -482,10 +482,10 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
             {/* Conversions */}
             <div className="flex flex-wrap gap-2 border-t border-border pt-3">
               {isProspect && <>
-                <button type="button" onClick={() => save({ convert: 'client' }, 'Converti en client')} className="flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-xs font-bold text-foreground active:bg-muted">Convertir en client <ArrowRight className="size-3" /></button>
-                <button type="button" onClick={() => save({ convert: 'partenaire' }, 'Converti en partenaire')} className="flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-xs font-bold text-foreground active:bg-muted">Convertir en partenaire <ArrowRight className="size-3" /></button>
+                <button type="button" onClick={() => save({ convert: 'client' }, 'Converti en client')} className="flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-base font-bold text-foreground active:bg-muted">Convertir en client <ArrowRight className="size-3" /></button>
+                <button type="button" onClick={() => save({ convert: 'partenaire' }, 'Converti en partenaire')} className="flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-base font-bold text-foreground active:bg-muted">Convertir en partenaire <ArrowRight className="size-3" /></button>
               </>}
-              {isClient && <button type="button" onClick={() => save({ convert: 'partenaire' }, 'Converti en partenaire')} className="flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-xs font-bold text-foreground active:bg-muted">Convertir en partenaire (upsell) <ArrowRight className="size-3" /></button>}
+              {isClient && <button type="button" onClick={() => save({ convert: 'partenaire' }, 'Converti en partenaire')} className="flex items-center gap-1.5 rounded-xl border border-border bg-surface px-3 py-2 text-base font-bold text-foreground active:bg-muted">Convertir en partenaire (upsell) <ArrowRight className="size-3" /></button>}
               {isPartner && <p className="text-xs text-muted-foreground">Ses KPI viennent de son profil partenaire.</p>}
             </div>
           </div>

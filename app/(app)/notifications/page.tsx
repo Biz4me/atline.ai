@@ -112,19 +112,19 @@ function NotifList() {
   return (
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between gap-2">
-        <p className="text-sm font-semibold text-foreground">
+        <p className="text-base font-semibold text-foreground">
           {showAll ? `${items.length} notification${items.length > 1 ? 's' : ''}` : `${unread.length} non lue${unread.length > 1 ? 's' : ''}`}
         </p>
         <div className="flex items-center gap-3">
-          {unread.length > 0 && <button type="button" onClick={markAll} className="text-xs font-semibold text-primary">Tout marquer comme lu</button>}
-          <button type="button" onClick={() => setShowAll((v) => !v)} className="text-xs font-semibold text-muted-foreground">{showAll ? 'Non lues' : 'Historique'}</button>
+          {unread.length > 0 && <button type="button" onClick={markAll} className="text-base font-semibold text-primary">Tout marquer comme lu</button>}
+          <button type="button" onClick={() => setShowAll((v) => !v)} className="text-base font-semibold text-muted-foreground">{showAll ? 'Non lues' : 'Historique'}</button>
         </div>
       </div>
 
       {list.length === 0 ? (
         <div className="flex flex-col items-center gap-2 rounded-2xl border border-border bg-surface px-4 py-10 text-center">
           <CheckCircle2 className="size-8 text-success" />
-          <p className="text-sm text-muted-foreground">Tu es à jour — aucune notification non lue.</p>
+          <p className="text-lg text-muted-foreground">Tu es à jour — aucune notification non lue.</p>
         </div>
       ) : (
       <Card className="divide-y divide-border p-0">
@@ -155,14 +155,14 @@ function NotifList() {
 
             <div className="min-w-0 flex-1">
               <div className="flex items-start justify-between gap-2">
-                <p className={cn('text-sm', !notif.read ? 'font-bold text-foreground' : 'font-semibold text-foreground')}>
+                <p className={cn('text-lg', !notif.read ? 'font-bold text-foreground' : 'font-semibold text-foreground')}>
                   {notif.title}
                 </p>
                 {!notif.read && (
                   <span className="mt-1 size-2 shrink-0 rounded-full bg-primary" />
                 )}
               </div>
-              <p className="mt-0.5 text-xs text-muted-foreground text-pretty line-clamp-2">{notif.body}</p>
+              <p className="mt-0.5 text-base text-muted-foreground text-pretty line-clamp-2">{notif.body}</p>
               <p className="mt-1 text-xs text-muted-foreground">{notif.time}</p>
             </div>
           </button>

@@ -399,7 +399,7 @@ function ContactsContent() {
               value={query}
               onChange={(e) => setQuery(e.target.value)}
               placeholder="Rechercher un contact"
-              className="w-full rounded-xl border border-border bg-surface py-3 pl-10 pr-4 text-sm outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
+              className="w-full rounded-xl border border-border bg-surface py-3 pl-10 pr-4 text-base outline-none transition-shadow placeholder:text-muted-foreground focus:ring-2 focus:ring-ring/40"
             />
           </div>
 
@@ -411,7 +411,7 @@ function ContactsContent() {
                 type="button"
                 onClick={() => handleSegmentChange(seg)}
                 className={cn(
-                  'rounded-lg py-2 text-sm font-semibold transition-colors',
+                  'rounded-lg py-2 text-base font-semibold transition-colors',
                   segment === seg
                     ? 'bg-background text-primary shadow-sm'
                     : 'text-muted-foreground'
@@ -431,7 +431,7 @@ function ContactsContent() {
                   type="button"
                   onClick={() => setStageFilter(f.id)}
                   className={cn(
-                    'shrink-0 rounded-full px-4 py-1.5 text-sm font-semibold transition-colors',
+                    'shrink-0 rounded-full px-4 py-1.5 text-base font-semibold transition-colors',
                     stageFilter === f.id
                       ? 'bg-primary/10 text-primary'
                       : 'border border-border bg-surface text-fg-2'
@@ -446,11 +446,11 @@ function ContactsContent() {
           {/* Liste */}
           {!loading && list.length === 0 ? (
             <div className="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-border bg-surface px-6 py-12 text-center">
-              <p className="text-sm text-muted-foreground">Aucun contact ici</p>
+              <p className="text-lg text-muted-foreground">Aucun contact ici</p>
               <button
                 type="button"
                 onClick={() => setAddOpen(true)}
-                className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-sm font-bold text-primary-foreground"
+                className="inline-flex items-center gap-2 rounded-xl bg-primary px-5 py-2.5 text-base font-bold text-primary-foreground"
               >
                 <Plus className="size-4 stroke-2" />
                 Ajouter un contact
@@ -466,10 +466,10 @@ function ContactsContent() {
                   >
                     <DiscAvatar firstName={c.firstName} lastName={c.lastName} disc={c.disc} />
                     <div className="min-w-0 flex-1">
-                      <p className="text-sm font-bold text-foreground">
+                      <p className="text-lg font-bold text-foreground">
                         {c.firstName} {c.lastName}
                       </p>
-                      <p className="text-xs text-muted-foreground">
+                      <p className="text-base text-muted-foreground">
                         {c.city && <span>{c.city} </span>}
                         <span className={cn('font-semibold', sourceColor(c.source))}>
                           {c.source}

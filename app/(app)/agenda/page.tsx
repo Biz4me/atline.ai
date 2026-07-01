@@ -90,7 +90,7 @@ export function AgendaView({ embedded = false, onClose }: { embedded?: boolean; 
           <div className="grid flex-1 grid-cols-3 gap-1 rounded-xl bg-muted p-1">
             {(['jour', 'semaine', 'mois'] as View[]).map((v) => (
               <button key={v} type="button" onClick={() => setView(v)}
-                className={cn('rounded-lg py-2 text-sm font-semibold capitalize transition-all', view === v ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground')}>
+                className={cn('rounded-lg py-2 text-base font-semibold capitalize transition-all', view === v ? 'bg-background text-primary shadow-sm' : 'text-muted-foreground')}>
                 {v.charAt(0).toUpperCase() + v.slice(1)}
               </button>
             ))}
@@ -108,8 +108,8 @@ export function AgendaView({ embedded = false, onClose }: { embedded?: boolean; 
           <div className="mb-4 flex items-center gap-3 rounded-2xl border border-primary/30 bg-primary/5 p-3.5">
             <CalendarCheck className="size-5 shrink-0 text-primary" />
             <div className="min-w-0 flex-1">
-              <p className="text-sm font-bold text-foreground">Connecte ton Google Agenda</p>
-              <p className="text-xs leading-snug text-muted-foreground">Pour voir tes vrais créneaux et éviter les conflits.</p>
+              <p className="text-base font-bold text-foreground">Connecte ton Google Agenda</p>
+              <p className="text-sm leading-snug text-muted-foreground">Pour voir tes vrais créneaux et éviter les conflits.</p>
             </div>
             <a href="/api/calendar/connect" className="shrink-0 rounded-xl bg-primary px-3 py-2 text-xs font-bold text-primary-foreground">Connecter</a>
           </div>
@@ -119,7 +119,7 @@ export function AgendaView({ embedded = false, onClose }: { embedded?: boolean; 
             onClick={() => { navigator.clipboard?.writeText(`${location.origin}/rdv/${username}`); toast.success('Lien de réservation copié') }}
             className="mb-4 flex w-full items-center gap-2.5 rounded-2xl border border-border bg-surface px-4 py-3 text-left active:bg-muted">
             <Share2 className="size-4 shrink-0 text-primary" />
-            <span className="min-w-0 flex-1 truncate text-sm font-medium text-foreground">Mon lien de RDV — partage-le à tes prospects</span>
+            <span className="min-w-0 flex-1 truncate text-base font-medium text-foreground">Mon lien de RDV — partage-le à tes prospects</span>
             <span className="shrink-0 text-xs font-bold text-primary">Copier</span>
           </button>
         )}
@@ -173,8 +173,8 @@ function JourView({ selected, setSelected, today, apptsOn, gevents, onTap, onCre
 
       {items.length === 0 ? (
         <div className="flex flex-col items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-8 text-center">
-          <p className="text-sm text-muted-foreground">Aucun rendez-vous ce jour</p>
-          <button type="button" onClick={onCreate} className="rounded-xl border border-border px-4 py-2 text-sm font-semibold text-foreground active:bg-muted">+ Nouveau RDV</button>
+          <p className="text-lg text-muted-foreground">Aucun rendez-vous ce jour</p>
+          <button type="button" onClick={onCreate} className="rounded-xl border border-border px-4 py-2 text-base font-semibold text-foreground active:bg-muted">+ Nouveau RDV</button>
         </div>
       ) : (
         <div className="flex flex-col gap-2.5">
@@ -185,7 +185,7 @@ function JourView({ selected, setSelected, today, apptsOn, gevents, onTap, onCre
               <div className="flex flex-1 flex-col gap-1.5 min-w-0">
                 <span className="self-start rounded-full bg-primary/10 px-2.5 py-0.5 text-xs font-bold text-primary">{TYPE_LABEL[it.rdv.type] ?? 'RDV'}</span>
                 <div className="flex items-center gap-1.5 min-w-0">
-                  <span className={cn('truncate text-sm font-semibold text-foreground', it.rdv.done && 'line-through')}>{it.rdv.title}</span>
+                  <span className={cn('truncate text-lg font-semibold text-foreground', it.rdv.done && 'line-through')}>{it.rdv.title}</span>
                   {it.rdv.contactName && <span className="shrink-0 text-xs text-muted-foreground">· {it.rdv.contactName}</span>}
                 </div>
               </div>
@@ -196,7 +196,7 @@ function JourView({ selected, setSelected, today, apptsOn, gevents, onTap, onCre
               <span className="font-display text-lg font-bold tabular-nums text-muted-foreground shrink-0">{it.g!.allDay ? '—' : fmtTime(it.g!.start)}</span>
               <div className="flex min-w-0 flex-1 flex-col gap-1">
                 <span className="self-start rounded-full bg-muted px-2 py-0.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground">Google</span>
-                <span className="truncate text-sm font-medium text-muted-foreground">{it.g!.title}</span>
+                <span className="truncate text-base font-medium text-muted-foreground">{it.g!.title}</span>
               </div>
             </div>
           ))}

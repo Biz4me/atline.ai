@@ -105,7 +105,7 @@ function AbonnementContent() {
                       </span>
                       <p className="font-display text-lg font-semibold text-foreground">{plan.label}</p>
                     </div>
-                    <p className="mt-0.5 text-xs text-muted-foreground">{plan.desc}</p>
+                    <p className="mt-0.5 text-base text-muted-foreground">{plan.desc}</p>
                   </div>
                   <div className="text-right">
                     <p className="font-display text-xl font-bold text-foreground">
@@ -119,13 +119,13 @@ function AbonnementContent() {
                   {plan.features.map((f) => (
                     <li key={f} className="flex items-center gap-2">
                       <Check className="size-3.5 shrink-0 text-success stroke-2" />
-                      <span className="text-xs text-foreground">{f}</span>
+                      <span className="text-base text-foreground">{f}</span>
                     </li>
                   ))}
                   {plan.locked.map((f) => (
                     <li key={f} className="flex items-center gap-2 opacity-40">
                       <div className="size-3.5 shrink-0 rounded-full border border-border" />
-                      <span className="text-xs text-muted-foreground">{f}</span>
+                      <span className="text-base text-muted-foreground">{f}</span>
                     </li>
                   ))}
                 </ul>
@@ -135,7 +135,7 @@ function AbonnementContent() {
                     type="button"
                     onClick={() => toast.info(`Passer au plan ${plan.label}`)}
                     className={cn(
-                      'mt-4 w-full rounded-xl py-2.5 text-sm font-bold transition-colors active:scale-[0.98]',
+                      'mt-4 w-full rounded-xl py-2.5 text-base font-bold transition-colors active:scale-[0.98]',
                       plan.id === 'leader'
                         ? 'bg-amber-500 text-white'
                         : plan.id === 'starter'

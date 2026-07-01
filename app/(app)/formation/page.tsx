@@ -49,7 +49,7 @@ export default function FormationPage() {
           {/* Progression globale */}
           <Card className="p-4">
             <div className="mb-2 flex items-center justify-between">
-              <p className="text-xs text-muted-foreground">
+              <p className="text-base text-muted-foreground">
                 {doneCount}/{modules.length} modules complétés
               </p>
               <span className="text-2xl font-bold text-primary">{totalPct}%</span>
@@ -107,10 +107,10 @@ export default function FormationPage() {
 
                         {/* Contenu */}
                         <div className="min-w-0 flex-1">
-                          <p className="truncate text-sm font-semibold text-foreground">
+                          <p className="truncate text-lg font-semibold text-foreground">
                             {stripPrefix(mod.title)}
                           </p>
-                          <p className="mt-0.5 text-xs text-muted-foreground">
+                          <p className="mt-0.5 text-base text-muted-foreground">
                             {mod._count.lessons} leçons
                           </p>
                           <div className="mt-1.5 h-1 overflow-hidden rounded-full bg-muted">

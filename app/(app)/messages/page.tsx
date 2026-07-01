@@ -136,7 +136,7 @@ export default function MessagesPage() {
                     </span>
                     <span className="shrink-0 text-xs text-muted-foreground">{conv.time}</span>
                   </div>
-                  <p className={cn('mt-0.5 truncate text-xs', conv.unread > 0 ? 'font-semibold text-foreground' : 'text-muted-foreground')}>
+                  <p className={cn('mt-0.5 truncate text-base', conv.unread > 0 ? 'font-semibold text-foreground' : 'text-muted-foreground')}>
                     {conv.lastMessage}
                   </p>
                 </div>
@@ -178,7 +178,7 @@ export default function MessagesPage() {
             {active.messages.map((m, i) => (
               <div key={i} className={cn('flex', m.from === 'me' ? 'justify-end' : 'justify-start')}>
                 <div className={cn(
-                  'max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-[1.55]',
+                  'max-w-[75%] rounded-2xl px-4 py-3 text-lg leading-[1.55] lg:text-sm',
                   m.from === 'me'
                     ? 'rounded-br-md bg-primary text-primary-foreground'
                     : 'rounded-bl-md bg-muted text-foreground',
@@ -197,7 +197,7 @@ export default function MessagesPage() {
                 value={draft}
                 onChange={(e) => setDraft(e.target.value)}
                 placeholder={`Répondre à ${active.firstName}…`}
-                className="flex-1 resize-none bg-transparent text-sm leading-[1.4] text-foreground outline-none placeholder:text-muted-foreground"
+                className="flex-1 resize-none bg-transparent text-lg leading-[1.4] text-foreground outline-none placeholder:text-muted-foreground lg:text-sm"
                 style={{ maxHeight: 120, paddingTop: 7, paddingBottom: 7 }}
               />
               <button

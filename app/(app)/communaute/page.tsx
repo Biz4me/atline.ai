@@ -160,7 +160,7 @@ export default function CommunautePage() {
               type="button"
               onClick={() => { setSpace(s.id); setCategory('Tous') }}
               className={cn(
-                'rounded-lg py-2 text-sm font-semibold transition-all',
+                'rounded-lg py-2 text-base font-semibold transition-all',
                 space === s.id
                   ? 'bg-background text-primary shadow-sm'
                   : 'text-muted-foreground'
@@ -179,7 +179,7 @@ export default function CommunautePage() {
               type="button"
               onClick={() => setCategory(cat)}
               className={cn(
-                'shrink-0 rounded-full px-3.5 py-1.5 text-xs font-semibold transition-colors',
+                'shrink-0 rounded-full px-3.5 py-1.5 text-base font-semibold transition-colors',
                 category === cat
                   ? 'bg-primary text-primary-foreground'
                   : 'bg-muted text-muted-foreground'
@@ -193,7 +193,7 @@ export default function CommunautePage() {
         {/* Trending */}
         <div className="flex items-center gap-1.5">
           <TrendingUp className="size-3.5 text-primary" />
-          <span className="text-xs font-semibold text-primary">
+          <span className="text-base font-semibold text-primary">
             {filtered.filter(t => t.likes > 50).length} discussions tendance cette semaine
           </span>
         </div>
@@ -220,7 +220,7 @@ export default function CommunautePage() {
                   <span className={cn('flex size-7 shrink-0 items-center justify-center rounded-full text-xs font-bold text-white', thread.authorColor)}>
                     {thread.authorInitials}
                   </span>
-                  <span className="text-xs font-semibold text-foreground">{thread.author}</span>
+                  <span className="text-base font-semibold text-foreground">{thread.author}</span>
                   <span className={cn('rounded-full px-2 py-0.5 text-[10px] font-bold', thread.companyColor)}>
                     {thread.company}
                   </span>
@@ -248,7 +248,7 @@ export default function CommunautePage() {
         <button
           type="button"
           onClick={() => toast.info('Nouvelle discussion')}
-          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-sm font-bold text-primary-foreground transition-transform active:scale-[0.98]"
+          className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-base font-bold text-primary-foreground transition-transform active:scale-[0.98]"
         >
           <Plus className="size-5 stroke-2" />
           Nouvelle discussion
