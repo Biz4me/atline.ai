@@ -13,7 +13,7 @@ export async function GET() {
   const [contactCount, simSessions, referrals, rdvCount, simCount, certCount] = await Promise.all([
     db.contact.count({ where: { userId } }),
     db.simSession.findMany({
-      where: { userId, score: { not: null }, createdAt: { gte: thirtyDaysAgo } },
+      where: { userId, score: { not: null }, startedAt: { gte: thirtyDaysAgo } },
       select: { score: true },
     }),
     db.atlineReferral.findMany({
