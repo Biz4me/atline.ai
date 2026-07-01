@@ -20,15 +20,19 @@ const normGender = (g: string) => (g === 'Homme' ? 'M' : g === 'Femme' ? 'F' : g
 const inputCls =
   'w-full rounded-xl border border-border bg-background px-4 py-3 text-lg text-foreground outline-none placeholder:text-muted-foreground focus:border-muted-foreground/40'
 
-const SOCIALS: { key: string; label: string; color: string; placeholder: string }[] = [
-  { key: 'facebook',  label: 'Facebook',  color: '#1877F2', placeholder: 'facebook.com/ton-profil' },
+type Social = { key: string; label: string; color: string; placeholder: string }
+// 5 principaux visibles + 4 optionnels repliés (le 0/9 décourageait)
+const SOCIALS_MAIN: Social[] = [
   { key: 'instagram', label: 'Instagram', color: '#E4405F', placeholder: '@ton_pseudo' },
-  { key: 'linkedin',  label: 'LinkedIn',  color: '#0A66C2', placeholder: 'linkedin.com/in/…' },
+  { key: 'facebook',  label: 'Facebook',  color: '#1877F2', placeholder: 'facebook.com/ton-profil' },
   { key: 'tiktok',    label: 'TikTok',    color: '#111111', placeholder: '@ton_pseudo' },
+  { key: 'linkedin',  label: 'LinkedIn',  color: '#0A66C2', placeholder: 'linkedin.com/in/…' },
+  { key: 'whatsapp',  label: 'WhatsApp',  color: '#25D366', placeholder: 'ton numéro' },
+]
+const SOCIALS_MORE: Social[] = [
   { key: 'youtube',   label: 'YouTube',   color: '#FF0000', placeholder: 'ta chaîne' },
   { key: 'snapchat',  label: 'Snapchat',  color: '#FBC02D', placeholder: 'ton pseudo' },
   { key: 'telegram',  label: 'Telegram',  color: '#26A5E4', placeholder: '@ton_pseudo' },
-  { key: 'whatsapp',  label: 'WhatsApp',  color: '#25D366', placeholder: 'ton numéro' },
   { key: 'x',         label: 'X',         color: '#111111', placeholder: '@ton_pseudo' },
 ]
 
@@ -89,6 +93,7 @@ export default function ProfileEditPage() {
   const [quizOpen, setQuizOpen] = useState(false)
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
+  const [moreSocials, setMoreSocials] = useState(false)
   // Rubriques pliantes — toutes fermées à l'arrivée (l'état réel est restauré au refresh)
   const [open, setOpen] = useState<Record<string, boolean>>({})
   // Accordéon exclusif : ouvrir une rubrique ferme les autres
@@ -203,20 +208,20 @@ export default function ProfileEditPage() {
   const pColor = form.personality ? PERSONALITY_COLORS[form.personality] : '#e5e7eb'
 
   // Complétion « connaissance Atlas » : champs à forte valeur pour le coaching
-  const atlasFields = [form.personality, form.coaching.why, form.coaching.background, form.coaching.passions, form.coaching.audience, form.coaching.availability, form.coaching.level]
+  const atlasFields = [form.personality, form.coaching.why, form.coaching.background, form.coaching.passions, form.profession, form.education, form.coaching.audience, form.coaching.availability, form.coaching.level]
   const atlasFilled = atlasFields.filter((v) => v && String(v).trim()).length
   const atlasPct = Math.round((atlasFilled / atlasFields.length) * 100)
 
   // Remplissage par rubrique (compteur / coche sur les cartes)
   const nf = (vals: (string | undefined)[]) => vals.filter((v) => v && String(v).trim()).length
   const sec = {
-    identite: nf([form.firstName, form.lastName, form.gender, form.profession, form.education, form.phone, form.phone2]),
+    identite: nf([form.firstName, form.lastName, form.gender, form.birthDate, form.phone, form.phone2]),
+    quitues: nf([form.bio, form.personality, form.coaching.passions]),
+    coaching: nf([form.coaching.why, form.coaching.background, form.profession, form.education, form.coaching.audience, form.coaching.availability, form.coaching.level]),
+    socials: SOCIALS_MAIN.filter((s) => form.socials[s.key] && String(form.socials[s.key]).trim()).length,
     adresse: nf([form.address, form.address2, form.postal, form.city, form.country]),
-    perso: nf([form.bio, form.birthDate, form.personality, form.locale]),
-    socials: Object.values(form.socials).filter((v) => v && String(v).trim()).length,
-    coaching: nf([form.coaching.why, form.coaching.background, form.coaching.passions, form.coaching.audience, form.coaching.availability, form.coaching.level]),
   }
-  const tot = { identite: 7, adresse: 5, perso: 4, socials: SOCIALS.length, coaching: 6 }
+  const tot = { identite: 6, quitues: 3, coaching: 7, socials: SOCIALS_MAIN.length, adresse: 5 }
 
   return (
     <div className="mx-auto w-full max-w-2xl">
@@ -271,34 +276,21 @@ export default function ProfileEditPage() {
             </div>
           </div>
 
-          {/* Identité */}
+          {/* 1 — Identité (état civil + contact) */}
           <Collapsible icon={UserIcon} title="Identité" filled={sec.identite} total={tot.identite} open={!!open.identite} onToggle={() => toggle('identite')} onSave={save} saving={saving}>
             <div className="grid grid-cols-2 gap-3">
               <input className={inputCls} value={form.firstName} onChange={(e) => set('firstName', e.target.value)} placeholder="Prénom" />
               <input className={inputCls} value={form.lastName} onChange={(e) => set('lastName', e.target.value)} placeholder="Nom" />
             </div>
             <SelectMenu className={inputCls} placeholder="Genre" value={form.gender} onChange={(v) => set('gender', v)} options={[{ value: 'M', label: 'Homme' }, { value: 'F', label: 'Femme' }, { value: 'N', label: 'Neutre' }]} />
-            <input className={inputCls} value={form.profession} onChange={(e) => set('profession', e.target.value)} placeholder="Profession" />
-            <SelectMenu className={inputCls} placeholder="Niveau d'études" value={form.education} onChange={(v) => set('education', v)} options={EDUCATIONS.map((o) => ({ value: o, label: o }))} />
+            <input className={inputCls} type="text" placeholder="Date de naissance" value={form.birthDate} onChange={(e) => set('birthDate', e.target.value)} onFocus={(e) => (e.target.type = 'date')} onBlur={(e) => { if (!e.target.value) e.target.type = 'text' }} />
             <input className={inputCls} type="tel" value={form.phone} onChange={(e) => set('phone', e.target.value)} placeholder="Téléphone" />
             <input className={inputCls} type="tel" value={form.phone2} onChange={(e) => set('phone2', e.target.value)} placeholder="Téléphone secondaire" />
           </Collapsible>
 
-          {/* Adresse */}
-          <Collapsible icon={MapPin} title="Adresse" filled={sec.adresse} total={tot.adresse} open={!!open.adresse} onToggle={() => toggle('adresse')} onSave={save} saving={saving}>
-            <input className={inputCls} value={form.address} onChange={(e) => set('address', e.target.value)} placeholder="Adresse" />
-            <input className={inputCls} value={form.address2} onChange={(e) => set('address2', e.target.value)} placeholder="Complément (bâtiment, étage…)" />
-            <div className="grid grid-cols-[1fr_2fr] gap-3">
-              <input className={inputCls} value={form.postal} onChange={(e) => set('postal', e.target.value)} placeholder="Code postal" />
-              <input className={inputCls} value={form.city} onChange={(e) => set('city', e.target.value)} placeholder="Ville" />
-            </div>
-            <input className={inputCls} value={form.country} onChange={(e) => set('country', e.target.value)} placeholder="Pays" />
-          </Collapsible>
-
-          {/* Profil perso */}
-          <Collapsible icon={Sparkles} title="Profil perso" filled={sec.perso} total={tot.perso} open={!!open.perso} onToggle={() => toggle('perso')} onSave={save} saving={saving}>
+          {/* 2 — Qui tu es (personnalité — sert le ton des agents) */}
+          <Collapsible icon={Sparkles} title="Qui tu es" filled={sec.quitues} total={tot.quitues} open={!!open.quitues} onToggle={() => toggle('quitues')} onSave={save} saving={saving}>
             <textarea className={`${inputCls} min-h-[88px] resize-none`} value={form.bio} onChange={(e) => set('bio', e.target.value)} placeholder="Bio — quelques mots sur toi…" />
-            <input className={inputCls} type="text" placeholder="Date de naissance" value={form.birthDate} onChange={(e) => set('birthDate', e.target.value)} onFocus={(e) => (e.target.type = 'date')} onBlur={(e) => { if (!e.target.value) e.target.type = 'text' }} />
             {form.personality ? (
               <div className="flex items-center justify-between rounded-xl border border-border bg-background px-4 py-3">
                 <div className="flex items-center gap-2.5">
@@ -317,12 +309,23 @@ export default function ProfileEditPage() {
                 Découvre ta couleur (test)
               </button>
             )}
-            <SelectMenu className={inputCls} placeholder="Langue" value={form.locale} onChange={(v) => set('locale', v)} options={[{ value: 'fr', label: 'Français' }, { value: 'en', label: 'English' }]} />
+            <input className={inputCls} value={form.coaching.passions ?? ''} onChange={(e) => setCoaching('passions', e.target.value)} placeholder="Tes passions (sport, gaming, voyages…)" />
           </Collapsible>
 
-          {/* Réseaux sociaux */}
+          {/* 3 — Ton activité & coaching (contexte MLM pour Atlas) */}
+          <Collapsible icon={Target} title="Ton activité & coaching" filled={sec.coaching} total={tot.coaching} open={!!open.coaching} onToggle={() => toggle('coaching')} onSave={save} saving={saving}>
+            <textarea className={`${inputCls} min-h-[72px] resize-none`} value={form.coaching.why ?? ''} onChange={(e) => setCoaching('why', e.target.value)} placeholder="Ton pourquoi (revenus, liberté, famille…)" />
+            <textarea className={`${inputCls} min-h-[72px] resize-none`} value={form.coaching.background ?? ''} onChange={(e) => setCoaching('background', e.target.value)} placeholder="Ton parcours (métier, expériences, forces)" />
+            <input className={inputCls} value={form.profession} onChange={(e) => set('profession', e.target.value)} placeholder="Profession" />
+            <SelectMenu className={inputCls} placeholder="Niveau d'études" value={form.education} onChange={(v) => set('education', v)} options={EDUCATIONS.map((o) => ({ value: o, label: o }))} />
+            <input className={inputCls} value={form.coaching.audience ?? ''} onChange={(e) => setCoaching('audience', e.target.value)} placeholder="Ton audience cible (jeunes mamans, sportifs…)" />
+            <SelectMenu className={inputCls} placeholder="Ta disponibilité" value={form.coaching.availability ?? ''} onChange={(v) => setCoaching('availability', v)} options={[{ value: 'Temps plein', label: 'Temps plein' }, { value: 'Temps partiel', label: 'Temps partiel' }, { value: 'Quelques heures / semaine', label: 'Quelques heures / semaine' }, { value: 'Soirs & week-ends', label: 'Soirs & week-ends' }]} />
+            <SelectMenu className={inputCls} placeholder="Ton niveau en MLM" value={form.coaching.level ?? ''} onChange={(v) => setCoaching('level', v)} options={[{ value: 'Débutant', label: 'Débutant' }, { value: 'Intermédiaire', label: 'Intermédiaire' }, { value: 'Confirmé', label: 'Confirmé' }, { value: 'Expert', label: 'Expert' }]} />
+          </Collapsible>
+
+          {/* 4 — Réseaux sociaux (pour Nova) — 5 principaux + 4 optionnels */}
           <Collapsible icon={Share2} title="Réseaux sociaux" filled={sec.socials} total={tot.socials} open={!!open.socials} onToggle={() => toggle('socials')} onSave={save} saving={saving}>
-            {SOCIALS.map((s) => (
+            {[...SOCIALS_MAIN, ...(moreSocials ? SOCIALS_MORE : [])].map((s) => (
               <div key={s.key} className="flex items-center gap-2.5">
                 <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: s.color }} />
                 <span className="w-[92px] shrink-0 text-base text-muted-foreground">{s.label}</span>
@@ -334,16 +337,22 @@ export default function ProfileEditPage() {
                 />
               </div>
             ))}
+            {!moreSocials && (
+              <button type="button" onClick={() => setMoreSocials(true)} className="text-left text-base font-semibold text-primary">
+                + Autres réseaux ({SOCIALS_MORE.length})
+              </button>
+            )}
           </Collapsible>
 
-          {/* Pour mieux te coacher (Atlas) */}
-          <Collapsible icon={Target} title="Pour mieux te coacher" filled={sec.coaching} total={tot.coaching} open={!!open.coaching} onToggle={() => toggle('coaching')} onSave={save} saving={saving}>
-            <textarea className={`${inputCls} min-h-[72px] resize-none`} value={form.coaching.why ?? ''} onChange={(e) => setCoaching('why', e.target.value)} placeholder="Ton pourquoi (revenus, liberté, famille…)" />
-            <textarea className={`${inputCls} min-h-[72px] resize-none`} value={form.coaching.background ?? ''} onChange={(e) => setCoaching('background', e.target.value)} placeholder="Ton parcours (métier, expériences, forces)" />
-            <input className={inputCls} value={form.coaching.passions ?? ''} onChange={(e) => setCoaching('passions', e.target.value)} placeholder="Tes passions (sport, gaming, voyages…)" />
-            <input className={inputCls} value={form.coaching.audience ?? ''} onChange={(e) => setCoaching('audience', e.target.value)} placeholder="Ton audience cible (jeunes mamans, sportifs…)" />
-            <SelectMenu className={inputCls} placeholder="Ta disponibilité" value={form.coaching.availability ?? ''} onChange={(v) => setCoaching('availability', v)} options={[{ value: 'Temps plein', label: 'Temps plein' }, { value: 'Temps partiel', label: 'Temps partiel' }, { value: 'Quelques heures / semaine', label: 'Quelques heures / semaine' }, { value: 'Soirs & week-ends', label: 'Soirs & week-ends' }]} />
-            <SelectMenu className={inputCls} placeholder="Ton niveau en MLM" value={form.coaching.level ?? ''} onChange={(v) => setCoaching('level', v)} options={[{ value: 'Débutant', label: 'Débutant' }, { value: 'Intermédiaire', label: 'Intermédiaire' }, { value: 'Confirmé', label: 'Confirmé' }, { value: 'Expert', label: 'Expert' }]} />
+          {/* 5 — Adresse (administratif, en dernier) */}
+          <Collapsible icon={MapPin} title="Adresse" filled={sec.adresse} total={tot.adresse} open={!!open.adresse} onToggle={() => toggle('adresse')} onSave={save} saving={saving}>
+            <input className={inputCls} value={form.address} onChange={(e) => set('address', e.target.value)} placeholder="Adresse" />
+            <input className={inputCls} value={form.address2} onChange={(e) => set('address2', e.target.value)} placeholder="Complément (bâtiment, étage…)" />
+            <div className="grid grid-cols-[1fr_2fr] gap-3">
+              <input className={inputCls} value={form.postal} onChange={(e) => set('postal', e.target.value)} placeholder="Code postal" />
+              <input className={inputCls} value={form.city} onChange={(e) => set('city', e.target.value)} placeholder="Ville" />
+            </div>
+            <input className={inputCls} value={form.country} onChange={(e) => set('country', e.target.value)} placeholder="Pays" />
           </Collapsible>
 
           {/* Zone danger — séparée et discrète */}
