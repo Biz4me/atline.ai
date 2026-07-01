@@ -60,9 +60,7 @@ function Collapsible({ icon: Icon, title, filled, total, open, onToggle, onSave,
   return (
     <Card className="overflow-hidden p-0">
       <button type="button" onClick={onToggle} className={`flex w-full items-center gap-2.5 px-4 py-3.5 ${open ? 'border-b border-border' : ''}`}>
-        <span className="grid size-8 shrink-0 place-items-center rounded-full bg-muted">
-          <Icon className="size-4 text-muted-foreground" />
-        </span>
+        <Icon className="size-5 shrink-0 text-muted-foreground stroke-[1.5]" />
         <p className="flex-1 text-left text-lg font-semibold text-foreground">{title}</p>
         {done ? (
           <span className="grid size-5 shrink-0 place-items-center rounded-full bg-[#22C55E] text-white"><Check className="size-3.5" /></span>
