@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronDown, Check, X, Loader2, User as UserIcon, Phone, Sparkles, Target, Camera, Trash2, Share2 } from 'lucide-react'
+import { ChevronLeft, ChevronDown, Check, X, Loader2, User as UserIcon, Contact, Sparkles, Target, Camera, Trash2, Share2 } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { Card } from '@/components/card'
 import { SelectMenu } from '@/components/select-menu'
@@ -382,7 +382,7 @@ export default function ProfileEditPage() {
           </Collapsible>
 
           {/* 2 — Coordonnées (tél + email + adresse) — aligné sur la fiche contact */}
-          <Collapsible icon={Phone} title="Coordonnées" filled={sec.adresse} total={tot.adresse} open={!!open.adresse} onToggle={() => toggle('adresse')}>
+          <Collapsible icon={Contact} title="Coordonnées" filled={sec.adresse} total={tot.adresse} open={!!open.adresse} onToggle={() => toggle('adresse')}>
             <input className={inputCls} type="tel" inputMode="numeric" value={form.phone} onChange={(e) => set('phone', formatPhone(e.target.value))} placeholder="Téléphone" />
             <input className={inputCls} type="tel" inputMode="numeric" value={form.phone2} onChange={(e) => set('phone2', formatPhone(e.target.value))} placeholder="Téléphone secondaire" />
             <div>

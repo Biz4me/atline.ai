@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   ChevronLeft, Pencil, Phone, Mail, MapPin, Link2, Clock, Tag,
   MessageSquare, PhoneCall, CalendarPlus, Mic, Sparkles, ArrowRight, X, Plus,
-  MessageCircle, Bell, Share2, StickyNote, Check, ChevronDown, User as UserIcon,
+  MessageCircle, Bell, Share2, StickyNote, Check, ChevronDown, User as UserIcon, Contact,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -478,7 +478,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
             <input className={fieldCls} value={pf.profession} onChange={(e) => setPfField('profession', e.target.value)} placeholder="Profession" />
             <SelectMenu className={fieldCls} placeholder="Niveau d'études" value={pf.education} onChange={(v) => setPfField('education', v)} options={EDUCATIONS.map((o) => ({ value: o, label: o }))} />
           </Collapsible>
-          <Collapsible icon={Phone} title="Coordonnées" filled={pfNf([pf.phone, pf.email, pf.address, pf.postal, pf.city, pf.country])} total={6} open={!!pfOpen.coord} onToggle={() => pfToggle('coord')}>
+          <Collapsible icon={Contact} title="Coordonnées" filled={pfNf([pf.phone, pf.email, pf.address, pf.postal, pf.city, pf.country])} total={6} open={!!pfOpen.coord} onToggle={() => pfToggle('coord')}>
             <input className={fieldCls} type="tel" inputMode="numeric" value={pf.phone} onChange={(e) => setPfField('phone', formatPhone(e.target.value))} placeholder="Téléphone" />
             <input className={fieldCls} type="tel" inputMode="numeric" value={pf.phone2} onChange={(e) => setPfField('phone2', formatPhone(e.target.value))} placeholder="Téléphone secondaire" />
             <input className={fieldCls} type="email" value={pf.email} onChange={(e) => setPfField('email', e.target.value)} placeholder="Email" />
