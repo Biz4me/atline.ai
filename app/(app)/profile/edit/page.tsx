@@ -320,7 +320,7 @@ export default function ProfileEditPage() {
           <Loader2 className="size-6 animate-spin text-muted-foreground" />
         </div>
       ) : (
-        <div className="space-y-5 px-4 pb-10 pt-4">
+        <div className="space-y-5 px-4 pb-28 pt-4">
           {/* Avatar centré + nom */}
           <div className="flex flex-col items-center gap-2.5">
             <label className="relative cursor-pointer">
@@ -483,7 +483,7 @@ export default function ProfileEditPage() {
           </div>
 
           {/* Zone danger — séparée et discrète */}
-          <div className="flex justify-center border-t border-border pt-5">
+          <div className="flex justify-center pt-2">
             <button
               type="button"
               onClick={() => setConfirmDelete(true)}
@@ -495,10 +495,10 @@ export default function ProfileEditPage() {
         </div>
       )}
 
-      {/* Barre d'enregistrement globale (collante en bas) */}
+      {/* Bouton Enregistrer flottant (même langage que le composeur) */}
       {!loading && (
-        <div className="sticky bottom-0 z-10 border-t border-border bg-background/95 px-4 py-3 backdrop-blur" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
-          <button type="button" onClick={save} disabled={saving} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-base font-bold text-primary-foreground shadow-sm transition-transform active:scale-[0.98] disabled:opacity-60">
+        <div className="fixed inset-x-0 z-[48] px-4" style={{ bottom: 'max(20px, env(safe-area-inset-bottom))' }}>
+          <button type="button" onClick={save} disabled={saving} className="mx-auto flex w-full max-w-md items-center justify-center gap-2 rounded-full bg-primary py-3.5 text-base font-bold text-primary-foreground shadow-lg transition-transform active:scale-[0.98] disabled:opacity-60">
             {saving ? <Loader2 className="size-5 animate-spin" /> : 'Enregistrer'}
           </button>
         </div>
