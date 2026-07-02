@@ -12,6 +12,7 @@ import { cn } from '@/lib/utils'
 import { Card } from '@/components/card'
 import { WhenPicker } from '@/components/when-picker'
 import { SelectMenu } from '@/components/select-menu'
+import { describePersonality } from '@/components/personality-quiz'
 
 /* ── Référentiels ─────────────────────────────────────────────── */
 const PERSO: Record<string, { label: string; hex: string; desc: string; approach: string }> = {
@@ -432,6 +433,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
     })
   }, [contact])
   const setQ = (k: keyof typeof qual, v: string) => setQual((s) => ({ ...s, [k]: v }))
+  const [discOpen, setDiscOpen] = useState(false)
   const setPfDobPart = (patch: Partial<{ d: string; m: string; y: string }>) => {
     const next = { ...pfDob, ...patch }
     if (next.d && parseInt(next.d, 10) > daysInMonth(next.m, next.y)) next.d = ''
@@ -505,19 +507,32 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
             <div>
               <p className="mb-1.5 text-base font-semibold text-foreground">Comment l&apos;aborder</p>
               {qual.personality && PERSO[qual.personality] ? (
-                <div className="flex items-center gap-3 rounded-xl border border-border bg-background px-4 py-2.5">
-                  <span className="grid size-8 shrink-0 place-items-center rounded-lg text-sm font-bold text-white" style={{ backgroundColor: PERSO[qual.personality].hex }}>{PERSO[qual.personality].label[0]}</span>
-                  <span className="flex-1 text-lg font-medium text-foreground">{PERSO[qual.personality].label}</span>
-                  <button type="button" onClick={() => setEvalOpen(true)} className="shrink-0 text-base font-semibold text-primary">Réévaluer</button>
+                <div className="overflow-hidden rounded-xl border border-border bg-background">
+                  <div className="flex items-center gap-2.5 px-4 py-3">
+                    <button type="button" onClick={() => setDiscOpen((o) => !o)} className="flex min-w-0 flex-1 items-center gap-2.5 text-left">
+                      <span className="size-6 shrink-0 rounded-full" style={{ backgroundColor: PERSO[qual.personality].hex }} />
+                      <span className="flex-1 text-lg font-medium text-foreground">Personnalité</span>
+                      <ChevronDown className={cn('size-4 shrink-0 text-muted-foreground transition-transform', discOpen && 'rotate-180')} />
+                    </button>
+                    <button type="button" onClick={() => setEvalOpen(true)} className="shrink-0 text-base font-semibold text-primary">Refaire le test</button>
+                  </div>
+                  {discOpen && (() => {
+                    const info = describePersonality(qual.personality, pf.gender)
+                    return (
+                      <div className="border-t border-border px-4 py-3">
+                        <p className="text-lg font-semibold" style={{ color: PERSO[qual.personality].hex }}>{info ? info.archetype : PERSO[qual.personality].label}</p>
+                        <p className="mt-1 text-lg leading-relaxed text-muted-foreground">{PERSO[qual.personality].approach}</p>
+                      </div>
+                    )
+                  })()}
                 </div>
               ) : (
                 <button type="button" onClick={() => setEvalOpen(true)} className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-base font-semibold text-primary">
                   <Sparkles className="size-4" /> Évaluer la couleur (test 3 questions)
                 </button>
               )}
-              {qual.personality && PERSO[qual.personality] && <p className="mt-2 rounded-xl bg-muted/50 px-3 py-2 text-base leading-snug text-muted-foreground">{PERSO[qual.personality].approach}</p>}
               <div className="mt-2">
-                <SelectMenu className={fieldCls} placeholder="Marché d'origine (proximité)" value={qual.market} onChange={(v) => setQ('market', v)} options={[{ value: 'CHAUD', label: 'Chaud' }, { value: 'TIEDE', label: 'Tiède' }, { value: 'FROID', label: 'Froid' }]} />
+                <SelectMenu className={fieldCls} placeholder="Marché d'origine (proximité)" value={qual.market} onChange={(v) => setQ('market', v)} options={[{ value: 'CHAUD', label: 'Marché chaud' }, { value: 'TIEDE', label: 'Marché tiède' }, { value: 'FROID', label: 'Marché froid' }]} />
               </div>
             </div>
             {/* Bloc 2 — Le contexte */}
