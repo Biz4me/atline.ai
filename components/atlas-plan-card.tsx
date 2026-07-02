@@ -19,6 +19,7 @@ export type PlanItem = {
   phone: string | null
   email: string | null
   market: string | null
+  route?: string | null // socle/fondation : surface à ouvrir ; null pour une action par contact
 }
 
 // Rond sélectif — Atlas propose 2-3 choix guidés, l'utilisateur en sélectionne un (repris de l'onboarding `chatChoices`).

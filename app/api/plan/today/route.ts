@@ -25,6 +25,7 @@ type Cand = {
   phone: string | null
   email: string | null
   market: string | null
+  route: string | null // socle : surface à ouvrir (fondation) ; null pour une action par contact
 }
 
 // score_opportunité (aligné sur computeScore de /api/contacts/[id])
@@ -92,9 +93,35 @@ export async function GET() {
       contactId: c.id, name: c.name, prenom: prenom(c), initials: initialsOf(c), accent: c.accent ?? '#F97316',
       level, priority: Math.round(opportunity(c) * potentielMult(c.qualification)),
       action, headline, reason, channel, stage: c.prospectStage ?? c.partnerStage ?? '',
-      phone: c.phone, email: c.email, market: c.market,
+      phone: c.phone, email: c.email, market: c.market, route: null,
     })
   }
+
+  // ── Niveau 1.5 — GATE de phase : la Fondation (Bande A) prime tant qu'elle n'est pas posée ──
+  // Séquence des modules : M1 Mindset → M2 Pourquoi → M4 Liste. On ne pousse au tunnel (niv. 2+)
+  // qu'une fois ces prérequis en place. Les incontournables temporels (niv. 1) passent toujours avant.
+  const [user, mindsetModule] = await Promise.all([
+    db.user.findUnique({ where: { id: userId }, select: { coaching: true } }),
+    db.lmsModule.findFirst({ where: { position: 0 }, select: { id: true } }).catch(() => null),
+  ])
+  let mindsetDone = false
+  if (mindsetModule) {
+    const p = await db.userLmsProgress.findFirst({ where: { userId, moduleId: mindsetModule.id }, select: { status: true } }).catch(() => null)
+    mindsetDone = p?.status === 'DONE'
+  }
+  const coaching = (user?.coaching && typeof user.coaching === 'object' && !Array.isArray(user.coaching)) ? (user.coaching as Record<string, unknown>) : {}
+  const hasWhy = typeof coaching.why === 'string' && (coaching.why as string).trim().length > 0
+  const listCount = contacts.length
+
+  const foundItem = (action: string, rank: number, headline: string, reason: string, route: string | null): Cand => ({
+    contactId: '', name: '', prenom: '', initials: '', accent: '#F97316',
+    level: 1.5, priority: 100 + rank, action, headline, reason, channel: null, stage: 'SOCLE',
+    phone: null, email: null, market: null, route,
+  })
+  // Mindset : seulement au tout début (pas encore de pourquoi) pour ne pas harceler un utilisateur lancé.
+  if (!hasWhy && !mindsetDone) cands.push(foundItem('FOUND_MINDSET', 3, 'Pose ton état d’esprit de pro', 'Module 1 — la base : comprendre le métier avant de te lancer. 15 min qui changent tout.', mindsetModule ? `/formation/${mindsetModule.id}` : '/formation'))
+  if (!hasWhy)                cands.push(foundItem('FOUND_WHY', 2, 'Formule ton pourquoi', 'Module 2 — ton moteur. Sans un pourquoi clair, tout s’essouffle. On le travaille ensemble.', null))
+  if (listCount < 10)         cands.push(foundItem('FOUND_LIST', 1, 'Construis ta liste de noms', `Module 4 — la matière première de ton activité. Tu as ${listCount} contact${listCount > 1 ? 's' : ''}, vise 100 noms.`, '/contacts'))
 
   // ── Niveau 1 — Temporel (fenêtres qui se ferment) ──
   const today = new Date()
@@ -149,8 +176,9 @@ export async function GET() {
   cands.sort((a, b) => a.level - b.level || b.priority - a.priority)
   const plan: Cand[] = []
   for (const c of cands) {
-    if (seen.has(c.contactId)) continue
-    seen.add(c.contactId)
+    const key = c.contactId || c.action // socle : pas de contact → clé = l'action (unique)
+    if (seen.has(key)) continue
+    seen.add(key)
     plan.push(c)
     if (plan.length >= 7) break
   }

@@ -430,6 +430,15 @@ export default function AtlasPage() {
 
   // Démarre le flux d'action : point sur le contact → enrichissement → canal → concret.
   const startActionFlow = (item: PlanItem) => {
+    // Item de FONDATION (socle, pas de contact) : le gate de phase prime → on route vers la bonne surface.
+    if (!item.contactId) {
+      if (item.action === 'FOUND_WHY') { setTimeout(() => startWhyRef.current(), 300); return }
+      if (item.action === 'FOUND_PROFILE') { setTimeout(() => showProfileForm(), 300); return }
+      const label = item.action === 'FOUND_LIST' ? 'Construire ma liste' : item.action === 'FOUND_MINDSET' ? 'Ouvrir le module' : 'Y aller'
+      setMsgs((prev) => [...prev, { from: 'atlas', text: item.reason, choices: [{ label, value: 'goto' }], item }])
+      setTimeout(scrollToBottom, 60)
+      return
+    }
     if (item.action !== 'MESSAGE') {
       setMsgs((prev) => [...prev, { from: 'atlas', text: `On s'occupe de ${item.prenom} — dis-moi :`, choices: [{ label: 'Ouvre sa fiche', value: 'fiche' }, { label: "Je m'entraîne avec Aria", value: 'aria' }], item }])
       setTimeout(scrollToBottom, 60)
@@ -443,13 +452,21 @@ export default function AtlasPage() {
     if (streaming) return
     let items: PlanItem[] = []
     try { const r = await fetch('/api/plan/today'); const d = r.ok ? await r.json() : null; items = d?.items ?? [] } catch { /* ignore */ }
+    const top = items[0]
+    const isFoundation = top && !top.contactId
+    const line = (it: PlanItem, i: number) => it.contactId
+      ? `${i + 1}. ${it.headline} — ${it.reason} (contact : ${it.prenom}, étape : ${it.stage || 'à définir'})`
+      : `${i + 1}. ${it.headline} — ${it.reason} (fondation de ton activité, pas un contact)`
     const ctx = items.length === 0
       ? "Je n'ai aucune priorité urgente aujourd'hui d'après mes contacts. Dis-moi à ta voix, comme un coach, comment on avance (prospecter, enrichir ma liste, me former…) — une action à la fois."
-      : 'Voici mes priorités du jour, déjà calculées et classées :\n'
-        + items.map((it, i) => `${i + 1}. ${it.headline} — ${it.reason} (contact : ${it.prenom}, étape : ${it.stage || 'à définir'})`).join('\n')
-        + "\n\nPrésente-moi ça à ta voix, comme un coach — pas une liste, tu me parles. Concentre-toi sur la priorité n°1 : dis-moi juste l'état d'esprit à avoir, en 1-2 phrases courtes. RÈGLE ABSOLUE : ne termine PAS par une question, ne me demande PAS ce que je veux faire, ne propose AUCUNE option. Tu t'arrêtes net sur l'état d'esprit. C'est MOI qui pose la question suivante juste après."
+      : isFoundation
+        ? 'Avant de courir après les contacts, je regarde ta FONDATION — le socle qui fait que tout le reste tient :\n'
+          + items.map(line).join('\n')
+          + "\n\nPrésente-moi ça à ta voix, comme un coach exigeant et bienveillant. Explique-moi en 1-2 phrases courtes POURQUOI on pose d'abord la priorité n°1 (le socle avant le terrain), sans jargon. RÈGLE ABSOLUE : ne termine PAS par une question, ne me demande PAS ce que je veux faire, ne propose AUCUNE option. Tu t'arrêtes net. C'est MOI qui enchaîne juste après."
+        : 'Voici mes priorités du jour, déjà calculées et classées :\n'
+          + items.map(line).join('\n')
+          + "\n\nPrésente-moi ça à ta voix, comme un coach — pas une liste, tu me parles. Concentre-toi sur la priorité n°1 : dis-moi juste l'état d'esprit à avoir, en 1-2 phrases courtes. RÈGLE ABSOLUE : ne termine PAS par une question, ne me demande PAS ce que je veux faire, ne propose AUCUNE option. Tu t'arrêtes net sur l'état d'esprit. C'est MOI qui pose la question suivante juste après."
     await sendMsg(ctx, 'Mon plan du jour')
-    const top = items[0]
     if (top) startActionFlow(top)
   }
 
@@ -578,6 +595,7 @@ Reste très court (2-3 phrases max), chaleureux, jamais de liste. Ne formule PAS
     }
     if (value === 'call:aria' || value === 'aria') { router.push(`/aria?contact=${item.contactId}`); return }
     if (value === 'call:now' && item.phone) { window.location.href = `tel:${item.phone}`; return }
+    if (value === 'goto' && item.route) { router.push(item.route); return } // item de fondation → ouvre la surface (formation, contacts…)
     if (value === 'fiche') { router.push(`/contacts/${item.contactId}`) }
   }
 

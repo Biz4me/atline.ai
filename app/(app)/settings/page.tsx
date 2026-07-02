@@ -11,11 +11,11 @@ import { toast } from 'sonner'
 import { signOut } from 'next-auth/react'
 
 const COMPTE = [
-  { icon: Settings,  label: 'Préférences',                   href: '/settings/preferences'  },
   { icon: User,      label: 'Profil',                        href: '/profile/edit'          },
-  { icon: KeyRound,  label: 'Connexion & sécurité',          href: '/settings/securite'     },
-  { icon: Bell,      label: 'Notifications',                 href: '/settings/notifications'},
   { icon: Briefcase, label: 'Activité MLM',                  href: '/activities'            },
+  { icon: Settings,  label: 'Préférences',                   href: '/settings/preferences'  },
+  { icon: Bell,      label: 'Notifications',                 href: '/settings/notifications'},
+  { icon: KeyRound,  label: 'Connexion & sécurité',          href: '/settings/securite'     },
   { icon: Link2,     label: 'Comptes liés',                  href: '/settings/comptes-lies' },
   { icon: Users,     label: 'Parrainage',                    href: '/settings/parrainage'   },
   { icon: Lock,      label: 'Paramètres de confidentialité', href: '/settings/confidentialite' },
