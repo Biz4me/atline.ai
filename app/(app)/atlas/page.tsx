@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { SendHorizontal, Mic, History, Plus, X, ChevronDown, MoreHorizontal, Pencil, Trash2, Paperclip, FileText, Users, Loader2, Zap, Target, SquarePen } from 'lucide-react'
+import { SendHorizontal, Mic, History, Plus, X, ChevronDown, MoreHorizontal, Pencil, Trash2, Paperclip, FileText, Users, Loader2, Zap, Target, SquarePen, UserRound } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { AppComposer } from '@/components/mobile/app-composer'
@@ -14,9 +14,10 @@ const TH = String.fromCharCode(0x202F), NB = String.fromCharCode(0xA0), EM = Str
 const frText = (t: string) => t.replace(/ ([:;!?])/g, TH + '$1').replace(new RegExp(' ' + EM + ' ', 'g'), NB + EM + ' ')
 
 import { ChatChoices, AtlasDraftCard, type PlanItem } from '@/components/atlas-plan-card'
+import { ProfileFormCard } from '@/components/atlas-profile-form'
 
 type Choice = { label: string; value: string }
-type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[]; choices?: Choice[]; item?: PlanItem; draft?: { contactId: string; prenom: string; channel: string; phone: string | null; email: string | null } }
+type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[]; choices?: Choice[]; item?: PlanItem; draft?: { contactId: string; prenom: string; channel: string; phone: string | null; email: string | null }; profileForm?: { me: Record<string, unknown> } }
 
 // Indicateur « Atlas réfléchit » — 3 points en cascade
 function TypingDots() {
@@ -429,6 +430,18 @@ export default function AtlasPage() {
     if (top) startActionFlow(top)
   }
 
+  // Compléter mon profil : carte mini-formulaire inline (self-serve, tout dans le chat).
+  const showProfileForm = async () => {
+    if (streaming) return
+    setMsgs((prev) => [...prev, { from: 'user', text: 'Compléter mon profil' }])
+    setTimeout(scrollToBottom, 40)
+    let me: Record<string, unknown> | null = null
+    try { const r = await fetch('/api/me'); me = r.ok ? await r.json() : null } catch { /* ignore */ }
+    if (!me) { setMsgs((prev) => [...prev, { from: 'atlas', text: "Je n'arrive pas à charger ton profil, réessaie dans un instant." }]); return }
+    setMsgs((prev) => [...prev, { from: 'atlas', text: 'On complète les infos simples de ton profil — remplis ce qui manque ici, directement :' }, { from: 'atlas', text: '', profileForm: { me: me! } }])
+    setTimeout(scrollToBottom, 60)
+  }
+
   // Sélection d'un rond : retire les choix, renvoie le choix en bulle, et branche (machine à états du flux).
   const handleChoice = (item: PlanItem, value: string, label: string, idx: number) => {
     setMsgs((prev) => [...prev.map((m, j) => (j === idx ? { ...m, choices: undefined } : m)), { from: 'user', text: label }])
@@ -681,6 +694,7 @@ export default function AtlasPage() {
                   { icon: Target, label: 'Mon prochain pas', run: () => sendMsg('Quel est mon prochain pas ?') },
                   { icon: Mic, label: 'Simuler un appel avec Aria', run: () => router.push('/aria') },
                   { icon: SquarePen, label: 'Créer un post avec Nova', run: () => router.push('/nova') },
+                  { icon: UserRound, label: 'Compléter mon profil', run: () => showProfileForm() },
                 ].map(({ icon: Icon, label, run }) => (
                   <button
                     key={label}
@@ -715,6 +729,8 @@ export default function AtlasPage() {
                   </div>
                 ) : m.draft ? (
                   <AtlasDraftCard contactId={m.draft.contactId} prenom={m.draft.prenom} channel={m.draft.channel} phone={m.draft.phone} email={m.draft.email} />
+                ) : m.profileForm ? (
+                  <ProfileFormCard me={m.profileForm.me} onSaved={(n) => { setMsgs((prev) => [...prev, { from: 'atlas', text: `C'est noté dans ton profil ✓ (${n} info${n > 1 ? 's' : ''}). Plus je te connais, mieux je te coache.` }]); setTimeout(scrollToBottom, 60) }} />
                 ) : m.text === '' ? (
                   <TypingDots />
                 ) : (
