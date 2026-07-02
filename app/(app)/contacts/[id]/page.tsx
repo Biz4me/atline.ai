@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   ChevronLeft, Pencil, Mail, Link2, Clock, Tag,
   MessageSquare, PhoneCall, CalendarPlus, Mic, Sparkles, ArrowRight, X, Plus,
-  MessageCircle, Bell, Share2, StickyNote, Check, ChevronDown, User as UserIcon, Contact,
+  MessageCircle, Bell, Share2, StickyNote, Check, ChevronDown, User as UserIcon, Contact, Trash2,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -20,11 +20,6 @@ const PERSO: Record<string, { label: string; hex: string; desc: string; approach
   VERT:  { label: 'Vert',  hex: '#22C55E', desc: 'Analytique — veut des preuves, des faits.', approach: 'Apporte des faits, des preuves, laisse-lui le temps. Zéro hype.' },
   BLEU:  { label: 'Bleu',  hex: '#3B82F6', desc: 'Social — fun, gens, nouveauté.', approach: "Mise sur l'énergie, l'aventure, les gens. Évite les chiffres." },
   JAUNE: { label: 'Jaune', hex: '#F4B342', desc: 'Relationnel — aider, harmonie, zéro pression.', approach: "Chaleur, écoute, montre comment ça aide les gens. Aucune pression." },
-}
-const MARCHE: Record<string, { label: string; hex: string }> = {
-  CHAUD: { label: 'Chaud', hex: '#EF4444' },
-  TIEDE: { label: 'Tiède', hex: '#F4B342' },
-  FROID: { label: 'Froid', hex: '#3B82F6' },
 }
 const PROSPECT_STAGES = [
   { id: 'NOUVEAU', label: 'Nouveau' },
@@ -88,79 +83,7 @@ const daysInMonth = (m: string, y: string) => { const mm = parseInt(m, 10); if (
 const DOB_MONTHS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'].map((l, i) => ({ value: String(i + 1).padStart(2, '0'), label: l }))
 const DOB_YEARS = Array.from({ length: new Date().getFullYear() - 16 - 1929 }, (_, i) => { const y = String(new Date().getFullYear() - 16 - i); return { value: y, label: y } })
 
-/* ── Modifier (identité + coordonnées) ────────────────────────── */
-function EditSheet({ contact, onClose, onSave, onDelete }: { contact: Contact; onClose: () => void; onSave: (p: Partial<Contact>) => void; onDelete: () => void }) {
-  const [f, setF] = useState({
-    firstName: contact.firstName, lastName: contact.lastName, gender: normGender(contact.gender),
-    profession: contact.profession ?? '', education: contact.education ?? '', birthDate: contact.birthDate ?? '',
-    market: contact.market ?? '',
-    email: contact.email, phone: formatPhone(contact.phone ?? ''), phone2: formatPhone(contact.phone2 ?? ''),
-    address: contact.address, address2: contact.address2 ?? '', postal: contact.postal, city: contact.city, country: contact.country,
-  })
-  const set = (k: keyof typeof f, v: string) => setF((s) => ({ ...s, [k]: v }))
-  // Date de naissance : 3 déroulants (jour / mois / année) → recomposés en YYYY-MM-DD (aligné profil)
-  const [dob, setDob] = useState(() => { const [y, m, d] = (contact.birthDate || '').split('-'); return { d: d ?? '', m: m ?? '', y: y ?? '' } })
-  const setDobPart = (patch: Partial<{ d: string; m: string; y: string }>) => {
-    const next = { ...dob, ...patch }
-    if (next.d && parseInt(next.d, 10) > daysInMonth(next.m, next.y)) next.d = ''
-    setDob(next)
-    set('birthDate', next.y && next.m && next.d ? `${next.y}-${next.m}-${next.d}` : '')
-  }
-  const dobDays = Array.from({ length: daysInMonth(dob.m, dob.y) }, (_, i) => ({ value: String(i + 1).padStart(2, '0'), label: String(i + 1) }))
-  const input = 'w-full rounded-xl border border-border bg-background px-4 py-[7px] text-lg text-foreground outline-none placeholder:text-muted-foreground'
-
-  return (
-    <div className="fixed inset-0 z-[80] flex flex-col">
-      <div className="flex-1 bg-black/40" onClick={onClose} />
-      <div className="max-h-[92dvh] overflow-y-auto rounded-t-3xl bg-background">
-        <div className="sticky top-0 z-10 bg-background pt-3">
-          <div className="mx-auto mb-3 h-1 w-10 rounded-full bg-border" />
-          <div className="flex items-center gap-2 border-b border-border px-4 pb-3">
-            <button type="button" onClick={onClose} className="text-sm font-medium text-muted-foreground">Annuler</button>
-            <h2 className="flex-1 text-center text-sm font-bold text-foreground">Modifier</h2>
-            <button type="button" onClick={() => onSave(f)} className="rounded-xl bg-primary px-4 py-1.5 text-sm font-bold text-primary-foreground">Enregistrer</button>
-          </div>
-        </div>
-        <div className="flex flex-col gap-3 px-4 py-5 pb-10">
-          <input value={f.firstName} onChange={(e) => set('firstName', e.target.value)} placeholder="Prénom" className={input} />
-          <input value={f.lastName} onChange={(e) => set('lastName', e.target.value)} placeholder="Nom" className={input} />
-          <SelectMenu className={input} placeholder="Genre" value={f.gender} onChange={(v) => set('gender', v)} options={[{ value: 'M', label: 'Homme' }, { value: 'F', label: 'Femme' }, { value: 'N', label: 'Neutre' }]} />
-          {/* Date de naissance — 3 déroulants (levier relance anniversaire) */}
-          <div className="grid grid-cols-[0.9fr_1.7fr_1.2fr] gap-2">
-            <SelectMenu className={input} placeholder="Jour" value={dob.d} onChange={(v) => setDobPart({ d: v })} options={dobDays} />
-            <SelectMenu className={input} placeholder="Mois" value={dob.m} onChange={(v) => setDobPart({ m: v })} options={DOB_MONTHS} />
-            <SelectMenu className={input} placeholder="Année" value={dob.y} onChange={(v) => setDobPart({ y: v })} options={DOB_YEARS} />
-          </div>
-          <input value={f.profession} onChange={(e) => set('profession', e.target.value)} placeholder="Profession" className={input} />
-          <SelectMenu className={input} placeholder="Niveau d'études" value={f.education} onChange={(v) => set('education', v)} options={EDUCATIONS.map((o) => ({ value: o, label: o }))} />
-          {/* Marché d'origine — qualification (famille 3) : pastilles conservées, sera repris avec le funnel */}
-          <div>
-            <p className="mb-1.5 text-base text-muted-foreground">Marché d&apos;origine</p>
-            <div className="flex gap-2">
-              {Object.entries(MARCHE).map(([v, m]) => (
-                <button key={v} type="button" onClick={() => set('market', f.market === v ? '' : v)}
-                  className={cn('flex-1 rounded-xl py-2.5 text-base font-semibold transition-colors', f.market === v ? 'bg-primary text-primary-foreground' : 'border border-border bg-surface text-foreground')}>{m.label}</button>
-              ))}
-            </div>
-            <p className="mt-1.5 text-xs text-muted-foreground">D&apos;où vient ce contact (fixé à l&apos;arrivée, rarement modifié).</p>
-          </div>
-          <input value={f.phone} onChange={(e) => set('phone', formatPhone(e.target.value))} type="tel" inputMode="numeric" placeholder="Téléphone" className={input} />
-          <input value={f.phone2} onChange={(e) => set('phone2', formatPhone(e.target.value))} type="tel" inputMode="numeric" placeholder="Téléphone secondaire" className={input} />
-          <input value={f.email} onChange={(e) => set('email', e.target.value)} type="email" placeholder="Email" className={input} />
-          <input value={f.address} onChange={(e) => set('address', e.target.value)} placeholder="Adresse" className={input} />
-          <input value={f.address2} onChange={(e) => set('address2', e.target.value)} placeholder="Complément d'adresse" className={input} />
-          <input value={f.postal} onChange={(e) => set('postal', e.target.value)} placeholder="Code postal" className={input} />
-          <input value={f.city} onChange={(e) => set('city', e.target.value)} placeholder="Ville" className={input} />
-          <SelectMenu className={input} placeholder="Pays" value={f.country} onChange={(v) => set('country', v)} options={PAYS.map((p) => ({ value: p, label: p }))} />
-          <button type="button" onClick={() => { if (window.confirm('Supprimer définitivement ce contact ?')) onDelete() }}
-            className="mt-2 rounded-xl border border-[#EF4444]/30 bg-[#EF4444]/5 px-4 py-3 text-base font-bold text-[#EF4444] active:bg-[#EF4444]/10">
-            Supprimer ce contact
-          </button>
-        </div>
-      </div>
-    </div>
-  )
-}
+/* EditSheet retiré — l'édition se fait en ligne dans la charte ; la suppression est en bas de fiche */
 
 /* ── Carte famille ────────────────────────────────────────────── */
 function Section({ title, action, children }: { title: string; action?: React.ReactNode; children: React.ReactNode }) {
@@ -307,7 +230,6 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
   const router = useRouter()
   const [contact, setContact] = useState<Contact | null>(null)
   const [loading, setLoading] = useState(true)
-  const [editOpen, setEditOpen] = useState(false)
   const [evalOpen, setEvalOpen] = useState(false)
   const [noteDraft, setNoteDraft] = useState('')
   const [noteEditing, setNoteEditing] = useState(false)
@@ -405,7 +327,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
       <div className="sticky top-0 z-30 flex items-center gap-2 bg-background/90 px-4 py-3 backdrop-blur" style={{ paddingTop: 'max(0.75rem, env(safe-area-inset-top))' }}>
         <button type="button" onClick={() => router.back()} className="-ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"><ChevronLeft className="size-5 stroke-[1.5]" /></button>
         <p className="flex-1 text-center text-sm font-medium text-muted-foreground">{KIND_LABEL[c.kind]}</p>
-        <button type="button" onClick={() => setEditOpen(true)} className="flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"><Pencil className="size-4 stroke-[1.5]" /></button>
+        <div className="size-9" />
       </div>
 
       {/* ═══ STRUCTURE CHARTE PROFIL (nouveau — à adapter) ═══ */}
@@ -511,7 +433,6 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
           </Collapsible>
         </div>
         <button type="button" onClick={() => save({ ...pf, personality: qual.personality || null, market: qual.market || null, qualification: { situation: qual.situation, interests: qual.interests, motivation: qual.motivation, insatisfaction: qual.insatisfaction, reseau: qual.reseau, ouverture: qual.ouverture } }, 'Fiche enregistrée')} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-base font-bold text-primary-foreground shadow-sm transition-transform active:scale-[0.98]">Enregistrer</button>
-        <div className="rounded-xl border border-dashed border-border bg-muted/30 px-4 py-2.5 text-center text-xs text-muted-foreground">↓ Ci-dessous : l&apos;ancienne fiche (intacte) — on décidera ensemble comment l&apos;intégrer.</div>
       </div>
 
       <div className="flex flex-col gap-4 px-4 pb-24 pt-2">
@@ -531,7 +452,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
               </button>
             )}
             {nextStep.action === 'EDIT' && (
-              <button type="button" onClick={() => setEditOpen(true)} className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-primary py-2.5 text-xs font-bold text-primary-foreground active:opacity-90">Compléter la fiche</button>
+              <button type="button" onClick={() => window.scrollTo({ top: 0, behavior: 'smooth' })} className="mt-3 flex w-full items-center justify-center gap-1.5 rounded-xl bg-primary py-2.5 text-xs font-bold text-primary-foreground active:opacity-90">Compléter la fiche</button>
             )}
           </div>
         )}
@@ -691,14 +612,15 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
             </ol>
           )}
         </Section>
-      </div>
 
-      {editOpen && <EditSheet contact={c} onClose={() => setEditOpen(false)}
-        onSave={(p) => { save(p, 'Contact mis à jour'); setEditOpen(false) }}
-        onDelete={async () => {
-          const res = await fetch(`/api/contacts/${id}`, { method: 'DELETE' })
-          if (res.ok) { toast.success('Contact supprimé'); router.push('/contacts') } else toast.error('Échec de la suppression')
-        }} />}
+        {/* Suppression du contact (relogée depuis l'ancien EditSheet) */}
+        <div className="flex justify-center pt-2">
+          <button type="button" onClick={() => { if (window.confirm('Supprimer définitivement ce contact ?')) { fetch(`/api/contacts/${id}`, { method: 'DELETE' }).then((r) => { if (r.ok) { toast.success('Contact supprimé'); router.push('/contacts') } else toast.error('Échec de la suppression') }) } }}
+            className="flex items-center gap-1.5 text-base font-medium text-muted-foreground transition-colors active:text-destructive">
+            <Trash2 className="size-4" /> Supprimer ce contact
+          </button>
+        </div>
+      </div>
       {evalOpen && <PersonalityQuiz subjectName={pf.firstName || 'Ce contact'} gender={pf.gender} count={3} onClose={() => setEvalOpen(false)} onResult={(color) => { setQ('personality', color); setEvalOpen(false) }} />}
       {schedule && <ScheduleSheet mode={schedule} contactId={id} onClose={() => setSchedule(null)} onDone={load} />}
       {compose && <ComposeSheet contactId={id} channel={compose.channel} label={compose.label} phone={c.phone} email={c.email} autoDraft={compose.auto}
