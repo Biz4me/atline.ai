@@ -359,8 +359,6 @@ export default function ProfileEditPage() {
               {unameStatus === 'invalid' && <p className="mt-1 px-1 text-xs text-destructive">3-20 caractères : lettres, chiffres, . ou _</p>}
               {unameStatus === 'ok' && <p className="mt-1 px-1 text-xs text-[#22C55E]">Disponible</p>}
             </div>
-            {/* Email — lecture seule (non modifiable ici) */}
-            <input className={`${inputCls} opacity-60`} value={form.email} disabled placeholder="Email" />
             <SelectMenu className={inputCls} placeholder="Genre" value={form.gender} onChange={(v) => set('gender', v)} options={[{ value: 'M', label: 'Homme' }, { value: 'F', label: 'Femme' }, { value: 'N', label: 'Neutre' }]} />
             {/* Date de naissance — 3 déroulants (jour / mois / année), sans calendrier ni weekend */}
             <div className="grid grid-cols-[0.9fr_1.7fr_1.2fr] gap-2">

@@ -1,6 +1,6 @@
 'use client'
 
-import { use, useState } from 'react'
+import { use, useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import Link from 'next/link'
 import { useTheme } from 'next-themes'
@@ -10,6 +10,7 @@ import { cn } from '@/lib/utils'
 
 const TITLES: Record<string, string> = {
   'preferences':               'Préférences',
+  'securite':                  'Connexion & sécurité',
   'profil':                    'Profil',
   'notifications':             'Notifications',
   'comptes-lies':              'Comptes liés',
@@ -239,6 +240,76 @@ function LinkedAccounts() {
   )
 }
 
+// ── Connexion & sécurité (email + mot de passe) ──
+function Security() {
+  const [email, setEmail] = useState('')
+  const [hasPassword, setHasPassword] = useState(false)
+  const [savingEmail, setSavingEmail] = useState(false)
+  const [cur, setCur] = useState('')
+  const [nw, setNw] = useState('')
+  const [cf, setCf] = useState('')
+  const [savingPw, setSavingPw] = useState(false)
+
+  useEffect(() => {
+    fetch('/api/me').then((r) => (r.ok ? r.json() : null)).then((u) => {
+      if (u) { setEmail(u.email ?? ''); setHasPassword(!!u.hasPassword) }
+    }).catch(() => {})
+  }, [])
+
+  const input = 'w-full rounded-xl border border-border bg-background px-4 py-[7px] text-lg text-foreground outline-none placeholder:text-muted-foreground'
+
+  const saveEmail = async () => {
+    const e = email.trim().toLowerCase()
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) { toast.error('Email invalide'); return }
+    setSavingEmail(true)
+    try {
+      const r = await fetch('/api/me', { method: 'PATCH', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ email: e }) })
+      if (r.ok) toast.success('Email mis à jour')
+      else if (r.status === 409) toast.error('Cet email est déjà utilisé')
+      else toast.error('Email invalide')
+    } catch { toast.error('Erreur réseau') } finally { setSavingEmail(false) }
+  }
+
+  const savePw = async () => {
+    if (nw.length < 8) { toast.error('8 caractères minimum'); return }
+    if (nw !== cf) { toast.error('Les mots de passe ne correspondent pas'); return }
+    setSavingPw(true)
+    try {
+      const r = await fetch('/api/me/password', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ current: cur, next: nw }) })
+      if (r.ok) { toast.success(hasPassword ? 'Mot de passe changé' : 'Mot de passe défini'); setCur(''); setNw(''); setCf(''); setHasPassword(true) }
+      else if (r.status === 403) toast.error('Mot de passe actuel incorrect')
+      else if (r.status === 400) toast.error('8 caractères minimum')
+      else toast.error('Échec')
+    } catch { toast.error('Erreur réseau') } finally { setSavingPw(false) }
+  }
+
+  return (
+    <div className="flex flex-col gap-6 px-4 pt-5 pb-8">
+      <section>
+        <Eyebrow>Adresse email</Eyebrow>
+        <div className="flex flex-col gap-2">
+          <input className={input} type="email" value={email} onChange={(e) => setEmail(e.target.value)} placeholder="ton@email.com" autoCapitalize="none" autoCorrect="off" spellCheck={false} />
+          <button type="button" onClick={saveEmail} disabled={savingEmail} className="self-end rounded-xl bg-primary px-5 py-2.5 text-base font-bold text-primary-foreground active:opacity-90 disabled:opacity-60">
+            {savingEmail ? 'Enregistrement…' : 'Mettre à jour l’email'}
+          </button>
+        </div>
+      </section>
+
+      <section>
+        <Eyebrow>{hasPassword ? 'Changer le mot de passe' : 'Définir un mot de passe'}</Eyebrow>
+        <div className="flex flex-col gap-2">
+          {hasPassword && <input className={input} type="password" value={cur} onChange={(e) => setCur(e.target.value)} placeholder="Mot de passe actuel" />}
+          <input className={input} type="password" value={nw} onChange={(e) => setNw(e.target.value)} placeholder="Nouveau mot de passe (8 car. min.)" />
+          <input className={input} type="password" value={cf} onChange={(e) => setCf(e.target.value)} placeholder="Confirmer le nouveau" />
+          <button type="button" onClick={savePw} disabled={savingPw} className="self-end rounded-xl bg-primary px-5 py-2.5 text-base font-bold text-primary-foreground active:opacity-90 disabled:opacity-60">
+            {savingPw ? 'Enregistrement…' : hasPassword ? 'Changer le mot de passe' : 'Définir le mot de passe'}
+          </button>
+        </div>
+      </section>
+    </div>
+  )
+}
+
 export default function SettingsSectionPage({ params }: { params: Promise<{ section: string }> }) {
   const router = useRouter()
   const { section } = use(params)
@@ -265,6 +336,7 @@ export default function SettingsSectionPage({ params }: { params: Promise<{ sect
       </div>
 
       {section === 'comptes-lies' ? <LinkedAccounts />
+        : section === 'securite' ? <Security />
         : section === 'preferences' ? <Preferences />
         : section === 'notifications' ? <NotifPrefs />
         : section === 'confidentialite' ? <Privacy />

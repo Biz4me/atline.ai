@@ -4,7 +4,7 @@ import Link from 'next/link'
 import { useRouter } from 'next/navigation'
 import { Card } from '@/components/card'
 import {
-  Settings, User, Bell, Briefcase, Link2, Users, Lock,
+  Settings, User, Bell, Briefcase, Link2, Users, Lock, KeyRound,
   CreditCard, HelpCircle, MessageSquare, LogOut, ChevronRight, ChevronLeft,
 } from 'lucide-react'
 import { toast } from 'sonner'
@@ -13,6 +13,7 @@ import { signOut } from 'next-auth/react'
 const COMPTE = [
   { icon: Settings,  label: 'Préférences',                   href: '/settings/preferences'  },
   { icon: User,      label: 'Profil',                        href: '/profile/edit'          },
+  { icon: KeyRound,  label: 'Connexion & sécurité',          href: '/settings/securite'     },
   { icon: Bell,      label: 'Notifications',                 href: '/settings/notifications'},
   { icon: Briefcase, label: 'Activité MLM',                  href: '/activities'            },
   { icon: Link2,     label: 'Comptes liés',                  href: '/settings/comptes-lies' },

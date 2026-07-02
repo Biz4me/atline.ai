@@ -25,6 +25,14 @@ export function MobileDrawer() {
   const startRef = useRef<{ x: number; y: number } | null>(null)
   const modeRef = useRef<'?' | 'h' | 'v'>('?')
 
+  // Avatar compte (photo ou initiales) — chargé une fois
+  const [account, setAccount] = useState<{ photoUrl: string; initials: string }>({ photoUrl: '', initials: '' })
+  useEffect(() => {
+    fetch('/api/me').then((r) => (r.ok ? r.json() : null)).then((u) => {
+      if (u) setAccount({ photoUrl: u.photoUrl || '', initials: `${(u.firstName || '')[0] ?? ''}${(u.lastName || '')[0] ?? ''}`.toUpperCase() })
+    }).catch(() => {})
+  }, [])
+
   useEffect(() => {
     if (open) {
       setMounted(true)
@@ -187,9 +195,14 @@ export function MobileDrawer() {
               type="button"
               onClick={() => go('/settings')}
               aria-label="Mon compte"
-              className="grid size-9 shrink-0 place-items-center rounded-full bg-[#3B82F6] text-sm font-medium text-white active:opacity-90 transition-opacity"
+              className="size-9 shrink-0 overflow-hidden rounded-full active:opacity-90 transition-opacity"
             >
-              DA
+              {account.photoUrl ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={account.photoUrl} alt="" className="size-full object-cover" />
+              ) : (
+                <span className="grid size-full place-items-center bg-[#3B82F6] text-sm font-medium text-white">{account.initials || 'A'}</span>
+              )}
             </button>
           </div>
         </div>

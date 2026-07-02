@@ -42,11 +42,12 @@ export async function GET() {
 
   const user = await db.user.findUnique({
     where: { id: session.user.id },
-    select: PROFILE_SELECT,
+    select: { ...PROFILE_SELECT, passwordHash: true },
   })
 
   if (!user) return NextResponse.json({ error: 'Not found' }, { status: 404 })
-  return NextResponse.json(user)
+  const { passwordHash, ...rest } = user
+  return NextResponse.json({ ...rest, hasPassword: !!passwordHash })
 }
 
 // Mise à jour des champs profil (Familles 1/2/3 : identité, adresse, perso)
@@ -108,6 +109,15 @@ export async function PATCH(req: Request) {
     const existing = await db.user.findUnique({ where: { username: u }, select: { id: true } })
     if (existing && existing.id !== session.user.id) return NextResponse.json({ error: 'username_taken' }, { status: 409 })
     data.username = u
+  }
+
+  // Email : format + unicité (s'exclut soi-même)
+  if (typeof body.email === 'string') {
+    const e = body.email.trim().toLowerCase()
+    if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(e)) return NextResponse.json({ error: 'email_invalid' }, { status: 400 })
+    const existing = await db.user.findUnique({ where: { email: e }, select: { id: true } })
+    if (existing && existing.id !== session.user.id) return NextResponse.json({ error: 'email_taken' }, { status: 409 })
+    data.email = e
   }
 
   const user = await db.user.update({
