@@ -430,8 +430,8 @@ export default function ProfileEditPage() {
           <Collapsible icon={Share2} title="Réseaux sociaux" filled={sec.socials} total={tot.socials} open={!!open.socials} onToggle={() => toggle('socials')}>
             {[...SOCIALS_MAIN, ...(moreSocials ? SOCIALS_MORE : [])].map((s) => (
               <div key={s.key} className="flex items-center gap-2.5">
-                {(() => { const Ico = SOCIAL_ICONS[s.key]; return Ico ? <Ico className="size-4 shrink-0 text-muted-foreground" /> : null })()}
-                <span className="w-[84px] shrink-0 text-base text-muted-foreground">{s.label}</span>
+                {(() => { const Ico = SOCIAL_ICONS[s.key]; return Ico ? <Ico className="size-5 shrink-0 text-muted-foreground" /> : null })()}
+                <span className="w-[100px] shrink-0 text-lg text-muted-foreground">{s.label}</span>
                 <input
                   className={`${inputCls} min-w-0 flex-1`}
                   value={form.socials[s.key] ?? ''}
