@@ -14,7 +14,12 @@ const PERSONALITY_COLORS: Record<string, string> = { ROUGE: '#EF4444', VERT: '#2
 const EDUCATIONS = ['Primaire et secondaire', 'Supérieur court (Bac+2/3)', 'Supérieur long (Bac+5 et +)']
 
 // Date de naissance en 3 déroulants (jour / mois / année) — style SelectMenu, sans calendrier
-const DOB_DAYS = Array.from({ length: 31 }, (_, i) => ({ value: String(i + 1).padStart(2, '0'), label: String(i + 1) }))
+// Nombre de jours valides selon le mois/année (évite le « 31 février ») — 2000 = bissextile si pas d'année
+const daysInMonth = (m: string, y: string) => {
+  const mm = parseInt(m, 10)
+  if (!mm) return 31
+  return new Date(parseInt(y, 10) || 2000, mm, 0).getDate()
+}
 const DOB_MONTHS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre']
   .map((m, i) => ({ value: String(i + 1).padStart(2, '0'), label: m }))
 const DOB_NOW_YEAR = new Date().getFullYear()
@@ -61,7 +66,7 @@ const EMPTY: Form = {
 }
 
 // Rubrique pliante : l'en-tête (icône + titre + chevron) ouvre/ferme le contenu
-function Collapsible({ icon: Icon, title, filled, total, open, onToggle, onSave, saving, children }: { icon: typeof UserIcon; title: string; filled: number; total: number; open: boolean; onToggle: () => void; onSave: () => void; saving: boolean; children: React.ReactNode }) {
+function Collapsible({ icon: Icon, title, filled, total, open, onToggle, children }: { icon: typeof UserIcon; title: string; filled: number; total: number; open: boolean; onToggle: () => void; children: React.ReactNode }) {
   const done = total > 0 && filled >= total
   return (
     <Card className="overflow-hidden p-0">
@@ -78,11 +83,6 @@ function Collapsible({ icon: Icon, title, filled, total, open, onToggle, onSave,
       {open && (
         <div className="space-y-4 p-4">
           {children}
-          <div className="flex justify-end pt-1">
-            <button type="button" onClick={onSave} disabled={saving} className="flex items-center justify-center gap-1.5 rounded-xl bg-primary px-5 py-2.5 text-base font-bold text-primary-foreground shadow-sm transition-transform active:scale-[0.97] disabled:opacity-60">
-              {saving ? <Loader2 className="size-4 animate-spin" /> : <><Check className="size-4" />Enregistrer</>}
-            </button>
-          </div>
         </div>
       )}
     </Card>
@@ -123,7 +123,7 @@ export default function ProfileEditPage() {
       const raw = sessionStorage.getItem(DRAFT_KEY)
       if (raw) {
         const d = JSON.parse(raw)
-        if (d && d.form) { setForm(d.form); if (d.open && typeof d.open === 'object') setOpen(d.open); setLoading(false); return }
+        if (d && d.form) { setForm(d.form); initialUsername.current = d.form.username ?? ''; if (d.open && typeof d.open === 'object') setOpen(d.open); setLoading(false); return }
       }
     } catch { /* ignore */ }
     let active = true
@@ -169,9 +169,11 @@ export default function ProfileEditPage() {
   }, [form.birthDate])
   const setDobPart = (patch: Partial<{ d: string; m: string; y: string }>) => {
     const next = { ...dob, ...patch }
+    if (next.d && parseInt(next.d, 10) > daysInMonth(next.m, next.y)) next.d = '' // jour invalide pour ce mois → réinitialisé
     setDob(next)
     set('birthDate', next.y && next.m && next.d ? `${next.y}-${next.m}-${next.d}` : '')
   }
+  const dobDays = Array.from({ length: daysInMonth(dob.m, dob.y) }, (_, i) => ({ value: String(i + 1).padStart(2, '0'), label: String(i + 1) }))
 
   // Pseudo : vérif de dispo en direct (débounce) via /api/auth/username
   const [unameStatus, setUnameStatus] = useState<'idle' | 'checking' | 'ok' | 'taken' | 'invalid'>('idle')
@@ -263,11 +265,6 @@ export default function ProfileEditPage() {
   const initials = `${form.firstName[0] ?? ''}${form.lastName[0] ?? ''}`.toUpperCase()
   const pColor = form.personality ? PERSONALITY_COLORS[form.personality] : '#e5e7eb'
 
-  // Complétion « connaissance Atlas » : champs à forte valeur pour le coaching
-  const atlasFields = [form.personality, form.coaching.why, form.coaching.background, form.coaching.passions, form.profession, form.education, form.coaching.audience, form.coaching.availability, form.coaching.level]
-  const atlasFilled = atlasFields.filter((v) => v && String(v).trim()).length
-  const atlasPct = Math.round((atlasFilled / atlasFields.length) * 100)
-
   // Remplissage par rubrique (compteur / coche sur les cartes)
   const nf = (vals: (string | undefined)[]) => vals.filter((v) => v && String(v).trim()).length
   const sec = {
@@ -278,6 +275,10 @@ export default function ProfileEditPage() {
     adresse: nf([form.address, form.address2, form.postal, form.city, form.country]),
   }
   const tot = { identite: 6, quitues: 3, coaching: 7, socials: SOCIALS_MAIN.length, adresse: 5 }
+  // Complétion = tout le profil (somme des rubriques) → le libellé « Profil complété » est honnête
+  const totalFilled = sec.identite + sec.quitues + sec.coaching + sec.socials + sec.adresse
+  const totalFields = tot.identite + tot.quitues + tot.coaching + tot.socials + tot.adresse
+  const atlasPct = totalFields ? Math.round((totalFilled / totalFields) * 100) : 0
 
   return (
     <div className="mx-auto w-full max-w-2xl">
@@ -320,6 +321,11 @@ export default function ProfileEditPage() {
               </span>
             </label>
             <p className="text-lg font-semibold text-foreground">{`${form.firstName} ${form.lastName}`.trim() || 'Ton profil'}</p>
+            {form.photoUrl && (
+              <button type="button" onClick={() => set('photoUrl', '')} className="text-xs font-medium text-muted-foreground transition-colors active:text-destructive">
+                Retirer la photo
+              </button>
+            )}
           </div>
 
           {/* Complétion du profil — bandeau fin, sans carte */}
@@ -333,7 +339,7 @@ export default function ProfileEditPage() {
           {/* Cartes du profil — espacement resserré comme Formation (gap-2) */}
           <div className="flex flex-col gap-2">
           {/* 1 — Identité (état civil + contact) */}
-          <Collapsible icon={UserIcon} title="Identité" filled={sec.identite} total={tot.identite} open={!!open.identite} onToggle={() => toggle('identite')} onSave={save} saving={saving}>
+          <Collapsible icon={UserIcon} title="Identité" filled={sec.identite} total={tot.identite} open={!!open.identite} onToggle={() => toggle('identite')}>
             <input className={inputCls} value={form.firstName} onChange={(e) => set('firstName', e.target.value)} placeholder="Prénom" />
             <input className={inputCls} value={form.lastName} onChange={(e) => set('lastName', e.target.value)} placeholder="Nom" />
             {/* Pseudo — modifiable, avec vérif de dispo en direct */}
@@ -347,14 +353,16 @@ export default function ProfileEditPage() {
                   {(unameStatus === 'taken' || unameStatus === 'invalid') && <X className="size-4 text-destructive" />}
                 </span>
               </div>
-              {unameStatus === 'taken' && <p className="mt-1 px-1 text-sm text-destructive">Ce pseudo est déjà pris.</p>}
-              {unameStatus === 'invalid' && <p className="mt-1 px-1 text-sm text-destructive">3-20 caractères : lettres, chiffres, . ou _</p>}
-              {unameStatus === 'ok' && <p className="mt-1 px-1 text-sm text-[#22C55E]">Disponible</p>}
+              {unameStatus === 'taken' && <p className="mt-1 px-1 text-xs text-destructive">Ce pseudo est déjà pris.</p>}
+              {unameStatus === 'invalid' && <p className="mt-1 px-1 text-xs text-destructive">3-20 caractères : lettres, chiffres, . ou _</p>}
+              {unameStatus === 'ok' && <p className="mt-1 px-1 text-xs text-[#22C55E]">Disponible</p>}
             </div>
+            {/* Email — lecture seule (non modifiable ici) */}
+            <input className={`${inputCls} opacity-60`} value={form.email} disabled placeholder="Email" />
             <SelectMenu className={inputCls} placeholder="Genre" value={form.gender} onChange={(v) => set('gender', v)} options={[{ value: 'M', label: 'Homme' }, { value: 'F', label: 'Femme' }, { value: 'N', label: 'Neutre' }]} />
             {/* Date de naissance — 3 déroulants (jour / mois / année), sans calendrier ni weekend */}
-            <div className="grid grid-cols-[1fr_1.5fr_1.2fr] gap-2">
-              <SelectMenu className={inputCls} placeholder="Jour" value={dob.d} onChange={(v) => setDobPart({ d: v })} options={DOB_DAYS} />
+            <div className="grid grid-cols-[0.9fr_1.7fr_1.2fr] gap-2">
+              <SelectMenu className={inputCls} placeholder="Jour" value={dob.d} onChange={(v) => setDobPart({ d: v })} options={dobDays} />
               <SelectMenu className={inputCls} placeholder="Mois" value={dob.m} onChange={(v) => setDobPart({ m: v })} options={DOB_MONTHS} />
               <SelectMenu className={inputCls} placeholder="Année" value={dob.y} onChange={(v) => setDobPart({ y: v })} options={DOB_YEARS} />
             </div>
@@ -363,7 +371,7 @@ export default function ProfileEditPage() {
           </Collapsible>
 
           {/* 2 — Qui tu es (personnalité — sert le ton des agents) */}
-          <Collapsible icon={Sparkles} title="Qui tu es" filled={sec.quitues} total={tot.quitues} open={!!open.quitues} onToggle={() => toggle('quitues')} onSave={save} saving={saving}>
+          <Collapsible icon={Sparkles} title="Qui tu es" filled={sec.quitues} total={tot.quitues} open={!!open.quitues} onToggle={() => toggle('quitues')}>
             <AutoTextarea className={`${inputCls} min-h-[88px] resize-none overflow-hidden`} value={form.bio} onChange={(v) => set('bio', v)} placeholder="Bio — quelques mots sur toi…" />
             {form.personality ? (
               <div className="flex items-center justify-between rounded-xl border border-border bg-background px-4 py-3">
@@ -383,13 +391,13 @@ export default function ProfileEditPage() {
                 Découvre ta couleur (test)
               </button>
             )}
-            <input className={inputCls} value={form.coaching.passions ?? ''} onChange={(e) => setCoaching('passions', e.target.value)} placeholder="Tes passions (sport, gaming, voyages…)" />
+            <input className={inputCls} value={form.coaching.passions ?? ''} onChange={(e) => setCoaching('passions', e.target.value)} placeholder="Tes passions" />
           </Collapsible>
 
           {/* 3 — Ton activité & coaching (contexte MLM pour Atlas) */}
-          <Collapsible icon={Target} title="Ton activité & coaching" filled={sec.coaching} total={tot.coaching} open={!!open.coaching} onToggle={() => toggle('coaching')} onSave={save} saving={saving}>
-            <AutoTextarea className={`${inputCls} min-h-[72px] resize-none overflow-hidden`} value={form.coaching.why ?? ''} onChange={(v) => setCoaching('why', v)} placeholder="Ton pourquoi (revenus, liberté, famille…)" />
-            <AutoTextarea className={`${inputCls} min-h-[72px] resize-none overflow-hidden`} value={form.coaching.background ?? ''} onChange={(v) => setCoaching('background', v)} placeholder="Ton parcours (métier, expériences, forces)" />
+          <Collapsible icon={Target} title="Ton activité & coaching" filled={sec.coaching} total={tot.coaching} open={!!open.coaching} onToggle={() => toggle('coaching')}>
+            <AutoTextarea className={`${inputCls} min-h-[72px] resize-none overflow-hidden`} value={form.coaching.why ?? ''} onChange={(v) => setCoaching('why', v)} placeholder="Ton pourquoi" />
+            <AutoTextarea className={`${inputCls} min-h-[72px] resize-none overflow-hidden`} value={form.coaching.background ?? ''} onChange={(v) => setCoaching('background', v)} placeholder="Ton parcours" />
             <input className={inputCls} value={form.profession} onChange={(e) => set('profession', e.target.value)} placeholder="Profession" />
             <SelectMenu className={inputCls} placeholder="Niveau d'études" value={form.education} onChange={(v) => set('education', v)} options={EDUCATIONS.map((o) => ({ value: o, label: o }))} />
             <AutoTextarea className={`${inputCls} min-h-[44px] resize-none overflow-hidden`} value={form.coaching.audience ?? ''} onChange={(v) => setCoaching('audience', v)} placeholder="Ton audience cible" />
@@ -398,7 +406,7 @@ export default function ProfileEditPage() {
           </Collapsible>
 
           {/* 4 — Réseaux sociaux (pour Nova) — 5 principaux + 4 optionnels */}
-          <Collapsible icon={Share2} title="Réseaux sociaux" filled={sec.socials} total={tot.socials} open={!!open.socials} onToggle={() => toggle('socials')} onSave={save} saving={saving}>
+          <Collapsible icon={Share2} title="Réseaux sociaux" filled={sec.socials} total={tot.socials} open={!!open.socials} onToggle={() => toggle('socials')}>
             {[...SOCIALS_MAIN, ...(moreSocials ? SOCIALS_MORE : [])].map((s) => (
               <div key={s.key} className="flex items-center gap-2.5">
                 <span className="size-2.5 shrink-0 rounded-full" style={{ backgroundColor: s.color }} />
@@ -419,9 +427,9 @@ export default function ProfileEditPage() {
           </Collapsible>
 
           {/* 5 — Adresse (administratif, en dernier) */}
-          <Collapsible icon={MapPin} title="Adresse" filled={sec.adresse} total={tot.adresse} open={!!open.adresse} onToggle={() => toggle('adresse')} onSave={save} saving={saving}>
+          <Collapsible icon={MapPin} title="Adresse" filled={sec.adresse} total={tot.adresse} open={!!open.adresse} onToggle={() => toggle('adresse')}>
             <input className={inputCls} value={form.address} onChange={(e) => set('address', e.target.value)} placeholder="Adresse" />
-            <input className={inputCls} value={form.address2} onChange={(e) => set('address2', e.target.value)} placeholder="Complément (bâtiment, étage…)" />
+            <input className={inputCls} value={form.address2} onChange={(e) => set('address2', e.target.value)} placeholder="Complément d'adresse" />
             <input className={inputCls} value={form.postal} onChange={(e) => set('postal', e.target.value)} placeholder="Code postal" />
             <input className={inputCls} value={form.city} onChange={(e) => set('city', e.target.value)} placeholder="Ville" />
             <SelectMenu className={inputCls} placeholder="Pays" value={form.country} onChange={(v) => set('country', v)} options={[{ value: 'France', label: 'France' }, { value: 'Espagne', label: 'Espagne' }, { value: 'Allemagne', label: 'Allemagne' }, { value: 'Italie', label: 'Italie' }]} />
@@ -429,18 +437,26 @@ export default function ProfileEditPage() {
           </div>
 
           {/* Zone danger — séparée et discrète */}
-          <div className="mt-4 flex justify-center border-t border-border pt-5">
+          <div className="flex justify-center border-t border-border pt-5">
             <button
               type="button"
               onClick={() => setConfirmDelete(true)}
               className="flex items-center justify-center gap-1.5 text-base font-medium text-muted-foreground transition-colors active:text-destructive"
             >
-              <Trash2 className="size-3.5" /> Supprimer mon compte
+              <Trash2 className="size-4" /> Supprimer mon compte
             </button>
           </div>
         </div>
       )}
 
+      {/* Barre d'enregistrement globale (collante en bas) */}
+      {!loading && (
+        <div className="sticky bottom-0 z-10 border-t border-border bg-background/95 px-4 py-3 backdrop-blur" style={{ paddingBottom: 'max(12px, env(safe-area-inset-bottom))' }}>
+          <button type="button" onClick={save} disabled={saving} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-base font-bold text-primary-foreground shadow-sm transition-transform active:scale-[0.98] disabled:opacity-60">
+            {saving ? <Loader2 className="size-5 animate-spin" /> : 'Enregistrer'}
+          </button>
+        </div>
+      )}
 
       {quizOpen && (
         <PersonalityQuiz
