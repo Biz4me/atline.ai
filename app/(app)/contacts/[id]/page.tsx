@@ -12,7 +12,7 @@ import { cn } from '@/lib/utils'
 import { Card } from '@/components/card'
 import { WhenPicker } from '@/components/when-picker'
 import { SelectMenu } from '@/components/select-menu'
-import { describePersonality } from '@/components/personality-quiz'
+import { PersonalityQuiz, describePersonality } from '@/components/personality-quiz'
 
 /* ── Référentiels ─────────────────────────────────────────────── */
 const PERSO: Record<string, { label: string; hex: string; desc: string; approach: string }> = {
@@ -63,61 +63,7 @@ const INTERACTION_META: Record<string, { icon: typeof PhoneCall; label: string }
   AUTRE: { icon: Sparkles, label: 'Action' },
 }
 
-/* ── Évaluation personnalité (mini, observation) ──────────────── */
-const EVAL_Q = [
-  {
-    q: "Quand tu lui parles, qu'est-ce qui compte le plus pour lui ?",
-    opts: [['ROUGE', 'Aller au résultat, gagner'], ['BLEU', "S'amuser, du contact, du fun"], ['JAUNE', 'Aider, des relations sincères'], ['VERT', 'Comprendre, des preuves']],
-  },
-  {
-    q: 'Comment prend-il ses décisions ?',
-    opts: [['ROUGE', 'Vite et avec assurance'], ['BLEU', "À l'instinct, l'émotion"], ['JAUNE', 'Lentement, sans pression'], ['VERT', 'Après avoir tout analysé']],
-  },
-  {
-    q: "Qu'est-ce qui l'agace le plus ?",
-    opts: [['ROUGE', 'Perdre son temps'], ['BLEU', "La routine, l'ennui"], ['JAUNE', 'Le conflit, la pression'], ['VERT', "Le manque de détails"]],
-  },
-]
-
-function PersoEval({ onClose, onResult }: { onClose: () => void; onResult: (color: string) => void }) {
-  const [step, setStep] = useState(0)
-  const [votes, setVotes] = useState<string[]>([])
-
-  function pick(color: string) {
-    const next = [...votes, color]
-    if (step < EVAL_Q.length - 1) { setVotes(next); setStep(step + 1) }
-    else {
-      const tally: Record<string, number> = {}
-      next.forEach((c) => { tally[c] = (tally[c] ?? 0) + 1 })
-      const winner = Object.entries(tally).sort((a, b) => b[1] - a[1])[0][0]
-      onResult(winner)
-    }
-  }
-
-  const cur = EVAL_Q[step]
-  return (
-    <div className="fixed inset-0 z-[80] flex flex-col">
-      <div className="flex-1 bg-black/40" onClick={onClose} />
-      <div className="rounded-t-3xl bg-background pb-[max(1.25rem,env(safe-area-inset-bottom))]">
-        <div className="mx-auto mb-4 mt-3 h-1 w-10 rounded-full bg-border" />
-        <div className="flex items-center justify-between px-5 pb-3">
-          <p className="text-xs font-bold uppercase tracking-widest text-muted-foreground">Évaluation · {step + 1}/{EVAL_Q.length}</p>
-          <button type="button" onClick={onClose}><X className="size-4 text-muted-foreground" /></button>
-        </div>
-        <div className="px-5 pb-2"><p className="text-lg font-bold text-foreground">{cur.q}</p></div>
-        <div className="flex flex-col gap-2 px-5 py-4">
-          {cur.opts.map(([color, label]) => (
-            <button key={color} type="button" onClick={() => pick(color)}
-              className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-3.5 text-left text-sm font-medium text-foreground transition-colors active:bg-muted">
-              <span className="size-3 shrink-0 rounded-full" style={{ backgroundColor: PERSO[color].hex }} />
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-    </div>
-  )
-}
+/* PersoEval remplacé par le composant PersonalityQuiz (mode 3 questions) — visuel unique avec le profil */
 
 /* ── Types ────────────────────────────────────────────────────── */
 type Contact = {
@@ -805,7 +751,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
           const res = await fetch(`/api/contacts/${id}`, { method: 'DELETE' })
           if (res.ok) { toast.success('Contact supprimé'); router.push('/contacts') } else toast.error('Échec de la suppression')
         }} />}
-      {evalOpen && <PersoEval onClose={() => setEvalOpen(false)} onResult={(color) => { setQ('personality', color); setEvalOpen(false) }} />}
+      {evalOpen && <PersonalityQuiz firstName={pf.firstName} gender={pf.gender} count={3} onClose={() => setEvalOpen(false)} onResult={(color) => { setQ('personality', color); setEvalOpen(false) }} />}
       {schedule && <ScheduleSheet mode={schedule} contactId={id} onClose={() => setSchedule(null)} onDone={load} />}
       {compose && <ComposeSheet contactId={id} channel={compose.channel} label={compose.label} phone={c.phone} email={c.email} autoDraft={compose.auto}
         onClose={() => setCompose(null)}

@@ -123,12 +123,12 @@ function tally(ans: Color[]): Color[] {
   return (Object.keys(c) as Color[]).filter((k) => c[k] === max)
 }
 
-export function PersonalityQuiz({ onClose, onResult, firstName = '', gender = '' }: { onClose: () => void; onResult: (color: string) => void; firstName?: string; gender?: string }) {
+export function PersonalityQuiz({ onClose, onResult, firstName = '', gender = '', count }: { onClose: () => void; onResult: (color: string) => void; firstName?: string; gender?: string; count?: number }) {
   const arche = (c: Color) => (gender === 'F' ? PROFILES[c].archetype.f : gender === 'N' ? PROFILES[c].archetype.n : PROFILES[c].archetype.m)
-  // Options mélangées une fois (réduit le biais de position)
+  // Options mélangées une fois (réduit le biais de position) — count limite le nombre de questions (ex. 3 pour un contact)
   const questions = useMemo(
-    () => QUESTIONS.map((q) => ({ prompt: q.prompt, options: [...q.options].sort(() => Math.random() - 0.5) })),
-    [],
+    () => (count ? QUESTIONS.slice(0, count) : QUESTIONS).map((q) => ({ prompt: q.prompt, options: [...q.options].sort(() => Math.random() - 0.5) })),
+    [count],
   )
   const [phase, setPhase] = useState<'quiz' | 'tie' | 'result'>('quiz')
   const [step, setStep] = useState(0)
