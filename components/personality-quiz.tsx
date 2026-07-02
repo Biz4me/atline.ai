@@ -186,13 +186,12 @@ export function PersonalityQuiz({ onClose, onResult, firstName = '', gender = ''
     }
     setTimeout(tick, 200)
 
-    if (subjectName) { full = fallback; streamDone = true }
-    else (async () => {
+    ;(async () => {
       try {
         const r = await fetch('/api/onboarding/color-read', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ user_first_name: firstName, color: result, answer: p.caracterise, gender: gender || 'M' }),
+          body: JSON.stringify({ user_first_name: firstName, color: result, answer: p.caracterise, gender: gender || 'M', subject_name: subjectName || '' }),
         })
         if (!r.ok || !r.body) throw new Error('no stream')
         const reader = r.body.getReader(); const dec = new TextDecoder(); let buf = ''
