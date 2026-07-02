@@ -58,6 +58,7 @@ export async function GET(_: Request, ctx: { params: Promise<{ id: string }> }) 
     gender: c.gender ?? '',
     profession: c.profession ?? '',
     education: c.education ?? '',
+    birthDate: c.birthDate ? c.birthDate.toISOString().slice(0, 10) : '',
     phone2: c.phone2 ?? '',
     address2: c.address2 ?? '',
     postal: c.postal ?? '',
@@ -86,7 +87,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
   if (!existing) return NextResponse.json({ error: 'Not found' }, { status: 404 })
 
   const body = await req.json()
-  const { name, firstName, lastName, gender, profession, education, phone, phone2, email, address, address2, postal, city, country, note, stage, market, prospectStage, partnerStage, convert, personality, score, lastContact, tags } = body
+  const { name, firstName, lastName, gender, profession, education, birthDate, phone, phone2, email, address, address2, postal, city, country, note, stage, market, prospectStage, partnerStage, convert, personality, score, lastContact, tags } = body
 
   // Synchroniser name si prénom/nom changent (aligné profil)
   const nameUpdate: Record<string, string> = {}
@@ -134,6 +135,7 @@ export async function PATCH(req: Request, ctx: { params: Promise<{ id: string }>
       ...(gender !== undefined && { gender: gender || null }),
       ...(profession !== undefined && { profession: profession || null }),
       ...(education !== undefined && { education: education || null }),
+      ...(birthDate !== undefined && { birthDate: birthDate ? new Date(birthDate) : null }),
       ...(phone !== undefined && { phone }),
       ...(phone2 !== undefined && { phone2: phone2 || null }),
       ...(email !== undefined && { email }),

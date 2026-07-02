@@ -11,6 +11,7 @@ import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
 import { Card } from '@/components/card'
 import { WhenPicker } from '@/components/when-picker'
+import { SelectMenu } from '@/components/select-menu'
 
 /* ── Référentiels ─────────────────────────────────────────────── */
 const PERSO: Record<string, { label: string; hex: string; desc: string; approach: string }> = {
@@ -119,7 +120,7 @@ function PersoEval({ onClose, onResult }: { onClose: () => void; onResult: (colo
 
 /* ── Types ────────────────────────────────────────────────────── */
 type Contact = {
-  id: string; name: string; firstName: string; lastName: string; gender: string; profession: string; education: string; initials: string; accent: string
+  id: string; name: string; firstName: string; lastName: string; gender: string; profession: string; education: string; birthDate: string; initials: string; accent: string
   kind: string; email: string; phone: string; phone2: string; address: string; address2: string; postal: string; city: string; country: string
   source: string; personality: string | null; market: string | null; prospectStage: string | null; partnerStage: string | null
   score: number; exposures: number; lastContact: string | null; note: string; tags: string[]; convertedUserId: string | null
@@ -132,18 +133,33 @@ type Relance = { id: string; channel: string; dueAt: string; message: string | n
 const EDUCATIONS = ['Primaire et secondaire', 'Supérieur court (Bac+2/3)', 'Supérieur long (Bac+5 et +)']
 const normGender = (g: string) => (g === 'HOMME' || g === 'Homme' ? 'M' : g === 'FEMME' || g === 'Femme' ? 'F' : g === 'AUTRE' || g === 'Autre' || g === 'Neutre' ? 'N' : g)
 
+/* ── Conventions partagées avec le profil (masque tel, pays, date de naissance) ─── */
+const PAYS = ['France', 'Espagne', 'Allemagne', 'Italie']
+const formatPhone = (raw: string) => raw.replace(/\D/g, '').slice(0, 10).replace(/(\d{2})(?=\d)/g, '$1 ').trim()
+const daysInMonth = (m: string, y: string) => { const mm = parseInt(m, 10); if (!mm) return 31; return new Date(parseInt(y, 10) || 2000, mm, 0).getDate() }
+const DOB_MONTHS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'].map((l, i) => ({ value: String(i + 1).padStart(2, '0'), label: l }))
+const DOB_YEARS = Array.from({ length: new Date().getFullYear() - 16 - 1929 }, (_, i) => { const y = String(new Date().getFullYear() - 16 - i); return { value: y, label: y } })
+
 /* ── Modifier (identité + coordonnées) ────────────────────────── */
 function EditSheet({ contact, onClose, onSave, onDelete }: { contact: Contact; onClose: () => void; onSave: (p: Partial<Contact>) => void; onDelete: () => void }) {
   const [f, setF] = useState({
     firstName: contact.firstName, lastName: contact.lastName, gender: normGender(contact.gender),
-    profession: contact.profession ?? '', education: contact.education ?? '',
+    profession: contact.profession ?? '', education: contact.education ?? '', birthDate: contact.birthDate ?? '',
     market: contact.market ?? '',
-    email: contact.email, phone: contact.phone, phone2: contact.phone2,
-    address: contact.address, postal: contact.postal, city: contact.city, country: contact.country,
+    email: contact.email, phone: formatPhone(contact.phone ?? ''), phone2: formatPhone(contact.phone2 ?? ''),
+    address: contact.address, address2: contact.address2 ?? '', postal: contact.postal, city: contact.city, country: contact.country,
   })
   const set = (k: keyof typeof f, v: string) => setF((s) => ({ ...s, [k]: v }))
-  const input = 'w-full rounded-xl border border-border bg-background px-4 py-3 text-sm text-foreground outline-none placeholder:text-muted-foreground'
-  const label = 'mb-1.5 block text-xs font-bold uppercase tracking-widest text-muted-foreground'
+  // Date de naissance : 3 déroulants (jour / mois / année) → recomposés en YYYY-MM-DD (aligné profil)
+  const [dob, setDob] = useState(() => { const [y, m, d] = (contact.birthDate || '').split('-'); return { d: d ?? '', m: m ?? '', y: y ?? '' } })
+  const setDobPart = (patch: Partial<{ d: string; m: string; y: string }>) => {
+    const next = { ...dob, ...patch }
+    if (next.d && parseInt(next.d, 10) > daysInMonth(next.m, next.y)) next.d = ''
+    setDob(next)
+    set('birthDate', next.y && next.m && next.d ? `${next.y}-${next.m}-${next.d}` : '')
+  }
+  const dobDays = Array.from({ length: daysInMonth(dob.m, dob.y) }, (_, i) => ({ value: String(i + 1).padStart(2, '0'), label: String(i + 1) }))
+  const input = 'w-full rounded-xl border border-border bg-background px-4 py-[7px] text-lg text-foreground outline-none placeholder:text-muted-foreground'
 
   return (
     <div className="fixed inset-0 z-[80] flex flex-col">
@@ -157,49 +173,39 @@ function EditSheet({ contact, onClose, onSave, onDelete }: { contact: Contact; o
             <button type="button" onClick={() => onSave(f)} className="rounded-xl bg-primary px-4 py-1.5 text-sm font-bold text-primary-foreground">Enregistrer</button>
           </div>
         </div>
-        <div className="flex flex-col gap-4 px-4 py-5 pb-10">
-          <div className="grid grid-cols-2 gap-3">
-            <div><label className={label}>Prénom</label><input value={f.firstName} onChange={(e) => set('firstName', e.target.value)} className={input} /></div>
-            <div><label className={label}>Nom</label><input value={f.lastName} onChange={(e) => set('lastName', e.target.value)} className={input} /></div>
+        <div className="flex flex-col gap-3 px-4 py-5 pb-10">
+          <input value={f.firstName} onChange={(e) => set('firstName', e.target.value)} placeholder="Prénom" className={input} />
+          <input value={f.lastName} onChange={(e) => set('lastName', e.target.value)} placeholder="Nom" className={input} />
+          <SelectMenu className={input} placeholder="Genre" value={f.gender} onChange={(v) => set('gender', v)} options={[{ value: 'M', label: 'Homme' }, { value: 'F', label: 'Femme' }, { value: 'N', label: 'Neutre' }]} />
+          {/* Date de naissance — 3 déroulants (levier relance anniversaire) */}
+          <div className="grid grid-cols-[0.9fr_1.7fr_1.2fr] gap-2">
+            <SelectMenu className={input} placeholder="Jour" value={dob.d} onChange={(v) => setDobPart({ d: v })} options={dobDays} />
+            <SelectMenu className={input} placeholder="Mois" value={dob.m} onChange={(v) => setDobPart({ m: v })} options={DOB_MONTHS} />
+            <SelectMenu className={input} placeholder="Année" value={dob.y} onChange={(v) => setDobPart({ y: v })} options={DOB_YEARS} />
           </div>
+          <input value={f.profession} onChange={(e) => set('profession', e.target.value)} placeholder="Profession" className={input} />
+          <SelectMenu className={input} placeholder="Niveau d'études" value={f.education} onChange={(v) => set('education', v)} options={EDUCATIONS.map((o) => ({ value: o, label: o }))} />
+          {/* Marché d'origine — qualification (famille 3) : pastilles conservées, sera repris avec le funnel */}
           <div>
-            <label className={label}>Genre</label>
-            <div className="flex gap-2">
-              {[['M', 'Homme'], ['F', 'Femme'], ['N', 'Neutre']].map(([v, l]) => (
-                <button key={v} type="button" onClick={() => set('gender', f.gender === v ? '' : v)}
-                  className={cn('flex-1 rounded-xl py-2.5 text-sm font-bold transition-colors', f.gender === v ? 'bg-primary text-primary-foreground' : 'border border-border bg-surface text-foreground')}>{l}</button>
-              ))}
-            </div>
-          </div>
-          <div><label className={label}>Profession</label><input value={f.profession} onChange={(e) => set('profession', e.target.value)} placeholder="Son activité principale" className={input} /></div>
-          <div>
-            <label className={label}>Niveau d&apos;études</label>
-            <select value={f.education} onChange={(e) => set('education', e.target.value)} className={input}>
-              <option value="">—</option>
-              {EDUCATIONS.map((o) => <option key={o} value={o}>{o}</option>)}
-            </select>
-          </div>
-          <div>
-            <label className={label}>Marché d'origine</label>
+            <p className="mb-1.5 text-base text-muted-foreground">Marché d&apos;origine</p>
             <div className="flex gap-2">
               {Object.entries(MARCHE).map(([v, m]) => (
                 <button key={v} type="button" onClick={() => set('market', f.market === v ? '' : v)}
-                  className={cn('flex-1 rounded-xl py-2.5 text-sm font-bold transition-colors', f.market === v ? 'bg-primary text-primary-foreground' : 'border border-border bg-surface text-foreground')}>{m.label}</button>
+                  className={cn('flex-1 rounded-xl py-2.5 text-base font-semibold transition-colors', f.market === v ? 'bg-primary text-primary-foreground' : 'border border-border bg-surface text-foreground')}>{m.label}</button>
               ))}
             </div>
-            <p className="mt-1.5 text-[10px] text-muted-foreground">D'où vient ce contact (fixé à l'arrivée, rarement modifié).</p>
+            <p className="mt-1.5 text-xs text-muted-foreground">D&apos;où vient ce contact (fixé à l&apos;arrivée, rarement modifié).</p>
           </div>
-          <div><label className={label}>Téléphone</label><input value={f.phone} onChange={(e) => set('phone', e.target.value)} type="tel" placeholder="+33 6 …" className={input} /></div>
-          <div><label className={label}>Téléphone 2</label><input value={f.phone2} onChange={(e) => set('phone2', e.target.value)} type="tel" placeholder="Optionnel" className={input} /></div>
-          <div><label className={label}>Email</label><input value={f.email} onChange={(e) => set('email', e.target.value)} type="email" placeholder="contact@email.fr" className={input} /></div>
-          <div><label className={label}>Adresse</label><input value={f.address} onChange={(e) => set('address', e.target.value)} placeholder="12 rue …" className={input} /></div>
-          <div className="grid grid-cols-[100px_1fr] gap-3">
-            <div><label className={label}>CP</label><input value={f.postal} onChange={(e) => set('postal', e.target.value)} placeholder="75001" className={input} /></div>
-            <div><label className={label}>Ville</label><input value={f.city} onChange={(e) => set('city', e.target.value)} placeholder="Paris" className={input} /></div>
-          </div>
-          <div><label className={label}>Pays</label><input value={f.country} onChange={(e) => set('country', e.target.value)} placeholder="France" className={input} /></div>
+          <input value={f.phone} onChange={(e) => set('phone', formatPhone(e.target.value))} type="tel" inputMode="numeric" placeholder="Téléphone" className={input} />
+          <input value={f.phone2} onChange={(e) => set('phone2', formatPhone(e.target.value))} type="tel" inputMode="numeric" placeholder="Téléphone secondaire" className={input} />
+          <input value={f.email} onChange={(e) => set('email', e.target.value)} type="email" placeholder="Email" className={input} />
+          <input value={f.address} onChange={(e) => set('address', e.target.value)} placeholder="Adresse" className={input} />
+          <input value={f.address2} onChange={(e) => set('address2', e.target.value)} placeholder="Complément d'adresse" className={input} />
+          <input value={f.postal} onChange={(e) => set('postal', e.target.value)} placeholder="Code postal" className={input} />
+          <input value={f.city} onChange={(e) => set('city', e.target.value)} placeholder="Ville" className={input} />
+          <SelectMenu className={input} placeholder="Pays" value={f.country} onChange={(v) => set('country', v)} options={PAYS.map((p) => ({ value: p, label: p }))} />
           <button type="button" onClick={() => { if (window.confirm('Supprimer définitivement ce contact ?')) onDelete() }}
-            className="mt-2 rounded-xl border border-[#EF4444]/30 bg-[#EF4444]/5 px-4 py-3 text-sm font-bold text-[#EF4444] active:bg-[#EF4444]/10">
+            className="mt-2 rounded-xl border border-[#EF4444]/30 bg-[#EF4444]/5 px-4 py-3 text-base font-bold text-[#EF4444] active:bg-[#EF4444]/10">
             Supprimer ce contact
           </button>
         </div>

@@ -445,6 +445,7 @@ model Contact {
   market        MarketTemp?
   profession    String?
   education     String?
+  birthDate     DateTime?
   prospectStage ProspectStage?
   clientStage   ClientStage?
   partnerStage  PartnerStage?
