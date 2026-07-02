@@ -118,6 +118,35 @@ function Collapsible({ icon: Icon, title, filled, total, open, onToggle, childre
   )
 }
 
+/* ── Curseur d'étape du flow (Nouveau → Closing · ou Démarrage → Leader) ── */
+function StageCursor({ stages, current, onPick }: { stages: { id: string; label: string }[]; current: string | null; onPick: (id: string) => void }) {
+  const idx = Math.max(0, stages.findIndex((s) => s.id === current))
+  return (
+    <div className="rounded-2xl border border-border bg-surface px-2 py-3">
+      <div className="flex items-start">
+        {stages.map((s, i) => {
+          const done = i < idx
+          const cur = i === idx
+          return (
+            <div key={s.id} className="flex flex-1 flex-col items-center">
+              <div className="flex w-full items-center">
+                <div className={cn('h-0.5 flex-1', i === 0 ? 'opacity-0' : done || cur ? 'bg-primary' : 'bg-border')} />
+                <button type="button" onClick={() => onPick(s.id)}
+                  className={cn('grid size-6 shrink-0 place-items-center rounded-full text-[10px] font-bold transition-colors',
+                    cur ? 'bg-primary text-primary-foreground ring-4 ring-primary/15' : done ? 'bg-primary text-primary-foreground' : 'border border-border bg-background text-muted-foreground')}>
+                  {done ? <Check className="size-3" /> : i + 1}
+                </button>
+                <div className={cn('h-0.5 flex-1', i === stages.length - 1 ? 'opacity-0' : done ? 'bg-primary' : 'bg-border')} />
+              </div>
+              <button type="button" onClick={() => onPick(s.id)} className={cn('mt-1.5 px-0.5 text-center text-xs leading-tight', cur ? 'font-bold text-foreground' : 'text-muted-foreground')}>{s.label}</button>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 /* ── Planifier (RDV / relance) ────────────────────────────────── */
 function ScheduleSheet({ mode, contactId, onClose, onDone }: { mode: 'rdv' | 'relance'; contactId: string; onClose: () => void; onDone: () => void }) {
   const [when, setWhen] = useState(() => { const d = new Date(); const p = (n: number) => String(n).padStart(2, '0'); return `${d.getFullYear()}-${p(d.getMonth() + 1)}-${p(d.getDate())}T09:00` })
@@ -436,6 +465,9 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       <div className="flex flex-col gap-4 px-4 pb-24 pt-2">
+        {/* Curseur d'étape — où en est ce contact dans le flow */}
+        {isProspect && <StageCursor stages={PROSPECT_STAGES} current={c.prospectStage} onPick={(id) => save({ prospectStage: id }, 'Étape mise à jour')} />}
+        {isPartner && <StageCursor stages={PARTNER_STAGES} current={c.partnerStage} onPick={(id) => save({ partnerStage: id }, 'Étape mise à jour')} />}
         {/* LE PROCHAIN PAS — cockpit Atlas */}
         {nextStep && (
           <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4">
@@ -490,27 +522,11 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
         <Section title="Statut">
           <div className="flex flex-col gap-3">
             {isProspect && (
-              <div className="flex flex-col gap-2">
-                <div className="flex flex-wrap gap-2">
-                  {PROSPECT_STAGES.map((s) => (
-                    <button key={s.id} type="button" onClick={() => save({ prospectStage: s.id }, 'Étape mise à jour')}
-                      className={cn('rounded-xl border px-3.5 py-2 text-base font-bold transition-colors', c.prospectStage === s.id ? 'border-primary bg-primary text-primary-foreground' : 'border-border bg-surface text-foreground')}>{s.label}</button>
-                  ))}
-                </div>
-                <p className="text-[10px] leading-relaxed text-muted-foreground">
-                  <span className="font-bold text-foreground">{c.exposures} exposition{c.exposures > 1 ? 's' : ''}</span> · Worre vise 4-6 avant le closing (auto-comptées par les actions CRM).
-                </p>
-              </div>
+              <p className="text-[10px] leading-relaxed text-muted-foreground">
+                <span className="font-bold text-foreground">{c.exposures} exposition{c.exposures > 1 ? 's' : ''}</span> · Worre vise 4-6 avant le closing (auto-comptées par les actions CRM).
+              </p>
             )}
             {isClient && <div className="rounded-xl bg-success/10 px-4 py-3 text-sm font-bold text-success">Client actif</div>}
-            {isPartner && (
-              <div className="flex flex-wrap gap-2">
-                {PARTNER_STAGES.map((s) => (
-                  <button key={s.id} type="button" onClick={() => save({ partnerStage: s.id }, 'Étape mise à jour')}
-                    className={cn('rounded-xl border px-3.5 py-2 text-base font-bold transition-colors', c.partnerStage === s.id ? 'border-violet bg-violet text-white' : 'border-border bg-surface text-foreground')}>{s.label}</button>
-                ))}
-              </div>
-            )}
 
             {/* Conversions */}
             <div className="flex flex-wrap gap-2 border-t border-border pt-3">
