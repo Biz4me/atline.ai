@@ -8,7 +8,6 @@ import {
   BookOpen,
   CalendarDays,
   Users,
-  Check,
   Rocket,
   Mic,
 } from 'lucide-react'
@@ -17,42 +16,6 @@ import { useState, useEffect } from 'react'
 import { cn } from '@/lib/utils'
 
 // ── Données mobiles (inchangées) ─────────────────────────────────────────────
-
-const dailyTasks = [
-  {
-    id: 't1',
-    icon: Flame,
-    iconBg: 'bg-muted',
-    iconColor: 'text-muted-foreground',
-    label: 'Relancer 3 prospects chauds',
-    cta: '/contacts',
-    ctaLabel: 'Préparer',
-    ctaPrimary: true,
-    done: false,
-  },
-  {
-    id: 't2',
-    icon: PhoneCall,
-    iconBg: 'bg-muted',
-    iconColor: 'text-muted-foreground',
-    label: 'Appeler Sophie pour son closing',
-    cta: '/aria',
-    ctaLabel: 'Script',
-    ctaPrimary: false,
-    done: false,
-  },
-  {
-    id: 't3',
-    icon: BookOpen,
-    iconBg: 'bg-muted',
-    iconColor: 'text-muted-foreground',
-    label: 'Module 3 — Formation',
-    cta: '/formation/m3',
-    ctaLabel: 'Reprendre',
-    ctaPrimary: false,
-    done: true,
-  },
-]
 
 const agenda = [
   { time: '14:00', stage: 'Closing', stageColor: 'bg-red-100 text-red-600', name: 'Sophie Laurent', href: '/contacts/c1' },
@@ -174,10 +137,16 @@ const JOURNAL_DOT: Record<string, string> = {
 }
 
 // ── Carte partagée — Plan du jour (mobile + desktop, source unique) ────────────
+// Règle : le tableau de bord n'affiche que des RÉSULTATS. Chaque ligne est un
+// raccourci vers la fiche (là où l'on agit). Aucune action ne mute ici.
+
+type PlanItem = { contactId: string; name: string; initials: string; accent: string; level: number; headline: string; reason: string }
 
 function PlanDuJourCard() {
-  const [checkedTasks, setCheckedTasks] = useState<Set<string>>(new Set(['t3']))
-  const allDone = checkedTasks.size >= dailyTasks.length
+  const [items, setItems] = useState<PlanItem[] | null>(null)
+  useEffect(() => {
+    fetch('/api/plan/today').then((r) => (r.ok ? r.json() : null)).then((d) => setItems(d?.items ?? [])).catch(() => setItems([]))
+  }, [])
 
   return (
     <Card className="p-0 overflow-hidden">
@@ -193,60 +162,27 @@ function PlanDuJourCard() {
           Discuter
         </Link>
       </div>
-      {allDone ? (
-        <div className="flex items-center gap-3 px-4 py-5">
-          <span className="flex size-9 shrink-0 items-center justify-center rounded-xl bg-[#22c55e]/10">
-            <Check className="size-5 text-[#22c55e] stroke-[2.5]" />
-          </span>
-          <div>
-            <p className="text-sm font-bold text-foreground">Plan du jour bouclé</p>
-            <button type="button" onClick={() => setCheckedTasks(new Set())}
-              className="text-xs text-muted-foreground hover:text-foreground transition-colors mt-0.5">
-              Tout décocher
-            </button>
-          </div>
+      {items === null ? (
+        <div className="px-4 py-6 text-center text-sm text-muted-foreground">Atlas prépare ton plan…</div>
+      ) : items.length === 0 ? (
+        <div className="px-4 py-6 text-center">
+          <p className="text-sm font-medium text-foreground">Rien d&apos;urgent aujourd&apos;hui 🎉</p>
+          <Link href="/contacts" className="mt-1 inline-block text-xs font-semibold text-primary">Profites-en pour prospecter →</Link>
         </div>
       ) : (
         <div className="divide-y divide-border">
-          {dailyTasks.map((task) => {
-            const Icon = task.icon
-            const done = checkedTasks.has(task.id)
-            return (
-              <div key={task.id} className={cn(
-                'flex h-[60px] items-center gap-3 px-4 transition-colors hover:bg-muted/20',
-                done && 'opacity-50'
-              )}>
-                <button
-                  type="button"
-                  onClick={() => setCheckedTasks((prev) => {
-                    const next = new Set(prev)
-                    next.has(task.id) ? next.delete(task.id) : next.add(task.id)
-                    return next
-                  })}
-                  className={cn(
-                    'flex size-5 shrink-0 items-center justify-center rounded-full border-2 transition-colors',
-                    done ? 'border-primary bg-primary' : 'border-border hover:border-primary'
-                  )}
-                >
-                  {done && <Check className="size-3 text-primary-foreground stroke-[3]" />}
-                </button>
-                <span className={cn('flex size-8 shrink-0 items-center justify-center rounded-lg', task.iconBg)}>
-                  <Icon className={cn('size-4 stroke-[1.5]', task.iconColor)} />
-                </span>
-                <p className={cn('flex-1 text-sm font-medium text-foreground', done && 'line-through text-muted-foreground')}>
-                  {task.label}
-                </p>
-                {!done && (
-                  <Link
-                    href={task.cta}
-                    className="shrink-0 rounded-xl border border-border bg-surface px-3 py-1.5 text-xs font-medium text-foreground hover:bg-muted transition-colors"
-                  >
-                    {task.ctaLabel}
-                  </Link>
-                )}
+          {items.map((it) => (
+            <Link key={it.contactId} href={`/contacts/${it.contactId}`}
+              className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/20 active:bg-muted/40">
+              <span className="grid size-9 shrink-0 place-items-center rounded-full text-xs font-bold text-white" style={{ backgroundColor: it.accent }}>{it.initials}</span>
+              <div className="min-w-0 flex-1">
+                <p className="truncate text-sm font-semibold text-foreground">{it.headline}</p>
+                <p className="truncate text-xs text-muted-foreground">{it.reason}</p>
               </div>
-            )
-          })}
+              {it.level === 1 && <span className="shrink-0 rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-bold text-destructive">Urgent</span>}
+              <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
+            </Link>
+          ))}
         </div>
       )}
     </Card>
