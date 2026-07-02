@@ -63,12 +63,9 @@ export function ProfileFormCard({ me, onSaved }: { me: Me; onSaved: (n: number) 
       <div className="border-b border-border px-4 py-2.5 text-sm font-semibold text-muted-foreground">Complète en 30 secondes</div>
       <div className="flex flex-col gap-2.5 px-4 py-3">
         {missing.map((f) => (
-          <div key={f.key} className="flex flex-col gap-1">
-            <span className="text-xs font-medium text-muted-foreground">{f.label}</span>
-            {f.type === 'select'
-              ? <SelectMenu className={inputCls} placeholder={f.label} value={vals[f.key] ?? ''} onChange={(v) => setVals((s) => ({ ...s, [f.key]: v }))} options={f.options!} />
-              : <input className={inputCls} value={vals[f.key] ?? ''} onChange={(e) => setVals((s) => ({ ...s, [f.key]: e.target.value }))} placeholder={f.label} />}
-          </div>
+          f.type === 'select'
+            ? <SelectMenu key={f.key} className={inputCls} placeholder={f.label} value={vals[f.key] ?? ''} onChange={(v) => setVals((s) => ({ ...s, [f.key]: v }))} options={f.options!} />
+            : <input key={f.key} className={inputCls} value={vals[f.key] ?? ''} onChange={(e) => setVals((s) => ({ ...s, [f.key]: e.target.value }))} placeholder={f.label} />
         ))}
         <button type="button" onClick={save} disabled={saving || filled.length === 0} className="mt-1 rounded-2xl bg-primary py-2.5 text-sm font-bold text-primary-foreground transition-transform active:scale-[0.98] disabled:opacity-50">
           {saving ? "J'enregistre…" : 'Enregistrer'}
