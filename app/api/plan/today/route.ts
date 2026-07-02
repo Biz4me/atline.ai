@@ -22,6 +22,9 @@ type Cand = {
   reason: string
   channel: string | null
   stage: string
+  phone: string | null
+  email: string | null
+  market: string | null
 }
 
 // score_opportunité (aligné sur computeScore de /api/contacts/[id])
@@ -89,6 +92,7 @@ export async function GET() {
       contactId: c.id, name: c.name, prenom: prenom(c), initials: initialsOf(c), accent: c.accent ?? '#F97316',
       level, priority: Math.round(opportunity(c) * potentielMult(c.qualification)),
       action, headline, reason, channel, stage: c.prospectStage ?? c.partnerStage ?? '',
+      phone: c.phone, email: c.email, market: c.market,
     })
   }
 

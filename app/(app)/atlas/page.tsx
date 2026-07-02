@@ -16,7 +16,7 @@ const frText = (t: string) => t.replace(/ ([:;!?])/g, TH + '$1').replace(new Reg
 import { ChatChoices, AtlasDraftCard, type PlanItem } from '@/components/atlas-plan-card'
 
 type Choice = { label: string; value: string }
-type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[]; choices?: Choice[]; item?: PlanItem; draft?: { contactId: string; prenom: string; channel: string } }
+type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[]; choices?: Choice[]; item?: PlanItem; draft?: { contactId: string; prenom: string; channel: string; phone: string | null; email: string | null } }
 
 // Indicateur « Atlas réfléchit » — 3 points en cascade
 function TypingDots() {
@@ -328,7 +328,37 @@ export default function AtlasPage() {
     }
   }
 
-  // « Mon plan du jour » : Atlas présente EN CONVERSATION, puis propose des ronds sélectifs pour la priorité n°1.
+  // Demande le canal (message / mail / appel) via ronds sélectifs.
+  const askChannel = (item: PlanItem) => {
+    const ch: Choice[] = []
+    if (item.phone) ch.push({ label: '📱 Lui envoyer un message', value: 'chan:message' })
+    if (item.email) ch.push({ label: '✉️ Lui écrire un mail', value: 'chan:mail' })
+    if (item.phone) ch.push({ label: "📞 L'appeler", value: 'chan:call' })
+    if (ch.length === 0) ch.push({ label: 'Ajouter un moyen de le contacter', value: 'fiche' })
+    setMsgs((prev) => [...prev, { from: 'atlas', text: `Comment tu préfères aborder ${item.prenom} ?`, choices: ch, item }])
+    setTimeout(scrollToBottom, 60)
+  }
+
+  // Démarre le flux d'action : on fait le point sur le contact, puis on choisit le canal, jusqu'au concret.
+  const startActionFlow = (item: PlanItem) => {
+    if (item.action !== 'MESSAGE') {
+      setMsgs((prev) => [...prev, { from: 'atlas', text: `On s'occupe de ${item.prenom} — dis-moi :`, choices: [{ label: 'Ouvre sa fiche', value: 'fiche' }, { label: "Je m'entraîne avec Aria", value: 'aria' }], item }])
+      setTimeout(scrollToBottom, 60)
+      return
+    }
+    if (!item.market) {
+      setMsgs((prev) => [...prev, { from: 'atlas', text: `Avant d'écrire à ${item.prenom}, un point utile : tu le connais comment ? Ça m'aide à viser le bon ton.`, choices: [
+        { label: 'Un proche', value: 'know:CHAUD' },
+        { label: 'Une connaissance', value: 'know:TIEDE' },
+        { label: 'On se connaît peu', value: 'know:FROID' },
+      ], item }])
+      setTimeout(scrollToBottom, 60)
+    } else {
+      askChannel(item)
+    }
+  }
+
+  // « Mon plan du jour » : Atlas présente EN CONVERSATION, puis lance le flux guidé sur la priorité n°1.
   const showPlan = async () => {
     if (streaming) return
     let items: PlanItem[] = []
@@ -337,29 +367,48 @@ export default function AtlasPage() {
       ? "Je n'ai aucune priorité urgente aujourd'hui d'après mes contacts. Dis-moi à ta voix, comme un coach, comment on avance (prospecter, enrichir ma liste, me former…) — une action à la fois."
       : 'Voici mes priorités du jour, déjà calculées et classées :\n'
         + items.map((it, i) => `${i + 1}. ${it.headline} — ${it.reason} (contact : ${it.prenom}, étape : ${it.stage || 'à définir'})`).join('\n')
-        + "\n\nPrésente-les-moi à ta voix comme un coach — ne me balance pas une liste, parle-moi. Commence par la plus importante et donne-moi l'état d'esprit. Ne me propose PAS d'options toi-même : je vais choisir juste après."
+        + "\n\nPrésente-les-moi à ta voix comme un coach — ne me balance pas une liste, parle-moi. Commence par la plus importante et donne-moi l'état d'esprit en 1-2 phrases. Ne me propose PAS d'options toi-même : je vais choisir juste après."
     await sendMsg(ctx, 'Mon plan du jour')
     const top = items[0]
-    if (top) {
-      const choices: Choice[] = top.action === 'MESSAGE'
-        ? [{ label: `Prépare-moi le message pour ${top.prenom}`, value: 'draft' }, { label: "Je m'entraîne d'abord avec Aria", value: 'aria' }, { label: 'Je gère, ouvre sa fiche', value: 'fiche' }]
-        : [{ label: `Ouvre la fiche de ${top.prenom}`, value: 'fiche' }, { label: "Je m'entraîne avec Aria", value: 'aria' }]
-      setMsgs((prev) => [...prev, { from: 'atlas', text: `On commence par ${top.prenom} — dis-moi :`, choices, item: top }])
-      setTimeout(scrollToBottom, 60)
-    }
+    if (top) startActionFlow(top)
   }
 
-  // Sélection d'un rond : on retire les choix, on renvoie le choix en bulle, et on branche.
+  // Sélection d'un rond : retire les choix, renvoie le choix en bulle, et branche (machine à états du flux).
   const handleChoice = (item: PlanItem, value: string, label: string, idx: number) => {
-    setMsgs((prev) => {
-      const cleared = prev.map((m, j) => (j === idx ? { ...m, choices: undefined } : m))
-      const extra: Msg[] = [{ from: 'user', text: label }]
-      if (value === 'draft') extra.push({ from: 'atlas', text: '', draft: { contactId: item.contactId, prenom: item.prenom, channel: item.channel || 'WHATSAPP' } })
-      return [...cleared, ...extra]
-    })
-    if (value === 'aria') router.push(`/aria?contact=${item.contactId}`)
-    if (value === 'fiche') router.push(`/contacts/${item.contactId}`)
-    setTimeout(scrollToBottom, 60)
+    setMsgs((prev) => [...prev.map((m, j) => (j === idx ? { ...m, choices: undefined } : m)), { from: 'user', text: label }])
+    if (value.startsWith('know:')) {
+      const market = value.slice(5)
+      fetch(`/api/contacts/${item.contactId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ market }) }).catch(() => {})
+      const ack = market === 'CHAUD' ? 'Parfait, un proche — on peut être direct et sincère.' : market === 'FROID' ? 'Ok, on se connaît peu — on reste léger, zéro pression.' : 'Noté.'
+      setMsgs((prev) => [...prev, { from: 'atlas', text: ack }])
+      setTimeout(() => askChannel({ ...item, market }), 350)
+      return
+    }
+    if (value === 'chan:message') {
+      const ch = item.phone ? 'WHATSAPP' : 'SMS'
+      setMsgs((prev) => [...prev,
+        { from: 'atlas', text: `Je te prépare un message qui lui ressemble. Régénère-le si besoin, puis ouvre-le direct dans ${ch === 'WHATSAPP' ? 'WhatsApp' : 'tes SMS'}.` },
+        { from: 'atlas', text: '', draft: { contactId: item.contactId, prenom: item.prenom, channel: ch, phone: item.phone, email: item.email } },
+      ])
+      setTimeout(scrollToBottom, 60)
+      return
+    }
+    if (value === 'chan:mail') {
+      setMsgs((prev) => [...prev,
+        { from: 'atlas', text: `Je te prépare un mail pour ${item.prenom}.` },
+        { from: 'atlas', text: '', draft: { contactId: item.contactId, prenom: item.prenom, channel: 'EMAIL', phone: item.phone, email: item.email } },
+      ])
+      setTimeout(scrollToBottom, 60)
+      return
+    }
+    if (value === 'chan:call') {
+      setMsgs((prev) => [...prev, { from: 'atlas', text: "Un appel, c'est le plus puissant — et le plus intimidant. Tu veux t'échauffer avec Aria d'abord ?", choices: [{ label: "Oui, je m'entraîne avec Aria", value: 'call:aria' }, { label: `Non, j'appelle ${item.prenom} maintenant`, value: 'call:now' }], item }])
+      setTimeout(scrollToBottom, 60)
+      return
+    }
+    if (value === 'call:aria' || value === 'aria') { router.push(`/aria?contact=${item.contactId}`); return }
+    if (value === 'call:now' && item.phone) { window.location.href = `tel:${item.phone}`; return }
+    if (value === 'fiche') { router.push(`/contacts/${item.contactId}`) }
   }
 
   const newSession = () => {
@@ -558,7 +607,7 @@ export default function AtlasPage() {
                     <ChatChoices choices={m.choices} onPick={(value, label) => handleChoice(m.item!, value, label, i)} />
                   </div>
                 ) : m.draft ? (
-                  <AtlasDraftCard contactId={m.draft.contactId} prenom={m.draft.prenom} channel={m.draft.channel} />
+                  <AtlasDraftCard contactId={m.draft.contactId} prenom={m.draft.prenom} channel={m.draft.channel} phone={m.draft.phone} email={m.draft.email} />
                 ) : m.text === '' ? (
                   <TypingDots />
                 ) : (
