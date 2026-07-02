@@ -41,6 +41,14 @@ export function describePersonality(color: string, gender: string) {
   return { name: p.name, color: p.color, archetype, text: `${p.caracterise} ${p.adapte}` }
 }
 
+// Descriptions 3e personne (pour un contact) — l'IA onboarding est écrite à la 2e personne
+const THIRD: Record<Color, string> = {
+  ROUGE: "Direct, rapide, orienté résultats — décide vite et avance. Pour l'aborder : va droit au but, parle objectifs, chiffres et défis.",
+  VERT: "Rigoureux et prudent — veut des faits avant d'agir. Pour l'aborder : apporte des preuves, du concret, et laisse-lui le temps d'analyser.",
+  BLEU: "Sociable et spontané — carbure à l'énergie et aux gens. Pour l'aborder : mise sur la vision, l'élan et les relations.",
+  JAUNE: "Relationnel et bienveillant — veut aider, sans pression. Pour l'aborder : reste chaleureux, à l'écoute, et respecte son rythme.",
+}
+
 const QUESTIONS: { prompt: string; options: { text: string; color: Color }[] }[] = [
   { prompt: "Dans une conversation, tu…", options: [
     { text: "vas droit au but", color: 'ROUGE' },
@@ -123,7 +131,7 @@ function tally(ans: Color[]): Color[] {
   return (Object.keys(c) as Color[]).filter((k) => c[k] === max)
 }
 
-export function PersonalityQuiz({ onClose, onResult, firstName = '', gender = '', count }: { onClose: () => void; onResult: (color: string) => void; firstName?: string; gender?: string; count?: number }) {
+export function PersonalityQuiz({ onClose, onResult, firstName = '', gender = '', count, subjectName }: { onClose: () => void; onResult: (color: string) => void; firstName?: string; gender?: string; count?: number; subjectName?: string }) {
   const arche = (c: Color) => (gender === 'F' ? PROFILES[c].archetype.f : gender === 'N' ? PROFILES[c].archetype.n : PROFILES[c].archetype.m)
   // Options mélangées une fois (réduit le biais de position) — count limite le nombre de questions (ex. 3 pour un contact)
   const questions = useMemo(
@@ -141,7 +149,7 @@ export function PersonalityQuiz({ onClose, onResult, firstName = '', gender = ''
   useEffect(() => {
     if (phase !== 'result' || !result) return
     const p = PROFILES[result]
-    const fallback = `${firstName ? firstName + ', ' : ''}tu es ${p.name} — ${arche(result)}. ${p.caracterise} ${p.adapte}`
+    const fallback = subjectName ? THIRD[result] : `${firstName ? firstName + ', ' : ''}tu es ${p.name} — ${arche(result)}. ${p.caracterise} ${p.adapte}`
     let cancelled = false
     let full = ''
     let shown = 0
@@ -156,7 +164,8 @@ export function PersonalityQuiz({ onClose, onResult, firstName = '', gender = ''
     }
     setTimeout(tick, 200)
 
-    ;(async () => {
+    if (subjectName) { full = fallback; streamDone = true }
+    else (async () => {
       try {
         const r = await fetch('/api/onboarding/color-read', {
           method: 'POST',
@@ -210,7 +219,7 @@ export function PersonalityQuiz({ onClose, onResult, firstName = '', gender = ''
       {/* Header + progression */}
       <div className="shrink-0" style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top))' }}>
         <div className="flex items-center justify-between px-2 py-2">
-          <p className="pl-2 text-lg font-semibold text-foreground">Ta couleur de personnalité</p>
+          <p className="pl-2 text-lg font-semibold text-foreground">{subjectName ? 'Sa couleur de personnalité' : 'Ta couleur de personnalité'}</p>
           <button type="button" onClick={onClose} aria-label="Fermer" className="flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted">
             <X className="size-5" />
           </button>
@@ -227,17 +236,17 @@ export function PersonalityQuiz({ onClose, onResult, firstName = '', gender = ''
         <div className="flex flex-1 flex-col items-center px-6 pt-10 text-center">
           <div className="size-24 shrink-0 rounded-full" style={{ backgroundColor: PROFILES[result].color }} />
           <h1 className="mt-5 font-display text-[27px] font-extrabold leading-tight" style={{ color: PROFILES[result].color }}>
-            Tu es {arche(result)}
+            {subjectName ? `${subjectName} est ` : 'Tu es '}{arche(result)}
           </h1>
           <p className="mt-1 text-base font-semibold text-muted-foreground">Couleur {PROFILES[result].name}</p>
-          <p className="mt-3 min-h-[3.5rem] max-w-sm whitespace-pre-wrap text-lg leading-relaxed text-muted-foreground">{revealText || 'Atlas décrypte ta couleur…'}</p>
+          <p className="mt-3 min-h-[3.5rem] max-w-sm whitespace-pre-wrap text-lg leading-relaxed text-muted-foreground">{revealText || (subjectName ? 'Atlas décrypte sa couleur…' : 'Atlas décrypte ta couleur…')}</p>
           <div className="mt-auto w-full pb-6 pt-8">
             <button
               type="button"
               onClick={() => onResult(result)}
               className="w-full rounded-2xl bg-primary py-3.5 text-base font-bold text-primary-foreground shadow-md transition-transform active:scale-[0.98]"
             >
-              C'est tout moi
+              {subjectName ? 'Valider' : "C'est tout moi"}
             </button>
             <button type="button" onClick={() => { setPhase('quiz'); setStep(0); setAnswers([]); setResult(null) }} className="mt-3 w-full py-2 text-base font-medium text-muted-foreground">
               Refaire le test

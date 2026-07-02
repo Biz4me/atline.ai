@@ -751,7 +751,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
           const res = await fetch(`/api/contacts/${id}`, { method: 'DELETE' })
           if (res.ok) { toast.success('Contact supprimé'); router.push('/contacts') } else toast.error('Échec de la suppression')
         }} />}
-      {evalOpen && <PersonalityQuiz firstName={pf.firstName} gender={pf.gender} count={3} onClose={() => setEvalOpen(false)} onResult={(color) => { setQ('personality', color); setEvalOpen(false) }} />}
+      {evalOpen && <PersonalityQuiz subjectName={pf.firstName || 'Ce contact'} gender={pf.gender} count={3} onClose={() => setEvalOpen(false)} onResult={(color) => { setQ('personality', color); setEvalOpen(false) }} />}
       {schedule && <ScheduleSheet mode={schedule} contactId={id} onClose={() => setSchedule(null)} onDone={load} />}
       {compose && <ComposeSheet contactId={id} channel={compose.channel} label={compose.label} phone={c.phone} email={c.email} autoDraft={compose.auto}
         onClose={() => setCompose(null)}
