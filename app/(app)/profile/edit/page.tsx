@@ -27,6 +27,8 @@ const DOB_YEARS = Array.from({ length: DOB_NOW_YEAR - 1924 }, (_, i) => ({ value
 const DRAFT_KEY = 'profile_draft_v1' // état en cours (saisie + rubrique ouverte), restauré au refresh (sessionStorage)
 // Harmonise le genre sur M/F/N (rattrape les anciennes valeurs Homme/Femme/Autre)
 const normGender = (g: string) => (g === 'Homme' ? 'M' : g === 'Femme' ? 'F' : g === 'Autre' || g === 'Neutre' ? 'N' : g)
+// Masque téléphone FR : 10 chiffres groupés par 2 → « 06 12 34 56 78 »
+const formatPhone = (raw: string) => raw.replace(/\D/g, '').slice(0, 10).replace(/(\d{2})(?=\d)/g, '$1 ').trim()
 
 const inputCls =
   'w-full rounded-xl border border-border bg-background px-4 py-[7px] text-lg text-foreground outline-none placeholder:text-muted-foreground'
@@ -133,7 +135,7 @@ export default function ProfileEditPage() {
         if (!active || !u) { if (active) setLoading(false); return }
         setForm({
           firstName: u.firstName ?? '', lastName: u.lastName ?? '', username: u.username ?? '', email: u.email ?? '',
-          gender: normGender(u.gender ?? ''), profession: u.profession ?? '', education: u.education ?? '', phone: u.phone ?? '', phone2: u.phone2 ?? '', photoUrl: u.photoUrl ?? '',
+          gender: normGender(u.gender ?? ''), profession: u.profession ?? '', education: u.education ?? '', phone: formatPhone(u.phone ?? ''), phone2: formatPhone(u.phone2 ?? ''), photoUrl: u.photoUrl ?? '',
           address: u.address ?? '', address2: u.address2 ?? '', postal: u.postal ?? '', city: u.city ?? '', country: u.country ?? '',
           bio: u.bio ?? '', birthDate: u.birthDate ? String(u.birthDate).slice(0, 10) : '',
           personality: u.personality ?? '', locale: u.locale ?? 'fr',
@@ -366,8 +368,8 @@ export default function ProfileEditPage() {
               <SelectMenu className={inputCls} placeholder="Mois" value={dob.m} onChange={(v) => setDobPart({ m: v })} options={DOB_MONTHS} />
               <SelectMenu className={inputCls} placeholder="Année" value={dob.y} onChange={(v) => setDobPart({ y: v })} options={DOB_YEARS} />
             </div>
-            <input className={inputCls} type="tel" value={form.phone} onChange={(e) => set('phone', e.target.value)} placeholder="Téléphone" />
-            <input className={inputCls} type="tel" value={form.phone2} onChange={(e) => set('phone2', e.target.value)} placeholder="Téléphone secondaire" />
+            <input className={inputCls} type="tel" inputMode="numeric" value={form.phone} onChange={(e) => set('phone', formatPhone(e.target.value))} placeholder="Téléphone" />
+            <input className={inputCls} type="tel" inputMode="numeric" value={form.phone2} onChange={(e) => set('phone2', formatPhone(e.target.value))} placeholder="Téléphone secondaire" />
           </Collapsible>
 
           {/* 2 — Qui tu es (personnalité — sert le ton des agents) */}
