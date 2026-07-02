@@ -120,6 +120,16 @@ export default function ProfileEditPage() {
   const [saving, setSaving] = useState(false)
   const [quizOpen, setQuizOpen] = useState(false)
   const [persoOpen, setPersoOpen] = useState(false)
+  // Email en lecture seule : l'info « où le modifier » recouvre le champ au tap (comme un déroulant)
+  const [emailInfo, setEmailInfo] = useState(false)
+  useEffect(() => {
+    if (!emailInfo) return
+    const close = () => setEmailInfo(false)
+    const onDown = (e: PointerEvent) => { if (!(e.target as HTMLElement)?.closest?.('[data-email-field]')) setEmailInfo(false) }
+    window.addEventListener('pointerdown', onDown)
+    window.addEventListener('scroll', close, true)
+    return () => { window.removeEventListener('pointerdown', onDown); window.removeEventListener('scroll', close, true) }
+  }, [emailInfo])
   const [confirmDelete, setConfirmDelete] = useState(false)
   const [deleting, setDeleting] = useState(false)
   const [moreSocials, setMoreSocials] = useState(false)
@@ -385,9 +395,15 @@ export default function ProfileEditPage() {
           <Collapsible icon={Contact} title="Coordonnées" filled={sec.adresse} total={tot.adresse} open={!!open.adresse} onToggle={() => toggle('adresse')}>
             <input className={inputCls} type="tel" inputMode="numeric" value={form.phone} onChange={(e) => set('phone', formatPhone(e.target.value))} placeholder="Téléphone" />
             <input className={inputCls} type="tel" inputMode="numeric" value={form.phone2} onChange={(e) => set('phone2', formatPhone(e.target.value))} placeholder="Téléphone secondaire" />
-            <div>
-              <input className={`${inputCls} cursor-not-allowed opacity-70`} value={form.email} readOnly placeholder="Email" />
-              <p className="mt-1 px-1 text-xs text-muted-foreground">Modifiable dans Réglages › Connexion &amp; sécurité</p>
+            <div className="relative" data-email-field>
+              <button type="button" onClick={() => setEmailInfo((o) => !o)} className={`${inputCls} flex items-center text-left`}>
+                <span className={form.email ? 'truncate' : 'text-muted-foreground'}>{form.email || 'Email'}</span>
+              </button>
+              {emailInfo && (
+                <div className="absolute inset-x-0 top-0 z-20 rounded-xl border border-border bg-background px-4 py-[7px] text-base leading-snug text-muted-foreground shadow-md">
+                  Modifiable dans Réglages › Connexion &amp; sécurité
+                </div>
+              )}
             </div>
             <input className={inputCls} value={form.address} onChange={(e) => set('address', e.target.value)} placeholder="Adresse" />
             <input className={inputCls} value={form.address2} onChange={(e) => set('address2', e.target.value)} placeholder="Complément d'adresse" />
