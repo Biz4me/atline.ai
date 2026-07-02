@@ -15,9 +15,10 @@ const frText = (t: string) => t.replace(/ ([:;!?])/g, TH + '$1').replace(new Reg
 
 import { ChatChoices, AtlasDraftCard, type PlanItem } from '@/components/atlas-plan-card'
 import { ProfileFormCard } from '@/components/atlas-profile-form'
+import { WhyValidateCard } from '@/components/atlas-why-card'
 
 type Choice = { label: string; value: string }
-type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[]; choices?: Choice[]; item?: PlanItem; draft?: { contactId: string; prenom: string; channel: string; phone: string | null; email: string | null }; profileForm?: { me: Record<string, unknown> } }
+type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[]; choices?: Choice[]; item?: PlanItem; draft?: { contactId: string; prenom: string; channel: string; phone: string | null; email: string | null }; profileForm?: { me: Record<string, unknown> }; whyCard?: { text: string; superseded?: boolean; done?: boolean } }
 
 // Indicateur « Atlas réfléchit » — 3 points en cascade
 function TypingDots() {
@@ -40,6 +41,13 @@ const displayUserText = (content: string): string => {
   if (content.startsWith('[SESSION_POURQUOI]')) return 'Je veux travailler mon pourquoi avec toi'
   if (content.startsWith('Voici mes priorités') || content.startsWith('Avant de courir après les contacts') || content.startsWith("Je n'ai aucune priorité")) return 'Mon plan du jour'
   return content
+}
+
+// Le marqueur technique [[POURQUOI]] (+ le pourquoi final) ne doit jamais s'afficher : on le retire à l'écran.
+const WHY_MARK = '[[POURQUOI]]'
+const stripWhyMarker = (content: string): string => {
+  const k = content.indexOf(WHY_MARK)
+  return k >= 0 ? content.slice(0, k).replace(/\s+$/, '') : content
 }
 
 const suggestions = [
@@ -141,7 +149,7 @@ export default function AtlasPage() {
           setMsgs(
             raw.map((m) => ({
               from: m.role === 'USER' ? 'user' : 'atlas',
-              text: m.role === 'USER' ? displayUserText(m.content) : m.content,
+              text: m.role === 'USER' ? displayUserText(m.content) : stripWhyMarker(m.content),
             })),
           )
           scrollToBottom()
@@ -154,6 +162,12 @@ export default function AtlasPage() {
               // Reprise transparente : on rebranche le composeur sur la session, la conversation continue naturellement.
               sessionRef.current = 'why'
               whyTurnsRef.current = raw.filter((m) => m.role === 'USER' && !m.content.startsWith('[SESSION_POURQUOI]')).length
+              // Si Atlas avait déjà proposé une formulation validée (dernier marqueur), on rétablit la carte « Je valide ».
+              const lastMarked = [...raw].reverse().find((m) => m.role !== 'USER' && m.content.includes(WHY_MARK))
+              if (lastMarked) {
+                const pourquoi = lastMarked.content.slice(lastMarked.content.indexOf(WHY_MARK) + WHY_MARK.length).trim()
+                if (pourquoi) setMsgs((prev) => [...prev, { from: 'atlas', text: '', whyCard: { text: pourquoi } }])
+              }
             }
           }
         }
@@ -387,10 +401,11 @@ export default function AtlasPage() {
       if (!full) full = "Je n'ai pas de réponse pour l'instant. Reformule ta question ?"
       streamDone = true
       await donePromise
-      // Atlas a validé le pourquoi (marqueur présent) → on l'enregistre en silence.
+      // Atlas a proposé sa formulation validée (marqueur présent) → carte de validation « Je valide ».
       if (isWhy && markerIdx >= 0) {
-        if (!revealTarget().trim()) setLastAtlas('Parfait, c’est clair maintenant.')
-        await saveWhyFromChat(full.slice(markerIdx + MARK.length).trim())
+        if (!revealTarget().trim()) setLastAtlas('Voilà, je crois qu’on y est.')
+        const pourquoi = full.slice(markerIdx + MARK.length).trim()
+        if (pourquoi) appendWhyCard(pourquoi)
       }
       afterDone?.()
     } catch {
@@ -537,25 +552,40 @@ TECHNIQUE (invisible pour moi, ne l'explique jamais)${NB}: le jour où je VALIDE
   }
 
   // Réponse de l'utilisateur pendant la session : il tape simplement, comme une vraie conversation.
-  // Atlas creuse, récapitule, et décide lui-même quand proposer la formulation puis enregistrer (marqueur [[POURQUOI]]).
+  // Atlas creuse, récapitule, et décide lui-même quand proposer sa formulation (→ carte de validation).
   const whyAnswer = (v: string) => {
     setInput('')
     whyTurnsRef.current += 1
+    // L'utilisateur préfère continuer à parler plutôt que valider → la proposition en cours est dépassée, Atlas affine.
+    setMsgs((prev) => prev.map((m) => (m.whyCard && !m.whyCard.done ? { ...m, whyCard: { ...m.whyCard, superseded: true } } : m)))
     sendMsg(v)
   }
 
-  // Atlas a jugé le pourquoi validé (marqueur émis) → enregistrement silencieux dans le profil.
-  const saveWhyFromChat = async (pourquoi: string) => {
-    sessionRef.current = null
-    if (!pourquoi.trim()) return
+  // Atlas a proposé une formulation validée ensemble (marqueur émis) → carte de validation (non régénérable).
+  // La session reste active : si l'utilisateur écrit encore, la carte est dépassée et Atlas affine ; s'il tape « Je valide », on enregistre.
+  const appendWhyCard = (text: string) => {
+    setMsgs((prev) => [...prev, { from: 'atlas', text: '', whyCard: { text } }])
+    setTimeout(scrollToBottom, 80)
+  }
+
+  const validateWhyCard = async (idx: number, text: string): Promise<boolean> => {
+    let ok = false
     try {
       const me = await fetch('/api/me').then((x) => (x.ok ? x.json() : null))
-      const coaching = { ...(me?.coaching && typeof me.coaching === 'object' ? me.coaching : {}), why: pourquoi.trim() }
+      const coaching = { ...(me?.coaching && typeof me.coaching === 'object' ? me.coaching : {}), why: text }
       const r = await fetch('/api/me', { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ coaching }) })
-      if (r.ok) { try { sessionStorage.removeItem('profile_draft_v1') } catch { /* ignore */ } }
+      ok = r.ok
+      if (ok) { try { sessionStorage.removeItem('profile_draft_v1') } catch { /* ignore */ } }
     } catch { /* ignore */ }
-    setMsgs((prev) => [...prev, { from: 'atlas', text: '✓ Ton pourquoi est enregistré dans ton profil — ton point d’ancrage.' }])
-    setTimeout(scrollToBottom, 60)
+    if (ok) {
+      sessionRef.current = null
+      setMsgs((prev) => [
+        ...prev.map((m, j) => (j === idx && m.whyCard ? { ...m, whyCard: { ...m.whyCard, done: true } } : m)),
+        { from: 'atlas', text: `C’est gravé dans ton profil ✓ Ton pourquoi sera ton point d’ancrage${NB}: on y reviendra chaque fois que tu douteras ou qu’on préparera un message important.` },
+      ])
+      setTimeout(scrollToBottom, 60)
+    }
+    return ok
   }
 
   // Sélection d'un rond : retire les choix, renvoie le choix en bulle, et branche (machine à états du flux).
@@ -853,6 +883,8 @@ TECHNIQUE (invisible pour moi, ne l'explique jamais)${NB}: le jour où je VALIDE
                   <AtlasDraftCard contactId={m.draft.contactId} prenom={m.draft.prenom} channel={m.draft.channel} phone={m.draft.phone} email={m.draft.email} />
                 ) : m.profileForm ? (
                   <ProfileFormCard me={m.profileForm.me} onSaved={(n) => { setMsgs((prev) => [...prev, { from: 'atlas', text: `C'est noté dans ton profil ✓ (${n} info${n > 1 ? 's' : ''}). Plus je te connais, mieux je te coache.` }]); setTimeout(scrollToBottom, 60) }} />
+                ) : m.whyCard ? (
+                  <WhyValidateCard text={m.whyCard.text} superseded={m.whyCard.superseded} done={m.whyCard.done} onValidate={() => validateWhyCard(i, m.whyCard!.text)} />
                 ) : m.text === '' ? (
                   <TypingDots />
                 ) : (
