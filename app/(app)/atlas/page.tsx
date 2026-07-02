@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { SendHorizontal, Mic, History, Plus, X, ChevronDown, MoreHorizontal, Pencil, Trash2, Paperclip, FileText, Users, Loader2, Zap, Target, SquarePen, UserRound } from 'lucide-react'
+import { SendHorizontal, Mic, History, Plus, X, ChevronDown, MoreHorizontal, Pencil, Trash2, Paperclip, FileText, Users, Loader2, Zap, Target, SquarePen, UserRound, Compass } from 'lucide-react'
 import { cn } from '@/lib/utils'
 import { toast } from 'sonner'
 import { AppComposer } from '@/components/mobile/app-composer'
@@ -15,9 +15,10 @@ const frText = (t: string) => t.replace(/ ([:;!?])/g, TH + '$1').replace(new Reg
 
 import { ChatChoices, AtlasDraftCard, type PlanItem } from '@/components/atlas-plan-card'
 import { ProfileFormCard } from '@/components/atlas-profile-form'
+import { WhyDraftCard } from '@/components/atlas-why-card'
 
 type Choice = { label: string; value: string }
-type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[]; choices?: Choice[]; item?: PlanItem; draft?: { contactId: string; prenom: string; channel: string; phone: string | null; email: string | null }; profileForm?: { me: Record<string, unknown> } }
+type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[]; choices?: Choice[]; whyChoice?: boolean; item?: PlanItem; draft?: { contactId: string; prenom: string; channel: string; phone: string | null; email: string | null }; profileForm?: { me: Record<string, unknown> }; whyDraft?: { conversationId: string } }
 
 // Indicateur « Atlas réfléchit » — 3 points en cascade
 function TypingDots() {
@@ -46,7 +47,9 @@ type Conv = { id: string; title: string | null; updatedAt: string }
 
 export default function AtlasPage() {
   const router = useRouter()
-  const c = useSearchParams().get('c')
+  const sp = useSearchParams()
+  const c = sp.get('c')
+  const sessionParam = sp.get('session')
   const [msgs, setMsgs] = useState<Msg[]>([])
   const [input, setInput] = useState('')
   const [histMounted, setHistMounted] = useState(false)
@@ -104,6 +107,9 @@ export default function AtlasPage() {
   const captureRef = useRef<{ field: string; item: PlanItem } | null>(null)
   const pendingRef = useRef<{ field: string; value: string; item: PlanItem } | null>(null)
   const gatherRef = useRef<{ queue: string[]; item: PlanItem | null }>({ queue: [], item: null })
+  // Session profonde en cours (ex. « le pourquoi ») : le composeur alimente la session au lieu du chat libre.
+  const sessionRef = useRef<null | 'why'>(null)
+  const whyTurnsRef = useRef(0)
 
   // Charge la conversation de l'URL (?c=) — saute si on vient de la créer (loadedRef).
   useEffect(() => {
@@ -188,9 +194,9 @@ export default function AtlasPage() {
     if (c) localStorage.setItem('atlas-last-conv', c)
   }, [c])
 
-  // Au retour sur /atlas (sans ?c=), reprend la dernière conversation en cours
+  // Au retour sur /atlas (sans ?c=), reprend la dernière conversation en cours — sauf si on démarre une session.
   useEffect(() => {
-    if (c) return
+    if (c || sessionParam) return
     const last = localStorage.getItem('atlas-last-conv')
     if (last) {
       setLoadingConv(true)
@@ -198,6 +204,21 @@ export default function AtlasPage() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [])
+
+  // Démarrage d'une session profonde depuis un lien (?session=why), ex. bouton « Travaille-le avec Atlas » du profil.
+  const sessionStartedRef = useRef(false)
+  const startWhyRef = useRef<() => void>(() => {})
+  useEffect(() => {
+    if (sessionParam !== 'why' || sessionStartedRef.current || loadingConv) return
+    sessionStartedRef.current = true
+    // On repart d'un chat vierge pour la session, puis on retire le paramètre de l'URL.
+    localStorage.removeItem('atlas-last-conv')
+    loadedRef.current = null
+    setMsgs([])
+    router.replace('/atlas', { scroll: false })
+    setTimeout(() => startWhyRef.current(), 100)
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [sessionParam, loadingConv])
 
   // Historique mobile — déploiement type menu « Plus » de l'accueil (slide depuis le header + backdrop)
   const openHist = () => {
@@ -269,7 +290,7 @@ export default function AtlasPage() {
       return next
     })
 
-  const sendMsg = async (text: string, display?: string) => {
+  const sendMsg = async (text: string, display?: string, afterDone?: () => void) => {
     const q = text.trim()
     if (!q || streaming) return
 
@@ -336,11 +357,13 @@ export default function AtlasPage() {
       if (!full) full = "Je n'ai pas de réponse pour l'instant. Reformule ta question ?"
       streamDone = true
       await donePromise
+      afterDone?.()
     } catch {
       setLastAtlas("Désolé, je n'ai pas pu répondre à l'instant. Réessaie dans un moment.")
       streamDone = true
       resolveDone()
       setStreaming(false)
+      afterDone?.()
     }
   }
 
@@ -442,6 +465,55 @@ export default function AtlasPage() {
     setTimeout(scrollToBottom, 60)
   }
 
+  // ── Session profonde « le pourquoi » : Atlas creuse en conversation, puis synthétise une formulation
+  //    que l'utilisateur régénère et valide → Atlas l'enregistre dans le profil (coaching.why). ──
+  const startWhySession = () => {
+    if (streaming) return
+    sessionRef.current = 'why'
+    whyTurnsRef.current = 0
+    const frame = `[SESSION_POURQUOI] Tu ouvres une courte session de coaching pour m'aider à formuler MON POURQUOI profond${NB}: la vraie motivation de fond derrière mon activité, au-delà de "gagner de l'argent".
+Déroulé${NB}: accueille-moi chaleureusement en UNE phrase, puis pose-moi UNE seule question ouverte pour démarrer (par ex. "qu'est-ce qui t'a vraiment fait dire oui à cette activité ?").
+Ensuite, à chacune de mes réponses, RE-CREUSE une fois avec bienveillance (technique des 5 pourquoi${NB}: "et pourquoi c'est important pour toi ?", "qu'est-ce que ça changerait concrètement dans ta vie ?"), TOUJOURS une question à la fois.
+Reste très court (2-3 phrases max), chaleureux, jamais de liste. Ne formule PAS toi-même mon pourquoi${NB}: c'est moi qui déclencherai la synthèse quand je serai prêt. Termine toujours par ta question.`
+    sendMsg(frame, 'Je veux travailler mon pourquoi avec toi')
+  }
+
+  // Réponse de l'utilisateur pendant la session (le composeur alimente la session, pas le chat libre).
+  const whyAnswer = (v: string) => {
+    setInput('')
+    whyTurnsRef.current += 1
+    const turn = whyTurnsRef.current
+    // Si un bloc « creuser / synthétiser » traînait, l'utilisateur a choisi de continuer à écrire → on le retire.
+    setMsgs((prev) => prev.map((m) => (m.whyChoice ? { ...m, choices: undefined, whyChoice: false } : m)))
+    sendMsg(v, undefined, () => { if (turn >= 2) appendWhyChoice() })
+  }
+
+  // À partir de 2 échanges, Atlas propose de creuser encore ou de synthétiser (rond sélectif).
+  const appendWhyChoice = () => {
+    setMsgs((prev) => {
+      if (prev.some((m) => m.whyChoice && m.choices)) return prev
+      return [...prev, { from: 'atlas', text: '', whyChoice: true, choices: [{ label: 'Creusons encore un peu', value: 'why:more' }, { label: '✅ Formule mon pourquoi', value: 'why:synth' }] }]
+    })
+    setTimeout(scrollToBottom, 60)
+  }
+
+  const handleWhyChoice = (value: string, label: string, idx: number) => {
+    setMsgs((prev) => [...prev.map((m, j) => (j === idx ? { ...m, choices: undefined, whyChoice: false } : m)), { from: 'user', text: label }])
+    if (value === 'why:more') {
+      setTimeout(() => { setMsgs((prev) => [...prev, { from: 'atlas', text: "Vas-y, je t'écoute — dis-m'en plus." }]); scrollToBottom() }, 200)
+      return
+    }
+    if (value === 'why:synth') synthesizeWhy()
+  }
+
+  const synthesizeWhy = () => {
+    const convId = c
+    if (!convId) { setMsgs((prev) => [...prev, { from: 'atlas', text: "Il me faut encore un peu d'échange avant de formuler ça juste — dis-m'en un peu plus." }]); return }
+    sessionRef.current = null
+    setMsgs((prev) => [...prev, { from: 'atlas', text: "Laisse-moi relire ce que tu m'as confié et te le refléter…" }, { from: 'atlas', text: '', whyDraft: { conversationId: convId } }])
+    setTimeout(scrollToBottom, 80)
+  }
+
   // Sélection d'un rond : retire les choix, renvoie le choix en bulle, et branche (machine à états du flux).
   const handleChoice = (item: PlanItem, value: string, label: string, idx: number) => {
     setMsgs((prev) => [...prev.map((m, j) => (j === idx ? { ...m, choices: undefined } : m)), { from: 'user', text: label }])
@@ -528,6 +600,7 @@ export default function AtlasPage() {
     const v = input.trim()
     if (!v || streaming) return
     if (captureRef.current) { handleCapture(v); return }
+    if (sessionRef.current === 'why') { whyAnswer(v); return }
     sendMsg(v)
   }
 
@@ -539,6 +612,9 @@ export default function AtlasPage() {
     pickMantra()
     if (c) router.push('/atlas')
   }
+
+  // Permet à l'effet ?session=why de déclencher la session une fois la fonction définie.
+  startWhyRef.current = startWhySession
 
   // Historique + nouveau chat pilotés depuis la barre du haut globale (via événements)
   const toggleHistRef = useRef(toggleHist); toggleHistRef.current = toggleHist
@@ -695,6 +771,7 @@ export default function AtlasPage() {
                   { icon: Mic, label: 'Simuler un appel avec Aria', run: () => router.push('/aria') },
                   { icon: SquarePen, label: 'Créer un post avec Nova', run: () => router.push('/nova') },
                   { icon: UserRound, label: 'Compléter mon profil', run: () => showProfileForm() },
+                  { icon: Compass, label: 'Travailler mon pourquoi', run: () => startWhySession() },
                 ].map(({ icon: Icon, label, run }) => (
                   <button
                     key={label}
@@ -722,11 +799,21 @@ export default function AtlasPage() {
                   <div className="max-w-[82%] whitespace-pre-line rounded-2xl rounded-br-md bg-primary px-3.5 py-2.5 text-lg leading-[1.4] text-primary-foreground lg:text-sm">
                     {frText(m.text)}
                   </div>
+                ) : m.choices && m.whyChoice ? (
+                  <div className="flex w-full flex-col gap-2">
+                    {m.text && <p className="text-lg leading-[1.65] text-foreground lg:text-sm">{m.text}</p>}
+                    <ChatChoices choices={m.choices} onPick={(value, label) => handleWhyChoice(value, label, i)} />
+                  </div>
                 ) : m.choices && m.item ? (
                   <div className="flex w-full flex-col gap-2">
                     {m.text && <p className="text-lg leading-[1.65] text-foreground lg:text-sm">{m.text}</p>}
                     <ChatChoices choices={m.choices} onPick={(value, label) => handleChoice(m.item!, value, label, i)} />
                   </div>
+                ) : m.whyDraft ? (
+                  <WhyDraftCard
+                    conversationId={m.whyDraft.conversationId}
+                    onSaved={() => { setMsgs((prev) => [...prev, { from: 'atlas', text: `Voilà ton pourquoi, gravé dans ton profil ✓ C'est ton point d'ancrage${NB}: on y reviendra chaque fois que tu douteras ou qu'on préparera un message important.` }]); setTimeout(scrollToBottom, 60) }}
+                  />
                 ) : m.draft ? (
                   <AtlasDraftCard contactId={m.draft.contactId} prenom={m.draft.prenom} channel={m.draft.channel} phone={m.draft.phone} email={m.draft.email} />
                 ) : m.profileForm ? (

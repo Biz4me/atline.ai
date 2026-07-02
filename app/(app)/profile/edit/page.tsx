@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useRef } from 'react'
 import { useRouter } from 'next/navigation'
-import { ChevronLeft, ChevronDown, Check, X, Loader2, User as UserIcon, Contact, Sparkles, Target, Camera, Trash2, Share2 } from 'lucide-react'
+import { ChevronLeft, ChevronDown, Check, X, Loader2, User as UserIcon, Contact, Sparkles, Target, Camera, Trash2, Share2, Compass } from 'lucide-react'
 import { signOut } from 'next-auth/react'
 import { Card } from '@/components/card'
 import { SelectMenu } from '@/components/select-menu'
@@ -452,7 +452,24 @@ export default function ProfileEditPage() {
 
           {/* 4 — Ton coaching (contexte MLM pour Atlas) */}
           <Collapsible icon={Target} title="Ton coaching" filled={sec.coaching} total={tot.coaching} open={!!open.coaching} onToggle={() => toggle('coaching')}>
-            <AutoTextarea className={`${inputCls} min-h-[72px] resize-none overflow-hidden`} value={form.coaching.why ?? ''} onChange={(v) => setCoaching('why', v)} placeholder="Ton pourquoi" />
+            {/* Le pourquoi = champ PROFOND : il se travaille en session avec Atlas (pas en saisie libre) */}
+            {form.coaching.why ? (
+              <div className="rounded-xl border border-border bg-background px-4 py-3">
+                <p className="mb-1 text-xs font-semibold text-muted-foreground">Ton pourquoi</p>
+                <p className="whitespace-pre-wrap text-lg italic leading-relaxed text-foreground lg:text-sm">{form.coaching.why}</p>
+                <button type="button" onClick={() => router.push('/atlas?session=why')} className="mt-2.5 flex items-center gap-1.5 text-sm font-semibold text-primary">
+                  <Compass className="size-3.5" /> Retravailler avec Atlas
+                </button>
+              </div>
+            ) : (
+              <button type="button" onClick={() => router.push('/atlas?session=why')} className="flex w-full items-center gap-3 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-left transition-colors active:bg-primary/10">
+                <Compass className="size-5 shrink-0 text-primary" />
+                <span className="min-w-0">
+                  <span className="block text-lg font-semibold text-foreground lg:text-sm">Ton pourquoi</span>
+                  <span className="block text-sm text-muted-foreground">Travaille-le avec Atlas{' '}: il t&apos;aide à le formuler en profondeur</span>
+                </span>
+              </button>
+            )}
             <AutoTextarea className={`${inputCls} min-h-[72px] resize-none overflow-hidden`} value={form.coaching.background ?? ''} onChange={(v) => setCoaching('background', v)} placeholder="Ton parcours" />
             <AutoTextarea className={`${inputCls} min-h-[72px] resize-none overflow-hidden`} value={form.coaching.challenge ?? ''} onChange={(v) => setCoaching('challenge', v)} placeholder="Ton principal défi — là où tu bloques en ce moment" />
             <SelectMenu className={inputCls} placeholder="Ta disponibilité" value={form.coaching.availability ?? ''} onChange={(v) => setCoaching('availability', v)} options={[{ value: 'Temps plein', label: 'Temps plein' }, { value: 'Temps partiel', label: 'Temps partiel' }, { value: 'Quelques heures / semaine', label: 'Quelques heures / semaine' }, { value: 'Soirs & week-ends', label: 'Soirs & week-ends' }]} />
