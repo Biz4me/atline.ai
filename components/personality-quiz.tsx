@@ -1,7 +1,7 @@
 'use client'
 
 import { useMemo, useState } from 'react'
-import { ChevronLeft, Check } from 'lucide-react'
+import { ChevronLeft, Check, X } from 'lucide-react'
 
 type Color = 'ROUGE' | 'VERT' | 'BLEU' | 'JAUNE'
 
@@ -148,14 +148,17 @@ export function PersonalityQuiz({ onClose, onResult }: { onClose: () => void; on
   const progress = phase === 'quiz' ? (step + 1) / questions.length : 1
 
   return (
-    <div className="fixed inset-0 z-[80] flex flex-col bg-background" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
+    <div className="fixed inset-0 z-[80] flex flex-col bg-background animate-slide-in-right" style={{ paddingBottom: 'env(safe-area-inset-bottom)' }}>
       {/* Header + progression */}
       <div className="shrink-0" style={{ paddingTop: 'max(0.5rem, env(safe-area-inset-top))' }}>
         <div className="flex items-center gap-2 px-2 py-2">
-          <button type="button" onClick={back} className="flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted">
+          <button type="button" onClick={back} aria-label="Précédent" className="flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted">
             <ChevronLeft className="size-5" />
           </button>
-          <p className="text-sm font-semibold text-foreground">Ta couleur de personnalité</p>
+          <p className="flex-1 text-lg font-semibold text-foreground">Ta couleur de personnalité</p>
+          <button type="button" onClick={onClose} aria-label="Fermer" className="flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted">
+            <X className="size-5" />
+          </button>
         </div>
         {phase !== 'result' && (
           <div className="h-1 w-full bg-muted">
@@ -170,10 +173,10 @@ export function PersonalityQuiz({ onClose, onResult }: { onClose: () => void; on
           <div className="grid size-24 place-items-center rounded-full text-3xl font-extrabold text-white" style={{ backgroundColor: PROFILES[result].color }}>
             <Check className="size-10" />
           </div>
-          <h1 className="mt-5 font-display text-[28px] font-extrabold leading-tight" style={{ color: PROFILES[result].color }}>
+          <h1 className="mt-5 font-display text-[27px] font-extrabold leading-tight" style={{ color: PROFILES[result].color }}>
             Tu es {PROFILES[result].name}
           </h1>
-          <p className="mt-3 max-w-sm text-sm leading-relaxed text-muted-foreground">{PROFILES[result].result}</p>
+          <p className="mt-3 max-w-sm text-lg leading-relaxed text-muted-foreground">{PROFILES[result].result}</p>
           <div className="mt-auto w-full pb-6 pt-8">
             <button
               type="button"
@@ -182,7 +185,7 @@ export function PersonalityQuiz({ onClose, onResult }: { onClose: () => void; on
             >
               C'est tout moi
             </button>
-            <button type="button" onClick={() => { setPhase('quiz'); setStep(0); setAnswers([]); setResult(null) }} className="mt-3 w-full py-2 text-sm font-medium text-muted-foreground">
+            <button type="button" onClick={() => { setPhase('quiz'); setStep(0); setAnswers([]); setResult(null) }} className="mt-3 w-full py-2 text-base font-medium text-muted-foreground">
               Refaire le test
             </button>
           </div>
@@ -205,7 +208,7 @@ export function PersonalityQuiz({ onClose, onResult }: { onClose: () => void; on
                     className="flex w-full items-center gap-3 rounded-2xl border border-border bg-surface px-4 py-4 text-left shadow-card transition-colors active:bg-muted"
                   >
                     <span className="size-6 shrink-0 rounded-full" style={{ backgroundColor: PROFILES[c].color }} />
-                    <span className="text-sm font-semibold text-foreground">{PROFILES[c].name}</span>
+                    <span className="text-lg font-semibold text-foreground">{PROFILES[c].name}</span>
                   </button>
                 ))}
               </div>
@@ -220,7 +223,7 @@ export function PersonalityQuiz({ onClose, onResult }: { onClose: () => void; on
                     key={opt.text}
                     type="button"
                     onClick={() => answer(opt.color)}
-                    className="w-full rounded-2xl border border-border bg-surface px-4 py-4 text-left text-sm font-medium text-foreground shadow-card transition-colors active:bg-muted active:border-primary"
+                    className="w-full rounded-2xl border border-border bg-surface px-4 py-4 text-left text-lg font-medium text-foreground shadow-card transition-colors active:bg-muted active:border-primary"
                   >
                     {opt.text}
                   </button>
