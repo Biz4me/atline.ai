@@ -13,9 +13,9 @@ const BUCKET_LABEL: Record<string, string> = { PRESENTER: 'Présenter', FORMER: 
 const TH = String.fromCharCode(0x202F), NB = String.fromCharCode(0xA0), EM = String.fromCharCode(0x2014)
 const frText = (t: string) => t.replace(/ ([:;!?])/g, TH + '$1').replace(new RegExp(' ' + EM + ' ', 'g'), NB + EM + ' ')
 
-import { AtlasPlanCard } from '@/components/atlas-plan-card'
+import { AtlasPlanCard, AtlasActionCard, type PlanItem } from '@/components/atlas-plan-card'
 
-type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[]; card?: 'plan' }
+type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[]; card?: 'plan' | 'action'; action?: PlanItem }
 
 // Indicateur « Atlas réfléchit » — 3 points en cascade
 function TypingDots() {
@@ -518,7 +518,9 @@ export default function AtlasPage() {
                     {frText(m.text)}
                   </div>
                 ) : m.card === 'plan' ? (
-                  <AtlasPlanCard />
+                  <AtlasPlanCard onPick={(item) => { setMsgs((prev) => [...prev, { from: 'user', text: item.headline }, { from: 'atlas', text: '', card: 'action', action: item }]); setTimeout(scrollToBottom, 50) }} />
+                ) : m.card === 'action' && m.action ? (
+                  <AtlasActionCard item={m.action} />
                 ) : m.text === '' ? (
                   <TypingDots />
                 ) : (

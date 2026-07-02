@@ -12,6 +12,7 @@ export const dynamic = 'force-dynamic'
 type Cand = {
   contactId: string
   name: string
+  prenom: string
   initials: string
   accent: string
   level: number
@@ -85,7 +86,7 @@ export async function GET() {
 
   const push = (c: typeof contacts[number], level: number, action: string, headline: string, reason: string, channel: string | null) => {
     cands.push({
-      contactId: c.id, name: c.name, initials: initialsOf(c), accent: c.accent ?? '#F97316',
+      contactId: c.id, name: c.name, prenom: prenom(c), initials: initialsOf(c), accent: c.accent ?? '#F97316',
       level, priority: Math.round(opportunity(c) * potentielMult(c.qualification)),
       action, headline, reason, channel, stage: c.prospectStage ?? c.partnerStage ?? '',
     })
