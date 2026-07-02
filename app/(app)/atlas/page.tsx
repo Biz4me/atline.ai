@@ -13,9 +13,9 @@ const BUCKET_LABEL: Record<string, string> = { PRESENTER: 'Présenter', FORMER: 
 const TH = String.fromCharCode(0x202F), NB = String.fromCharCode(0xA0), EM = String.fromCharCode(0x2014)
 const frText = (t: string) => t.replace(/ ([:;!?])/g, TH + '$1').replace(new RegExp(' ' + EM + ' ', 'g'), NB + EM + ' ')
 
-import { AtlasPlanCard, AtlasActionCard, type PlanItem } from '@/components/atlas-plan-card'
+import { AtlasPlanCard } from '@/components/atlas-plan-card'
 
-type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[]; card?: 'plan' | 'action'; action?: PlanItem }
+type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[]; card?: 'plan' }
 
 // Indicateur « Atlas réfléchit » — 3 points en cascade
 function TypingDots() {
@@ -263,11 +263,11 @@ export default function AtlasPage() {
       return next
     })
 
-  const sendMsg = async (text: string) => {
+  const sendMsg = async (text: string, display?: string) => {
     const q = text.trim()
     if (!q || streaming) return
 
-    setMsgs((prev) => [...prev, { from: 'user', text: q }, { from: 'atlas', text: '' }])
+    setMsgs((prev) => [...prev, { from: 'user', text: display ?? q }, { from: 'atlas', text: '' }])
     setInput('')
     setStreaming(true)
     atBottomRef.current = true
@@ -518,9 +518,7 @@ export default function AtlasPage() {
                     {frText(m.text)}
                   </div>
                 ) : m.card === 'plan' ? (
-                  <AtlasPlanCard onPick={(item) => { setMsgs((prev) => [...prev, { from: 'user', text: item.headline }, { from: 'atlas', text: '', card: 'action', action: item }]); setTimeout(scrollToBottom, 50) }} />
-                ) : m.card === 'action' && m.action ? (
-                  <AtlasActionCard item={m.action} />
+                  <AtlasPlanCard onPick={(item) => sendMsg(`Je m'attaque à cette action de mon plan : « ${item.headline} » — ${item.reason} (contact : ${item.prenom}, étape : ${item.stage || 'à définir'}). Coache-moi à ta façon, en restant sur ce contact tout le long : dis-moi l'état d'esprit, et si j'hésite propose-moi de m'entraîner avec Aria ou de préparer un script avant que j'y aille.`, item.headline)} />
                 ) : m.text === '' ? (
                   <TypingDots />
                 ) : (
