@@ -401,7 +401,7 @@ export default function AtlasPage() {
       ? "Je n'ai aucune priorité urgente aujourd'hui d'après mes contacts. Dis-moi à ta voix, comme un coach, comment on avance (prospecter, enrichir ma liste, me former…) — une action à la fois."
       : 'Voici mes priorités du jour, déjà calculées et classées :\n'
         + items.map((it, i) => `${i + 1}. ${it.headline} — ${it.reason} (contact : ${it.prenom}, étape : ${it.stage || 'à définir'})`).join('\n')
-        + "\n\nPrésente-les-moi à ta voix comme un coach — ne me balance pas une liste, parle-moi. Commence par la plus importante et donne-moi l'état d'esprit en 1-2 phrases. Ne me propose PAS d'options toi-même : je vais choisir juste après."
+        + "\n\nPrésente-moi ça à ta voix, comme un coach — pas une liste, tu me parles. Concentre-toi sur la priorité n°1 : dis-moi juste l'état d'esprit à avoir, en 1-2 phrases courtes. RÈGLE ABSOLUE : ne termine PAS par une question, ne me demande PAS ce que je veux faire, ne propose AUCUNE option. Tu t'arrêtes net sur l'état d'esprit. C'est MOI qui pose la question suivante juste après."
     await sendMsg(ctx, 'Mon plan du jour')
     const top = items[0]
     if (top) startActionFlow(top)
