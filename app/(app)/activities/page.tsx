@@ -29,7 +29,7 @@ const BUCKET_LABEL: Record<string, string> = { PRESENTER: 'Présenter', FORMER: 
 
 type Support = { id: string; title: string; description: string | null; format: string; fileUrl: string; createdAt: string }
 type Activity = {
-  id: string; mlmName: string; rank: string; category: string; goal: string; produit: string; color: string; active: boolean
+  id: string; mlmName: string; rank: string; category: string; goal: string; produit: string; audience: string; color: string; active: boolean
   objectif: Record<string, string>
   links: Record<string, string>
   supports: Record<string, Support[]>
@@ -103,7 +103,7 @@ export default function ActivitiesPage() {
         method: 'PATCH',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({
-          mlmName: act.mlmName, rank: act.rank, category: act.category, produit: act.produit, links: act.links,
+          mlmName: act.mlmName, rank: act.rank, category: act.category, produit: act.produit, audience: act.audience, links: act.links,
           objectif: act.objectif?.target?.trim()
             ? { target: act.objectif.target.trim(), unit: act.objectif.unit || 'partenaires', period: act.objectif.period || 'mois' }
             : {},
@@ -176,6 +176,10 @@ export default function ActivitiesPage() {
               <label className="block">
                 <span className="mb-1.5 block text-base font-medium text-muted-foreground">Produit / offre phare <span className="text-muted-foreground/60">(Aria &amp; Nova)</span></span>
                 <input className={inputCls} value={act.produit} onChange={(e) => setField('produit', e.target.value)} placeholder="ex. Complément minceur, coaching 12 semaines…" />
+              </label>
+              <label className="block">
+                <span className="mb-1.5 block text-base font-medium text-muted-foreground">Audience cible <span className="text-muted-foreground/60">(Aria &amp; Nova)</span></span>
+                <textarea className={`${inputCls} min-h-[72px] resize-none`} value={act.audience} onChange={(e) => setField('audience', e.target.value)} placeholder="À qui tu t'adresses — ex. jeunes parents, sportifs, indépendants…" />
               </label>
             </div>
           </Card>

@@ -377,6 +377,7 @@ model UserMlmBusiness {
   goal          String?
   objectif      Json?
   produit       String?
+  audience      String?
   color         String
   initials      String
   active        Boolean  @default(true)

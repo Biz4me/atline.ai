@@ -49,6 +49,7 @@ export async function GET() {
       goal: biz.goal ?? '',
       objectif: (biz.objectif && typeof biz.objectif === 'object' && !Array.isArray(biz.objectif)) ? biz.objectif : {},
       produit: biz.produit ?? '',
+      audience: biz.audience ?? '',
       color: biz.color,
       active: biz.active,
       links: linkMap,
@@ -75,6 +76,7 @@ export async function PATCH(req: Request) {
   if (typeof body.category === 'string') data.category = body.category.trim() || 'coaching'
   if (typeof body.goal === 'string') data.goal = body.goal.trim() || null
   if (typeof body.produit === 'string') data.produit = body.produit.trim() || null
+  if (typeof body.audience === 'string') data.audience = body.audience.trim() || null
   if (body.objectif && typeof body.objectif === 'object' && !Array.isArray(body.objectif)) {
     const clean: Record<string, string> = {}
     for (const [k, v] of Object.entries(body.objectif)) {
