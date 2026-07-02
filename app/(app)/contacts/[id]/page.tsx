@@ -504,21 +504,21 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
             {/* Bloc 1 — Comment l'aborder (DISC + proximité) */}
             <div>
               <p className="mb-1.5 text-base font-semibold text-foreground">Comment l&apos;aborder</p>
-              <div className="flex gap-2">
-                {Object.entries(PERSO).map(([v, p]) => (
-                  <button key={v} type="button" onClick={() => setQ('personality', qual.personality === v ? '' : v)}
-                    className={cn('flex-1 rounded-xl py-2.5 text-base font-semibold transition-colors', qual.personality === v ? 'text-white' : 'border border-border bg-surface text-foreground')}
-                    style={qual.personality === v ? { backgroundColor: p.hex } : undefined}>{p.label}</button>
-                ))}
-              </div>
-              <div className="mt-2 flex gap-2">
-                {Object.entries(MARCHE).map(([v, m]) => (
-                  <button key={v} type="button" onClick={() => setQ('market', qual.market === v ? '' : v)}
-                    className={cn('flex-1 rounded-xl py-2.5 text-base font-semibold transition-colors', qual.market === v ? 'text-white' : 'border border-border bg-surface text-foreground')}
-                    style={qual.market === v ? { backgroundColor: m.hex } : undefined}>{m.label}</button>
-                ))}
-              </div>
+              {qual.personality && PERSO[qual.personality] ? (
+                <div className="flex items-center gap-3 rounded-xl border border-border bg-background px-4 py-2.5">
+                  <span className="grid size-8 shrink-0 place-items-center rounded-lg text-sm font-bold text-white" style={{ backgroundColor: PERSO[qual.personality].hex }}>{PERSO[qual.personality].label[0]}</span>
+                  <span className="flex-1 text-lg font-medium text-foreground">{PERSO[qual.personality].label}</span>
+                  <button type="button" onClick={() => setEvalOpen(true)} className="shrink-0 text-base font-semibold text-primary">Réévaluer</button>
+                </div>
+              ) : (
+                <button type="button" onClick={() => setEvalOpen(true)} className="flex w-full items-center justify-center gap-2 rounded-xl border border-dashed border-primary/40 bg-primary/5 px-4 py-3 text-base font-semibold text-primary">
+                  <Sparkles className="size-4" /> Évaluer la couleur (test 3 questions)
+                </button>
+              )}
               {qual.personality && PERSO[qual.personality] && <p className="mt-2 rounded-xl bg-muted/50 px-3 py-2 text-base leading-snug text-muted-foreground">{PERSO[qual.personality].approach}</p>}
+              <div className="mt-2">
+                <SelectMenu className={fieldCls} placeholder="Marché d'origine (proximité)" value={qual.market} onChange={(v) => setQ('market', v)} options={[{ value: 'CHAUD', label: 'Chaud' }, { value: 'TIEDE', label: 'Tiède' }, { value: 'FROID', label: 'Froid' }]} />
+              </div>
             </div>
             {/* Bloc 2 — Le contexte */}
             <div className="border-t border-border pt-3">
@@ -790,7 +790,7 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
           const res = await fetch(`/api/contacts/${id}`, { method: 'DELETE' })
           if (res.ok) { toast.success('Contact supprimé'); router.push('/contacts') } else toast.error('Échec de la suppression')
         }} />}
-      {evalOpen && <PersoEval onClose={() => setEvalOpen(false)} onResult={(color) => { save({ personality: color }, `Personnalité : ${PERSO[color].label}`); setEvalOpen(false) }} />}
+      {evalOpen && <PersoEval onClose={() => setEvalOpen(false)} onResult={(color) => { setQ('personality', color); setEvalOpen(false) }} />}
       {schedule && <ScheduleSheet mode={schedule} contactId={id} onClose={() => setSchedule(null)} onDone={load} />}
       {compose && <ComposeSheet contactId={id} channel={compose.channel} label={compose.label} phone={c.phone} email={c.email} autoDraft={compose.auto}
         onClose={() => setCompose(null)}
