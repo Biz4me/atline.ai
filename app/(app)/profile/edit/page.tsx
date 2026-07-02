@@ -284,12 +284,12 @@ export default function ProfileEditPage() {
   const sec = {
     identite: nf([form.firstName, form.lastName, form.gender, form.birthDate, form.phone]),
     quitues: nf([form.bio, form.personality, form.coaching.passions]),
-    coaching: nf([form.coaching.why, form.coaching.background, form.profession, form.education, form.coaching.audience, form.coaching.availability, form.coaching.level]),
+    coaching: nf([form.coaching.why, form.coaching.background, form.coaching.challenge, form.profession, form.education, form.coaching.audience, form.coaching.availability, form.coaching.level]),
     socials: SOCIALS_MAIN.filter((s) => form.socials[s.key] && String(form.socials[s.key]).trim()).length,
     adresse: nf([form.address, form.postal, form.city, form.country]),
   }
   // Champs optionnels exclus du calcul (tél. secondaire, complément d'adresse) → 100 % réellement atteignable
-  const tot = { identite: 5, quitues: 3, coaching: 7, socials: SOCIALS_MAIN.length, adresse: 4 }
+  const tot = { identite: 5, quitues: 3, coaching: 8, socials: SOCIALS_MAIN.length, adresse: 4 }
   // Complétion = tout le profil (somme des rubriques) → le libellé « Profil complété » est honnête
   const totalFilled = sec.identite + sec.quitues + sec.coaching + sec.socials + sec.adresse
   const totalFields = tot.identite + tot.quitues + tot.coaching + tot.socials + tot.adresse
@@ -423,6 +423,7 @@ export default function ProfileEditPage() {
           <Collapsible icon={Target} title="Ton activité & coaching" filled={sec.coaching} total={tot.coaching} open={!!open.coaching} onToggle={() => toggle('coaching')}>
             <AutoTextarea className={`${inputCls} min-h-[72px] resize-none overflow-hidden`} value={form.coaching.why ?? ''} onChange={(v) => setCoaching('why', v)} placeholder="Ton pourquoi" />
             <AutoTextarea className={`${inputCls} min-h-[72px] resize-none overflow-hidden`} value={form.coaching.background ?? ''} onChange={(v) => setCoaching('background', v)} placeholder="Ton parcours" />
+            <AutoTextarea className={`${inputCls} min-h-[72px] resize-none overflow-hidden`} value={form.coaching.challenge ?? ''} onChange={(v) => setCoaching('challenge', v)} placeholder="Ton principal défi — là où tu bloques en ce moment" />
             <input className={inputCls} value={form.profession} onChange={(e) => set('profession', e.target.value)} placeholder="Profession" />
             <SelectMenu className={inputCls} placeholder="Niveau d'études" value={form.education} onChange={(v) => set('education', v)} options={EDUCATIONS.map((o) => ({ value: o, label: o }))} />
             <AutoTextarea className={`${inputCls} min-h-[44px] resize-none overflow-hidden`} value={form.coaching.audience ?? ''} onChange={(v) => setCoaching('audience', v)} placeholder="Ton audience cible" />
