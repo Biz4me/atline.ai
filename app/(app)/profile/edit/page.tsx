@@ -292,14 +292,14 @@ export default function ProfileEditPage() {
   // Remplissage par rubrique (compteur / coche sur les cartes)
   const nf = (vals: (string | undefined)[]) => vals.filter((v) => v && String(v).trim()).length
   const sec = {
-    identite: nf([form.firstName, form.lastName, form.gender, form.birthDate]),
+    identite: nf([form.firstName, form.lastName, form.gender, form.birthDate, form.profession, form.education]),
     quitues: nf([form.bio, form.personality, form.coaching.passions]),
-    coaching: nf([form.coaching.why, form.coaching.background, form.coaching.challenge, form.profession, form.education, form.coaching.availability, form.coaching.level]),
+    coaching: nf([form.coaching.why, form.coaching.background, form.coaching.challenge, form.coaching.availability, form.coaching.level]),
     socials: SOCIALS_MAIN.filter((s) => form.socials[s.key] && String(form.socials[s.key]).trim()).length,
     adresse: nf([form.phone, form.address, form.postal, form.city, form.country]),
   }
   // Champs optionnels exclus du calcul (tél. secondaire, complément d'adresse) → 100 % réellement atteignable
-  const tot = { identite: 4, quitues: 3, coaching: 7, socials: SOCIALS_MAIN.length, adresse: 5 }
+  const tot = { identite: 6, quitues: 3, coaching: 5, socials: SOCIALS_MAIN.length, adresse: 5 }
   // Complétion = tout le profil (somme des rubriques) → le libellé « Profil complété » est honnête
   const totalFilled = sec.identite + sec.quitues + sec.coaching + sec.socials + sec.adresse
   const totalFields = tot.identite + tot.quitues + tot.coaching + tot.socials + tot.adresse
@@ -389,6 +389,8 @@ export default function ProfileEditPage() {
               <SelectMenu className={inputCls} placeholder="Mois" value={dob.m} onChange={(v) => setDobPart({ m: v })} options={DOB_MONTHS} />
               <SelectMenu className={inputCls} placeholder="Année" value={dob.y} onChange={(v) => setDobPart({ y: v })} options={DOB_YEARS} />
             </div>
+            <input className={inputCls} value={form.profession} onChange={(e) => set('profession', e.target.value)} placeholder="Profession" />
+            <SelectMenu className={inputCls} placeholder="Niveau d'études" value={form.education} onChange={(v) => set('education', v)} options={EDUCATIONS.map((o) => ({ value: o, label: o }))} />
           </Collapsible>
 
           {/* 2 — Coordonnées (tél + email + adresse) — aligné sur la fiche contact */}
@@ -453,8 +455,6 @@ export default function ProfileEditPage() {
             <AutoTextarea className={`${inputCls} min-h-[72px] resize-none overflow-hidden`} value={form.coaching.why ?? ''} onChange={(v) => setCoaching('why', v)} placeholder="Ton pourquoi" />
             <AutoTextarea className={`${inputCls} min-h-[72px] resize-none overflow-hidden`} value={form.coaching.background ?? ''} onChange={(v) => setCoaching('background', v)} placeholder="Ton parcours" />
             <AutoTextarea className={`${inputCls} min-h-[72px] resize-none overflow-hidden`} value={form.coaching.challenge ?? ''} onChange={(v) => setCoaching('challenge', v)} placeholder="Ton principal défi — là où tu bloques en ce moment" />
-            <input className={inputCls} value={form.profession} onChange={(e) => set('profession', e.target.value)} placeholder="Profession" />
-            <SelectMenu className={inputCls} placeholder="Niveau d'études" value={form.education} onChange={(v) => set('education', v)} options={EDUCATIONS.map((o) => ({ value: o, label: o }))} />
             <SelectMenu className={inputCls} placeholder="Ta disponibilité" value={form.coaching.availability ?? ''} onChange={(v) => setCoaching('availability', v)} options={[{ value: 'Temps plein', label: 'Temps plein' }, { value: 'Temps partiel', label: 'Temps partiel' }, { value: 'Quelques heures / semaine', label: 'Quelques heures / semaine' }, { value: 'Soirs & week-ends', label: 'Soirs & week-ends' }]} />
             <SelectMenu className={inputCls} placeholder="Ton expérience en MLM" value={form.coaching.level ?? ''} onChange={(v) => setCoaching('level', v)} options={[{ value: 'Débutant', label: 'Débutant' }, { value: 'Intermédiaire', label: 'Intermédiaire' }, { value: 'Confirmé', label: 'Confirmé' }, { value: 'Expert', label: 'Expert' }]} />
           </Collapsible>
