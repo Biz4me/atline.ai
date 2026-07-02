@@ -49,6 +49,28 @@ const THIRD: Record<Color, string> = {
   JAUNE: "Relationnel et bienveillant — veut aider, sans pression. Pour l'aborder : reste chaleureux, à l'écoute, et respecte son rythme.",
 }
 
+// Questions d'observation (3e personne) — pour évaluer un contact, pas soi-même
+const QUESTIONS_3P: { prompt: string; options: { text: string; color: Color }[] }[] = [
+  { prompt: "Quand on lui parle, qu'est-ce qui compte le plus pour lui/elle ?", options: [
+    { text: 'Aller au résultat, gagner', color: 'ROUGE' },
+    { text: "S'amuser, du contact, du fun", color: 'BLEU' },
+    { text: 'Aider, des relations sincères', color: 'JAUNE' },
+    { text: 'Comprendre, avoir des preuves', color: 'VERT' },
+  ] },
+  { prompt: 'Comment prend-il/elle ses décisions ?', options: [
+    { text: 'Vite et avec assurance', color: 'ROUGE' },
+    { text: "À l'instinct, à l'émotion", color: 'BLEU' },
+    { text: 'Lentement, sans pression', color: 'JAUNE' },
+    { text: 'Après avoir tout analysé', color: 'VERT' },
+  ] },
+  { prompt: "Qu'est-ce qui l'agace le plus ?", options: [
+    { text: 'Perdre son temps', color: 'ROUGE' },
+    { text: "La routine, l'ennui", color: 'BLEU' },
+    { text: 'Le conflit, la pression', color: 'JAUNE' },
+    { text: 'Le manque de détails', color: 'VERT' },
+  ] },
+]
+
 const QUESTIONS: { prompt: string; options: { text: string; color: Color }[] }[] = [
   { prompt: "Dans une conversation, tu…", options: [
     { text: "vas droit au but", color: 'ROUGE' },
@@ -135,8 +157,8 @@ export function PersonalityQuiz({ onClose, onResult, firstName = '', gender = ''
   const arche = (c: Color) => (gender === 'F' ? PROFILES[c].archetype.f : gender === 'N' ? PROFILES[c].archetype.n : PROFILES[c].archetype.m)
   // Options mélangées une fois (réduit le biais de position) — count limite le nombre de questions (ex. 3 pour un contact)
   const questions = useMemo(
-    () => (count ? QUESTIONS.slice(0, count) : QUESTIONS).map((q) => ({ prompt: q.prompt, options: [...q.options].sort(() => Math.random() - 0.5) })),
-    [count],
+    () => (subjectName ? QUESTIONS_3P : count ? QUESTIONS.slice(0, count) : QUESTIONS).map((q) => ({ prompt: q.prompt, options: [...q.options].sort(() => Math.random() - 0.5) })),
+    [count, subjectName],
   )
   const [phase, setPhase] = useState<'quiz' | 'tie' | 'result'>('quiz')
   const [step, setStep] = useState(0)
@@ -260,7 +282,9 @@ export function PersonalityQuiz({ onClose, onResult, firstName = '', gender = ''
             <>
               <p className="text-xs font-semibold uppercase tracking-widest text-primary">Départage</p>
               <h2 className="mt-2 font-display text-2xl font-semibold leading-tight text-foreground">
-                Tu es entre {tieOptions.map((c) => PROFILES[c].name).join(' et ')}. Lequel te ressemble le plus ?
+                {subjectName
+                  ? `${subjectName} est plutôt entre ${tieOptions.map((c) => PROFILES[c].name).join(' et ')}. Lequel lui ressemble le plus ?`
+                  : `Tu es entre ${tieOptions.map((c) => PROFILES[c].name).join(' et ')}. Lequel te ressemble le plus ?`}
               </h2>
               <div className="mt-6 flex flex-col gap-3">
                 {tieOptions.map((c) => (
@@ -273,7 +297,7 @@ export function PersonalityQuiz({ onClose, onResult, firstName = '', gender = ''
                     <span className="mt-1 size-6 shrink-0 rounded-full" style={{ backgroundColor: PROFILES[c].color }} />
                     <span className="min-w-0 flex-1">
                       <span className="block text-lg font-semibold text-foreground">{PROFILES[c].name} — {arche(c)}</span>
-                      <span className="mt-0.5 block text-base leading-snug text-muted-foreground">{PROFILES[c].caracterise}</span>
+                      <span className="mt-0.5 block text-base leading-snug text-muted-foreground">{subjectName ? THIRD[c].split(' Pour')[0] : PROFILES[c].caracterise}</span>
                     </span>
                   </button>
                 ))}
