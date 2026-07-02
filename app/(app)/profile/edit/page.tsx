@@ -428,7 +428,7 @@ export default function ProfileEditPage() {
             <SelectMenu className={inputCls} placeholder="Niveau d'études" value={form.education} onChange={(v) => set('education', v)} options={EDUCATIONS.map((o) => ({ value: o, label: o }))} />
             <AutoTextarea className={`${inputCls} min-h-[44px] resize-none overflow-hidden`} value={form.coaching.audience ?? ''} onChange={(v) => setCoaching('audience', v)} placeholder="Ton audience cible" />
             <SelectMenu className={inputCls} placeholder="Ta disponibilité" value={form.coaching.availability ?? ''} onChange={(v) => setCoaching('availability', v)} options={[{ value: 'Temps plein', label: 'Temps plein' }, { value: 'Temps partiel', label: 'Temps partiel' }, { value: 'Quelques heures / semaine', label: 'Quelques heures / semaine' }, { value: 'Soirs & week-ends', label: 'Soirs & week-ends' }]} />
-            <SelectMenu className={inputCls} placeholder="Ton niveau en MLM" value={form.coaching.level ?? ''} onChange={(v) => setCoaching('level', v)} options={[{ value: 'Débutant', label: 'Débutant' }, { value: 'Intermédiaire', label: 'Intermédiaire' }, { value: 'Confirmé', label: 'Confirmé' }, { value: 'Expert', label: 'Expert' }]} />
+            <SelectMenu className={inputCls} placeholder="Ton expérience en MLM" value={form.coaching.level ?? ''} onChange={(v) => setCoaching('level', v)} options={[{ value: 'Débutant', label: 'Débutant' }, { value: 'Intermédiaire', label: 'Intermédiaire' }, { value: 'Confirmé', label: 'Confirmé' }, { value: 'Expert', label: 'Expert' }]} />
           </Collapsible>
 
           {/* 4 — Réseaux sociaux (pour Nova) — 5 principaux + 4 optionnels */}
