@@ -5,7 +5,7 @@ import { useRouter } from 'next/navigation'
 import {
   ChevronLeft, Pencil, Phone, Mail, MapPin, Link2, Clock, Tag,
   MessageSquare, PhoneCall, CalendarPlus, Mic, Sparkles, ArrowRight, X, Plus,
-  MessageCircle, Bell, Share2, StickyNote,
+  MessageCircle, Bell, Share2, StickyNote, Check, ChevronDown, User as UserIcon,
 } from 'lucide-react'
 import { toast } from 'sonner'
 import { cn } from '@/lib/utils'
@@ -135,6 +135,7 @@ const normGender = (g: string) => (g === 'HOMME' || g === 'Homme' ? 'M' : g === 
 
 /* ── Conventions partagées avec le profil (masque tel, pays, date de naissance) ─── */
 const PAYS = ['France', 'Espagne', 'Allemagne', 'Italie']
+const fieldCls = 'w-full rounded-xl border border-border bg-background px-4 py-[7px] text-lg text-foreground outline-none placeholder:text-muted-foreground'
 const formatPhone = (raw: string) => raw.replace(/\D/g, '').slice(0, 10).replace(/(\d{2})(?=\d)/g, '$1 ').trim()
 const daysInMonth = (m: string, y: string) => { const mm = parseInt(m, 10); if (!mm) return 31; return new Date(parseInt(y, 10) || 2000, mm, 0).getDate() }
 const DOB_MONTHS = ['Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre'].map((l, i) => ({ value: String(i + 1).padStart(2, '0'), label: l }))
@@ -223,6 +224,26 @@ function Section({ title, action, children }: { title: string; action?: React.Re
         {action}
       </div>
       <div className="px-5 py-4">{children}</div>
+    </Card>
+  )
+}
+
+/* ── Carte pliante (charte profil) ────────────────────────────── */
+function Collapsible({ icon: Icon, title, filled, total, open, onToggle, children }: { icon: typeof UserIcon; title: string; filled: number; total: number; open: boolean; onToggle: () => void; children: React.ReactNode }) {
+  const done = total > 0 && filled >= total
+  return (
+    <Card className="overflow-hidden p-0">
+      <button type="button" onClick={onToggle} className={cn('flex w-full items-center gap-2.5 px-4 py-3.5', open && 'border-b border-border')}>
+        <Icon className="size-5 shrink-0 text-muted-foreground stroke-[1.5]" />
+        <p className="flex-1 text-left text-lg font-semibold text-foreground">{title}</p>
+        {done ? (
+          <span className="grid size-5 shrink-0 place-items-center rounded-full bg-[#22C55E] text-white"><Check className="size-3.5" /></span>
+        ) : (
+          <span className="shrink-0 text-base font-semibold text-muted-foreground">{filled}/{total}</span>
+        )}
+        <ChevronDown className={cn('size-4 shrink-0 text-muted-foreground transition-transform', open && 'rotate-180')} />
+      </button>
+      {open && <div className="flex flex-col gap-3 p-4">{children}</div>}
     </Card>
   )
 }
@@ -383,6 +404,32 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
     if (res.ok) await load()
   }, [id, load])
 
+  // ── Structure charte-profil (nouveau) : formulaire inline des familles perso du contact ──
+  const [pf, setPf] = useState({ firstName: '', lastName: '', gender: '', birthDate: '', profession: '', education: '', phone: '', phone2: '', email: '', address: '', address2: '', postal: '', city: '', country: '' })
+  const [pfOpen, setPfOpen] = useState<Record<string, boolean>>({})
+  const [pfDob, setPfDob] = useState({ d: '', m: '', y: '' })
+  useEffect(() => {
+    if (!contact) return
+    setPf({
+      firstName: contact.firstName ?? '', lastName: contact.lastName ?? '', gender: normGender(contact.gender ?? ''), birthDate: contact.birthDate ?? '',
+      profession: contact.profession ?? '', education: contact.education ?? '',
+      phone: formatPhone(contact.phone ?? ''), phone2: formatPhone(contact.phone2 ?? ''), email: contact.email ?? '',
+      address: contact.address ?? '', address2: contact.address2 ?? '', postal: contact.postal ?? '', city: contact.city ?? '', country: contact.country ?? '',
+    })
+    const [y, m, d] = (contact.birthDate || '').split('-')
+    setPfDob({ y: y ?? '', m: m ?? '', d: d ?? '' })
+  }, [contact])
+  const setPfField = (k: keyof typeof pf, v: string) => setPf((s) => ({ ...s, [k]: v }))
+  const setPfDobPart = (patch: Partial<{ d: string; m: string; y: string }>) => {
+    const next = { ...pfDob, ...patch }
+    if (next.d && parseInt(next.d, 10) > daysInMonth(next.m, next.y)) next.d = ''
+    setPfDob(next)
+    setPf((s) => ({ ...s, birthDate: next.y && next.m && next.d ? `${next.y}-${next.m}-${next.d}` : '' }))
+  }
+  const pfDobDays = Array.from({ length: daysInMonth(pfDob.m, pfDob.y) }, (_, i) => ({ value: String(i + 1).padStart(2, '0'), label: String(i + 1) }))
+  const pfToggle = (k: string) => setPfOpen((o) => ({ [k]: !o[k] }))
+  const pfNf = (vals: string[]) => vals.filter((v) => v && String(v).trim()).length
+
   if (loading) return <div className="flex min-h-dvh items-center justify-center text-sm text-muted-foreground">Chargement…</div>
   if (!contact) return <div className="flex min-h-dvh flex-col items-center justify-center gap-3"><p className="text-sm text-muted-foreground">Contact introuvable.</p><button onClick={() => router.back()} className="text-sm font-bold text-primary">Retour</button></div>
 
@@ -399,6 +446,51 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
         <button type="button" onClick={() => router.back()} className="-ml-1 flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"><ChevronLeft className="size-5 stroke-[1.5]" /></button>
         <p className="flex-1 text-center text-sm font-medium text-muted-foreground">{KIND_LABEL[c.kind]}</p>
         <button type="button" onClick={() => setEditOpen(true)} className="flex size-9 items-center justify-center rounded-full text-muted-foreground active:bg-muted"><Pencil className="size-4 stroke-[1.5]" /></button>
+      </div>
+
+      {/* ═══ STRUCTURE CHARTE PROFIL (nouveau — à adapter) ═══ */}
+      <div className="flex flex-col gap-5 px-4 pb-8 pt-2">
+        <div className="flex flex-col items-center gap-2.5">
+          <div className="grid size-20 place-items-center rounded-full text-2xl font-bold text-white" style={{ backgroundColor: perso?.hex ?? c.accent }}>{c.initials}</div>
+          <p className="text-lg font-semibold text-foreground">{c.name || 'Contact'}</p>
+        </div>
+        {(() => {
+          const secId = pfNf([pf.firstName, pf.lastName, pf.gender, pf.birthDate, pf.profession, pf.education])
+          const secCo = pfNf([pf.phone, pf.email, pf.address, pf.postal, pf.city, pf.country])
+          const pct = Math.round(((secId + secCo) / 12) * 100)
+          return (
+            <div className="px-1">
+              <p className="mb-1.5 text-base font-semibold text-foreground">Fiche complétée à <span className="text-primary">{pct}%</span></p>
+              <div className="h-2 w-full overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all" style={{ width: `${pct}%` }} /></div>
+            </div>
+          )
+        })()}
+        <div className="flex flex-col gap-2">
+          <Collapsible icon={UserIcon} title="Identité" filled={pfNf([pf.firstName, pf.lastName, pf.gender, pf.birthDate, pf.profession, pf.education])} total={6} open={!!pfOpen.identite} onToggle={() => pfToggle('identite')}>
+            <input className={fieldCls} value={pf.firstName} onChange={(e) => setPfField('firstName', e.target.value)} placeholder="Prénom" />
+            <input className={fieldCls} value={pf.lastName} onChange={(e) => setPfField('lastName', e.target.value)} placeholder="Nom" />
+            <SelectMenu className={fieldCls} placeholder="Genre" value={pf.gender} onChange={(v) => setPfField('gender', v)} options={[{ value: 'M', label: 'Homme' }, { value: 'F', label: 'Femme' }, { value: 'N', label: 'Neutre' }]} />
+            <div className="grid grid-cols-[0.9fr_1.7fr_1.2fr] gap-2">
+              <SelectMenu className={fieldCls} placeholder="Jour" value={pfDob.d} onChange={(v) => setPfDobPart({ d: v })} options={pfDobDays} />
+              <SelectMenu className={fieldCls} placeholder="Mois" value={pfDob.m} onChange={(v) => setPfDobPart({ m: v })} options={DOB_MONTHS} />
+              <SelectMenu className={fieldCls} placeholder="Année" value={pfDob.y} onChange={(v) => setPfDobPart({ y: v })} options={DOB_YEARS} />
+            </div>
+            <input className={fieldCls} value={pf.profession} onChange={(e) => setPfField('profession', e.target.value)} placeholder="Profession" />
+            <SelectMenu className={fieldCls} placeholder="Niveau d'études" value={pf.education} onChange={(v) => setPfField('education', v)} options={EDUCATIONS.map((o) => ({ value: o, label: o }))} />
+          </Collapsible>
+          <Collapsible icon={Phone} title="Coordonnées" filled={pfNf([pf.phone, pf.email, pf.address, pf.postal, pf.city, pf.country])} total={6} open={!!pfOpen.coord} onToggle={() => pfToggle('coord')}>
+            <input className={fieldCls} type="tel" inputMode="numeric" value={pf.phone} onChange={(e) => setPfField('phone', formatPhone(e.target.value))} placeholder="Téléphone" />
+            <input className={fieldCls} type="tel" inputMode="numeric" value={pf.phone2} onChange={(e) => setPfField('phone2', formatPhone(e.target.value))} placeholder="Téléphone secondaire" />
+            <input className={fieldCls} type="email" value={pf.email} onChange={(e) => setPfField('email', e.target.value)} placeholder="Email" />
+            <input className={fieldCls} value={pf.address} onChange={(e) => setPfField('address', e.target.value)} placeholder="Adresse" />
+            <input className={fieldCls} value={pf.address2} onChange={(e) => setPfField('address2', e.target.value)} placeholder="Complément d'adresse" />
+            <input className={fieldCls} value={pf.postal} onChange={(e) => setPfField('postal', e.target.value)} placeholder="Code postal" />
+            <input className={fieldCls} value={pf.city} onChange={(e) => setPfField('city', e.target.value)} placeholder="Ville" />
+            <SelectMenu className={fieldCls} placeholder="Pays" value={pf.country} onChange={(v) => setPfField('country', v)} options={PAYS.map((p) => ({ value: p, label: p }))} />
+          </Collapsible>
+        </div>
+        <button type="button" onClick={() => save(pf, 'Fiche enregistrée')} className="flex w-full items-center justify-center gap-2 rounded-2xl bg-primary py-3.5 text-base font-bold text-primary-foreground shadow-sm transition-transform active:scale-[0.98]">Enregistrer</button>
+        <div className="rounded-xl border border-dashed border-border bg-muted/30 px-4 py-2.5 text-center text-xs text-muted-foreground">↓ Ci-dessous : l&apos;ancienne fiche (intacte) — on décidera ensemble comment l&apos;intégrer.</div>
       </div>
 
       <div className="flex flex-col gap-4 px-4 pb-24 pt-2">
