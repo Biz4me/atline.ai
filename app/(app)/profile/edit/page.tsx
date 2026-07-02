@@ -396,8 +396,8 @@ export default function ProfileEditPage() {
                   const info = describePersonality(form.personality, form.gender)
                   return info ? (
                     <div className="border-t border-border px-4 py-3">
-                      <p className="text-base font-semibold" style={{ color: info.color }}>{info.archetype}</p>
-                      <p className="mt-1 text-base leading-relaxed text-muted-foreground">{info.text}</p>
+                      <p className="text-lg font-semibold" style={{ color: info.color }}>{info.archetype}</p>
+                      <p className="mt-1 text-lg leading-relaxed text-muted-foreground">{info.text}</p>
                     </div>
                   ) : null
                 })()}
