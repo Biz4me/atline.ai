@@ -8,7 +8,6 @@ import {
   BookOpen,
   CalendarDays,
   Users,
-  Rocket,
   Mic,
 } from 'lucide-react'
 import Link from 'next/link'
@@ -136,59 +135,6 @@ const JOURNAL_DOT: Record<string, string> = {
   nova:  '#8B5CF6',
 }
 
-// ── Carte partagée — Plan du jour (mobile + desktop, source unique) ────────────
-// Règle : le tableau de bord n'affiche que des RÉSULTATS. Chaque ligne est un
-// raccourci vers la fiche (là où l'on agit). Aucune action ne mute ici.
-
-type PlanItem = { contactId: string; name: string; initials: string; accent: string; level: number; headline: string; reason: string }
-
-function PlanDuJourCard() {
-  const [items, setItems] = useState<PlanItem[] | null>(null)
-  useEffect(() => {
-    fetch('/api/plan/today').then((r) => (r.ok ? r.json() : null)).then((d) => setItems(d?.items ?? [])).catch(() => setItems([]))
-  }, [])
-
-  return (
-    <Card className="p-0 overflow-hidden">
-      <div className="flex h-14 items-center justify-between px-4 border-b border-border">
-        <div className="flex items-center gap-2">
-          <Rocket className="size-4 stroke-[1.5] text-muted-foreground" />
-          <span className="text-sm font-bold text-foreground">Plan du jour</span>
-        </div>
-        <Link
-          href="/atlas"
-          className="flex items-center gap-1.5 rounded-xl bg-primary/10 text-primary px-3.5 py-2 text-xs font-bold hover:bg-primary/20 transition-colors shrink-0"
-        >
-          Discuter
-        </Link>
-      </div>
-      {items === null ? (
-        <div className="px-4 py-6 text-center text-sm text-muted-foreground">Atlas prépare ton plan…</div>
-      ) : items.length === 0 ? (
-        <div className="px-4 py-6 text-center">
-          <p className="text-sm font-medium text-foreground">Rien d&apos;urgent aujourd&apos;hui 🎉</p>
-          <Link href="/contacts" className="mt-1 inline-block text-xs font-semibold text-primary">Profites-en pour prospecter →</Link>
-        </div>
-      ) : (
-        <div className="divide-y divide-border">
-          {items.map((it) => (
-            <Link key={it.contactId} href={`/contacts/${it.contactId}`}
-              className="flex items-center gap-3 px-4 py-3 transition-colors hover:bg-muted/20 active:bg-muted/40">
-              <span className="grid size-9 shrink-0 place-items-center rounded-full text-xs font-bold text-white" style={{ backgroundColor: it.accent }}>{it.initials}</span>
-              <div className="min-w-0 flex-1">
-                <p className="truncate text-sm font-semibold text-foreground">{it.headline}</p>
-                <p className="truncate text-xs text-muted-foreground">{it.reason}</p>
-              </div>
-              {it.level === 1 && <span className="shrink-0 rounded-full bg-destructive/10 px-2 py-0.5 text-[10px] font-bold text-destructive">Urgent</span>}
-              <ChevronRight className="size-4 shrink-0 text-muted-foreground" />
-            </Link>
-          ))}
-        </div>
-      )}
-    </Card>
-  )
-}
-
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export function HomeContent({ mantra }: { mantra: string }) {
@@ -227,9 +173,6 @@ export function HomeContent({ mantra }: { mantra: string }) {
               </div>
             ))}
           </div>
-
-          {/* Plan du jour */}
-          <PlanDuJourCard />
 
           {/* Agenda */}
           <Card className="p-0 overflow-hidden">
@@ -299,10 +242,6 @@ export function HomeContent({ mantra }: { mantra: string }) {
 
           {/* ── Colonne gauche — 3 zones ── */}
           <div className="flex flex-col gap-5">
-
-            {/* Plan du jour — carte partagée */}
-            <PlanDuJourCard />
-
 
           </div>
 

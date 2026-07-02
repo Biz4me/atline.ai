@@ -13,7 +13,9 @@ const BUCKET_LABEL: Record<string, string> = { PRESENTER: 'Présenter', FORMER: 
 const TH = String.fromCharCode(0x202F), NB = String.fromCharCode(0xA0), EM = String.fromCharCode(0x2014)
 const frText = (t: string) => t.replace(/ ([:;!?])/g, TH + '$1').replace(new RegExp(' ' + EM + ' ', 'g'), NB + EM + ' ')
 
-type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[] }
+import { AtlasPlanCard } from '@/components/atlas-plan-card'
+
+type Msg = { from: 'user' | 'atlas'; text: string; chips?: string[]; card?: 'plan' }
 
 // Indicateur « Atlas réfléchit » — 3 points en cascade
 function TypingDots() {
@@ -484,7 +486,7 @@ export default function AtlasPage() {
             {!input.trim() && (
               <div className="mx-auto flex w-full max-w-md flex-col gap-0.5">
                 {[
-                  { icon: Zap, label: 'Mon plan du jour', run: () => sendMsg('Donne-moi mon plan du jour') },
+                  { icon: Zap, label: 'Mon plan du jour', run: () => { setMsgs((prev) => [...prev, { from: 'user', text: 'Mon plan du jour' }, { from: 'atlas', text: '', card: 'plan' }]); setTimeout(scrollToBottom, 50) } },
                   { icon: Target, label: 'Mon prochain pas', run: () => sendMsg('Quel est mon prochain pas ?') },
                   { icon: Mic, label: 'Simuler un appel avec Aria', run: () => router.push('/aria') },
                   { icon: SquarePen, label: 'Créer un post avec Nova', run: () => router.push('/nova') },
@@ -515,6 +517,8 @@ export default function AtlasPage() {
                   <div className="max-w-[82%] whitespace-pre-line rounded-2xl rounded-br-md bg-primary px-3.5 py-2.5 text-lg leading-[1.4] text-primary-foreground lg:text-sm">
                     {frText(m.text)}
                   </div>
+                ) : m.card === 'plan' ? (
+                  <AtlasPlanCard />
                 ) : m.text === '' ? (
                   <TypingDots />
                 ) : (
