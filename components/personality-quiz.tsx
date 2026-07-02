@@ -43,10 +43,10 @@ export function describePersonality(color: string, gender: string) {
 
 // Descriptions 3e personne (pour un contact) — l'IA onboarding est écrite à la 2e personne
 const THIRD: Record<Color, string> = {
-  ROUGE: "Direct, rapide, orienté résultats — décide vite et avance. Pour l'aborder : va droit au but, parle objectifs, chiffres et défis.",
-  VERT: "Rigoureux et prudent — veut des faits avant d'agir. Pour l'aborder : apporte des preuves, du concret, et laisse-lui le temps d'analyser.",
-  BLEU: "Sociable et spontané — carbure à l'énergie et aux gens. Pour l'aborder : mise sur la vision, l'élan et les relations.",
-  JAUNE: "Relationnel et bienveillant — veut aider, sans pression. Pour l'aborder : reste chaleureux, à l'écoute, et respecte son rythme.",
+  ROUGE: 'Direct et orienté résultats. Va droit au but : chiffres, objectifs, décision rapide.',
+  VERT: "Rigoureux et factuel. Apporte des preuves et laisse-lui le temps d'analyser.",
+  BLEU: "Sociable et énergique. Mise sur la vision, l'élan et les relations.",
+  JAUNE: "Relationnel et sans pression. Reste chaleureux, à l'écoute, respecte son rythme.",
 }
 
 // Questions d'observation (3e personne) — pour évaluer un contact, pas soi-même
