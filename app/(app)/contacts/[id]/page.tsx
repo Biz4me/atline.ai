@@ -3,7 +3,7 @@
 import { use, useEffect, useState, useCallback } from 'react'
 import { useRouter } from 'next/navigation'
 import {
-  ChevronLeft, Pencil, Phone, Mail, MapPin, Link2, Clock, Tag,
+  ChevronLeft, Pencil, Mail, Link2, Clock, Tag,
   MessageSquare, PhoneCall, CalendarPlus, Mic, Sparkles, ArrowRight, X, Plus,
   MessageCircle, Bell, Share2, StickyNote, Check, ChevronDown, User as UserIcon, Contact,
 } from 'lucide-react'
@@ -515,13 +515,6 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
       </div>
 
       <div className="flex flex-col gap-4 px-4 pb-24 pt-2">
-        {/* Hero identité */}
-        <div className="flex flex-col items-center gap-2 pb-2">
-          <div className="flex size-20 items-center justify-center rounded-full text-2xl font-bold text-white" style={{ backgroundColor: perso?.hex ?? c.accent }}>{c.initials}</div>
-          <h1 className="text-2xl font-bold text-foreground">{c.name}</h1>
-          {c.city && <div className="flex items-center gap-1 text-xs text-muted-foreground"><MapPin className="size-3 stroke-[1.5]" />{c.city}</div>}
-        </div>
-
         {/* LE PROCHAIN PAS — cockpit Atlas */}
         {nextStep && (
           <div className="rounded-2xl border border-primary/30 bg-primary/5 p-4">
@@ -610,59 +603,14 @@ export default function ContactDetailPage({ params }: { params: Promise<{ id: st
           </div>
         </Section>
 
-        {/* QUALIFICATION */}
-        <Section title="Qualification">
-          <div className="flex flex-col gap-4">
-            {/* Couleur */}
-            {perso ? (
-              <div className="flex flex-col gap-2.5">
-                <div className="flex items-center gap-3">
-                  <span className="flex size-9 shrink-0 items-center justify-center rounded-xl text-sm font-bold text-white" style={{ backgroundColor: perso.hex }}>{perso.label[0]}</span>
-                  <div className="min-w-0 flex-1"><p className="text-xs font-bold text-foreground">{perso.label}</p><p className="text-xs leading-relaxed text-muted-foreground">{perso.desc}</p></div>
-                  <button type="button" onClick={() => setEvalOpen(true)} className="text-xs font-medium text-primary">Réévaluer</button>
-                </div>
-                <div className="rounded-xl bg-muted/50 px-3 py-2.5"><p className="mb-1 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Comment l'approcher</p><p className="text-xs leading-relaxed text-foreground">{perso.approach}</p></div>
-              </div>
-            ) : (
-              <button type="button" onClick={() => setEvalOpen(true)} className="flex items-center gap-3 rounded-xl border border-dashed border-border p-3 text-left active:bg-muted">
-                <Sparkles className="size-4 shrink-0 text-muted-foreground stroke-[1.5]" />
-                <span className="flex-1 text-xs text-muted-foreground">Évaluer la personnalité (3 questions) →</span>
-              </button>
-            )}
-
-            {/* Marché d'origine (état d'arrivée, lecture seule) */}
-            <div>
-              <p className="mb-1.5 text-[10px] font-bold uppercase tracking-widest text-muted-foreground">Marché d'origine</p>
-              {c.market ? (
-                <span className="inline-flex items-center gap-1.5 rounded-lg bg-muted px-2.5 py-1 text-xs font-bold text-foreground">
-                  <span className="size-2 rounded-full" style={{ backgroundColor: MARCHE[c.market].hex }} />
-                  Marché {MARCHE[c.market].label.toLowerCase()}
-                </span>
-              ) : (
-                <span className="text-xs text-muted-foreground">Non défini — à renseigner dans « Modifier ».</span>
-              )}
-              <p className="mt-1.5 text-[10px] leading-relaxed text-muted-foreground">D'où vient ce contact (chaud = proches, tiède = connaissances, froid = inconnu). Fixé à l'arrivée.</p>
+        {/* OPPORTUNITÉ (score auto) — la qualification (DISC, marché…) est désormais en haut */}
+        <Section title="Opportunité">
+          <div>
+            <div className="mb-1.5 flex items-center justify-between">
+              <p className="text-xs text-muted-foreground">Score d'opportunité <span className="text-[10px]">(auto)</span></p>
+              <p className="text-xs font-bold text-foreground">{c.score} / 100</p>
             </div>
-
-            {/* Score dynamique */}
-            <div>
-              <div className="mb-1.5 flex items-center justify-between">
-                <p className="text-xs text-muted-foreground">Score d'opportunité <span className="text-[10px]">(auto)</span></p>
-                <p className="text-xs font-bold text-foreground">{c.score} / 100</p>
-              </div>
-              <div className="h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all" style={{ width: `${c.score}%` }} /></div>
-            </div>
-          </div>
-        </Section>
-
-        {/* COORDONNÉES */}
-        <Section title="Coordonnées" action={<button type="button" onClick={() => setEditOpen(true)} className="text-xs font-medium text-primary"><Pencil className="mr-1 inline size-3" />Modifier</button>}>
-          <div className="flex flex-col divide-y divide-border">
-            {c.phone && <a href={`tel:${c.phone}`} className="flex items-center gap-3 py-2.5"><Phone className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" /><span className="text-sm font-medium text-primary">{c.phone}</span></a>}
-            {c.phone2 && <a href={`tel:${c.phone2}`} className="flex items-center gap-3 py-2.5"><Phone className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" /><span className="text-sm font-medium text-primary">{c.phone2}</span></a>}
-            {c.email && <a href={`mailto:${c.email}`} className="flex items-center gap-3 py-2.5"><Mail className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" /><span className="truncate text-sm text-foreground">{c.email}</span></a>}
-            {(c.address || c.city) && <div className="flex items-center gap-3 py-2.5"><MapPin className="size-4 shrink-0 stroke-[1.5] text-muted-foreground" /><span className="text-sm text-foreground">{[c.address, [c.postal, c.city].filter(Boolean).join(' '), c.country].filter(Boolean).join(', ')}</span></div>}
-            {!c.phone && !c.phone2 && !c.email && !c.address && !c.city && <p className="py-2 text-sm text-muted-foreground">Aucune coordonnée. <button onClick={() => setEditOpen(true)} className="font-bold text-primary">Ajouter</button></p>}
+            <div className="h-1.5 overflow-hidden rounded-full bg-muted"><div className="h-full rounded-full bg-primary transition-all" style={{ width: `${c.score}%` }} /></div>
           </div>
         </Section>
 
