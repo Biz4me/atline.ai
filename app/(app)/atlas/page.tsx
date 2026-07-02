@@ -350,23 +350,46 @@ export default function AtlasPage() {
     setTimeout(scrollToBottom, 60)
   }
 
-  // Démarre le flux d'action : on fait le point sur le contact, puis on choisit le canal, jusqu'au concret.
+  // Rond sélectif pour un champ manquant (proximité ou personnalité DISC).
+  const askField = (item: PlanItem, kind: 'market' | 'disc') => {
+    const choices: Choice[] = kind === 'market'
+      ? [{ label: 'Un proche', value: 'set:market:CHAUD' }, { label: 'Une connaissance', value: 'set:market:TIEDE' }, { label: 'On se connaît peu', value: 'set:market:FROID' }]
+      : [{ label: '🔴 Fonceur, direct, résultats', value: 'set:personality:ROUGE' }, { label: '🟢 Analytique, prudent, factuel', value: 'set:personality:VERT' }, { label: '🔵 Sociable, spontané, fun', value: 'set:personality:BLEU' }, { label: '🟡 Relationnel, bienveillant', value: 'set:personality:JAUNE' }]
+    setMsgs((prev) => [...prev, { from: 'atlas', text: kind === 'market' ? `Tu connais ${item.prenom} comment ?` : `Tu le sens plutôt comment, ${item.prenom} ?`, choices, item }])
+    setTimeout(scrollToBottom, 60)
+  }
+
+  // Le point sur la fiche : ce qu'Atlas sait / ce qui manque d'important, puis on complète.
+  const pointAndGather = async (item: PlanItem) => {
+    let c: { profession?: string | null; market?: string | null; personality?: string | null; note?: string | null } | null = null
+    try { const r = await fetch(`/api/contacts/${item.contactId}`); c = r.ok ? await r.json() : null } catch { /* ignore */ }
+    const has: string[] = []
+    if (c?.profession) has.push(`son métier (${c.profession})`)
+    if (c?.market) has.push('votre proximité')
+    if (c?.personality) has.push('sa personnalité')
+    if (c?.note && c.note.trim()) has.push('quelques notes')
+    const missMarket = !c?.market
+    const missDisc = !c?.personality
+    const missLabels: string[] = []
+    if (missMarket) missLabels.push('votre proximité')
+    if (missDisc) missLabels.push('sa personnalité (pour le ton)')
+    if (!c?.profession) missLabels.push('son métier')
+    const knownTxt = has.length ? `Ce que je sais sur ${item.prenom} : ${has.join(', ')}.` : `Je ne connais pas encore grand-chose sur ${item.prenom}.`
+    const missTxt = missLabels.length ? ` Pour viser juste, ça m'aiderait de connaître : ${missLabels.join(', ')}.` : " On a l'essentiel."
+    setMsgs((prev) => [...prev, { from: 'atlas', text: knownTxt + missTxt }])
+    if (missMarket) setTimeout(() => askField(item, 'market'), 550)
+    else if (missDisc) setTimeout(() => askField(item, 'disc'), 550)
+    else setTimeout(() => askChannel(item), 450)
+  }
+
+  // Démarre le flux d'action : point sur le contact → enrichissement → canal → concret.
   const startActionFlow = (item: PlanItem) => {
     if (item.action !== 'MESSAGE') {
       setMsgs((prev) => [...prev, { from: 'atlas', text: `On s'occupe de ${item.prenom} — dis-moi :`, choices: [{ label: 'Ouvre sa fiche', value: 'fiche' }, { label: "Je m'entraîne avec Aria", value: 'aria' }], item }])
       setTimeout(scrollToBottom, 60)
       return
     }
-    if (!item.market) {
-      setMsgs((prev) => [...prev, { from: 'atlas', text: `Avant d'écrire à ${item.prenom}, un point utile : tu le connais comment ? Ça m'aide à viser le bon ton.`, choices: [
-        { label: 'Un proche', value: 'know:CHAUD' },
-        { label: 'Une connaissance', value: 'know:TIEDE' },
-        { label: 'On se connaît peu', value: 'know:FROID' },
-      ], item }])
-      setTimeout(scrollToBottom, 60)
-    } else {
-      askChannel(item)
-    }
+    pointAndGather(item)
   }
 
   // « Mon plan du jour » : Atlas présente EN CONVERSATION, puis lance le flux guidé sur la priorité n°1.
@@ -387,25 +410,26 @@ export default function AtlasPage() {
   // Sélection d'un rond : retire les choix, renvoie le choix en bulle, et branche (machine à états du flux).
   const handleChoice = (item: PlanItem, value: string, label: string, idx: number) => {
     setMsgs((prev) => [...prev.map((m, j) => (j === idx ? { ...m, choices: undefined } : m)), { from: 'user', text: label }])
-    // Nouvelle info donnée par l'utilisateur → Atlas demande s'il l'enregistre, le fait, puis confirme.
-    if (value.startsWith('know:')) {
-      const market = value.slice(5)
-      const ack = market === 'CHAUD' ? 'Un proche — on pourra être direct et sincère.' : market === 'FROID' ? 'Vous vous connaissez peu — on restera léger.' : 'Une connaissance, noté.'
-      setMsgs((prev) => [...prev, { from: 'atlas', text: `${ack} Tu veux que je l'enregistre dans la fiche de ${item.prenom} ?`, choices: [{ label: 'Oui, enregistre-la', value: `save:${market}` }, { label: 'Non, garde juste pour maintenant', value: `nosave:${market}` }], item }])
+    // Nouvelle info donnée par l'utilisateur → Atlas demande s'il l'enregistre, le fait lui-même, puis confirme.
+    if (value.startsWith('set:')) {
+      const [, field, val] = value.split(':')
+      const ack = field === 'market'
+        ? (val === 'CHAUD' ? 'Un proche — on pourra être direct.' : val === 'FROID' ? 'Vous vous connaissez peu — on restera léger.' : 'Une connaissance, noté.')
+        : 'Ok, je vois le tempérament.'
+      setMsgs((prev) => [...prev, { from: 'atlas', text: `${ack} Tu veux que je l'enregistre dans la fiche de ${item.prenom} ?`, choices: [{ label: 'Oui, enregistre-la', value: `save:${field}:${val}` }, { label: 'Non merci', value: `nosave:${field}:${val}` }], item }])
       setTimeout(scrollToBottom, 60)
       return
     }
     if (value.startsWith('save:')) {
-      const market = value.slice(5)
-      fetch(`/api/contacts/${item.contactId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ market }) })
-        .then((r) => { setMsgs((prev) => [...prev, { from: 'atlas', text: r.ok ? `C'est noté dans sa fiche ✓` : `Je n'ai pas réussi à l'enregistrer, mais on continue.` }]); setTimeout(() => askChannel({ ...item, market }), 400) })
-        .catch(() => { setMsgs((prev) => [...prev, { from: 'atlas', text: `Je n'ai pas réussi à l'enregistrer, mais on continue.` }]); setTimeout(() => askChannel({ ...item, market }), 400) })
+      const [, field, val] = value.split(':')
+      fetch(`/api/contacts/${item.contactId}`, { method: 'PATCH', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ [field]: val }) })
+        .then((r) => { setMsgs((prev) => [...prev, { from: 'atlas', text: r.ok ? "C'est noté dans sa fiche ✓" : "Je n'ai pas réussi à l'enregistrer, mais on continue." }]); setTimeout(() => askChannel(item), 400) })
+        .catch(() => { setMsgs((prev) => [...prev, { from: 'atlas', text: "Je n'ai pas réussi à l'enregistrer, mais on continue." }]); setTimeout(() => askChannel(item), 400) })
       return
     }
     if (value.startsWith('nosave:')) {
-      const market = value.slice(7)
       setMsgs((prev) => [...prev, { from: 'atlas', text: 'Ok, je ne le note pas.' }])
-      setTimeout(() => askChannel({ ...item, market }), 300)
+      setTimeout(() => askChannel(item), 300)
       return
     }
     if (value === 'chan:message') {
